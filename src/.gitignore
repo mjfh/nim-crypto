@@ -12,9 +12,14 @@
 /libsession.la
 /libsession.so
 /libstub.la
+/main.o
 /nim.cfg
 /nim.sh
 /nimcache
 /session
+/session.dll
+/session.lib
+/session-dynlib.h
+/session-static.h
 /stub.lo
 /stub.o

@@ -39,15 +39,18 @@ prep:: prepare
 prepare update::
 	$(MAKE) -C import $@
 
-.PHONY: try docs prepare
-prepare try docs::
+.PHONY: try prepare
+prepare try::
 	$(MAKE) -C src $@
 
 # ---------------------------------------------------------------------------
 # Collect documentation
 # ---------------------------------------------------------------------------
 
+.PHONY: docs
 docs::
+	@$(MAKE) -C import prepare
+	@$(MAKE) -C src $@
 	@mkdir -p doc
 	@find . -name \*.nim -print|while read f; do \
 	  b=`expr "$$f" : '\(.*\)\.nim$$'` ; \

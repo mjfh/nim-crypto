@@ -48,46 +48,44 @@ help:
 	@echo "$(MAKE) [target]"
 	@echo
 	@echo "target: all [dist]clean -- standard targets dist/clean"
-	@echo "      | force           -- force recompiling main target"
 	@echo "      | docs            -- generate docs"
 	@echo "      | try             -- run quick source file tests"
 	@echo "      | check           -- run all tests"
 	@echo
 
 # ---------------------------------------------------------------------------
-# Libtool stub, pulls in command variables COMPILE and LTCOMPILE
-# ---------------------------------------------------------------------------
-
-lib_LTLIBRARIES = libstub.la
-libstub_la_SOURCES = stub.c
-
-# ---------------------------------------------------------------------------
 # Build library objects
 # ---------------------------------------------------------------------------
 
-all-local:: $(LIBNAME).la
-
-CLEANFILES  += $(LIBNAME).so $(LIBNAME).a $(LIBNAME).la
-
-
-# Collect non-pic/ststic objects in nimcache/dynlib/ sub-directory
+# Collect non-pic/static objects in nimcache/dynlib/ sub-directory
 #
-.PHONY: static
-static: $(NAME).nim
+CLEANFILES += $(LIBNAME).a $(NAME).lib
+nimcache/static/$(NAME).h: $(NAME).nim
 	@rm -f $@ nimcache/*.* nimcache/static/*
 	$(NIM2A) $(NIM2CFLAGS) $(NAME).nim
 	@mkdir -p               nimcache/static
 	mv nimcache/*.$(OBJEXT) nimcache/static
-
+	mv nimcache/$(NAME).h   nimcache/static
+	rm -f $(LIBNAME).a $(NAME).lib
 
 # Collect pic objects in nimcache/dynlib/ sub-directory
 #
-.PHONY: dynlib
-dynlib: $(NAME).nim
+CLEANFILES += $(LIBNAME).so $(NAME).dll
+nimcache/dynlib/$(NAME).h: $(NAME).nim
 	@rm -f $@ nimcache/*.* nimcache/dynlib/*
 	$(NIM2L) $(NIM2CFLAGS) $(NAME).nim
 	@mkdir -p               nimcache/dynlib
 	mv nimcache/*.$(OBJEXT) nimcache/dynlib
+	mv nimcache/$(NAME).h   nimcache/dynlib
+	rm -f $(LIBNAME).so $(NAME).dll
+
+
+# Libtool stub, create stub.lo template
+#
+CLEANFILES += stub.$(EXEOBJ) stub.lo
+stub.lo: stub.c
+	$(LIBTOOL) --tag=CC --mode=compile $(CC) -c -o stub.$(OBJEXT) stub.c
+
 
 # Kludge: emulate libtool/link behaviour without involing GCC directly
 #
@@ -97,9 +95,16 @@ dynlib: $(NAME).nim
 #         note that libtool checks for a particular header which is
 #         extracted from stub.lo
 #
-$(LIBNAME).la: static dynlib stub.lo
+if USE_MINGW
+LINK_LIBS  = -lm
+LINK_FLAGS = -no-undefined
+else
+LINK_LIBS  = -lm -ldl
+endif
+CLEANFILES += $(LIBNAME).la
+$(LIBNAME).la: nimcache/static/$(NAME).h nimcache/dynlib/$(NAME).h stub.lo
 	@rm -f $@ nimcache/*.lo
-	for obj in nimcache/static/* ; do \
+	@for obj in nimcache/static/*.$(OBJEXT) ; do \
 	  t=`basename $$obj .$(OBJEXT)` ;\
 	  o=`basename $$obj` ;\
 	  l=nimcache/$$t.lo  ;\
@@ -107,24 +112,46 @@ $(LIBNAME).la: static dynlib stub.lo
 	  echo "pic_object='dynlib/$$o'"                 >> $$l ;\
 	  echo "non_pic_object='static/$$o'"             >> $$l ;\
 	done
-	$(LINK) -rpath $(libdir) nimcache/*.lo -ldl -lm
+	$(LINK) $(LINK_FLAGS) -rpath $(libdir) nimcache/*.lo $(LINK_LIBS)
 
-clean-local::
-	rm -f nimcache/static/* nimcache/dynlib/*
-	rmdir nimcache/static   nimcache/dynlib 2>/dev/null ||:
+$(LIBNAME).a: $(LIBNAME).la
+	@rm -f $@
+	$(LN_S) .libs/$@ .
+
+$(LIBNAME).so: $(LIBNAME).la
+	@rm -f $@
+	$(LN_S) .libs/$@ .
+
+CLEANFILES += $(NAME)-static.h
+$(NAME)-static.h: $(LIBNAME).la
+	@rm -f $@
+	$(LN_S) nimcache/static/$(NAME).h $@
+
+CLEANFILES += $(NAME)-dynlib.h
+$(NAME)-dynlib.h: $(LIBNAME).la
+	@rm -f $@
+	$(LN_S) nimcache/dynlib/$(NAME).h $@
 
 # ---------------------------------------------------------------------------
 # Build target programs
 # ---------------------------------------------------------------------------
 
-cwrap_SOURCES      = main.c
-cwrap_CFLAGS       = -Inimcache -I$(NIMLIB)
-cwrap_LDFLAGS      =
-cwrap_LDADD        = -l$(NAME)
-cwrap_DEPENDENCIES =
+cwrap_SOURCES = main.c
+cwrap_LDFLAGS =
+cwrap_CFLAGS  = -I$(NIMLIB) -Inimcache
+cwrap_LDADD   =
 
-main.c: nimcache/$(NAME).h
-nimcache/$(NAME).h: $(LIBNAME).la
+main.c: $(main_c_deps)
+
+if USE_MINGW
+main_c_deps   = $(NAME)-static.h $(LIBNAME).a
+cwrap_CFLAGS += -DSESSION_STATIC
+cwrap_LDADD  += $(LIBNAME).a
+else
+main_c_deps   = $(NAME)-dynlib.h
+cwrap_CFLAGS += -DSESSION_DYNLIB
+cwrap_LDADD  += -l$(NAME)
+endif
 
 if USE_DEBUG
 cwrap_CFLAGS += -g
@@ -138,4 +165,6 @@ endif
 
 include ../tools/am/Makefile.nimhelper
 
+# ---------------------------------------------------------------------------
 # End
+# ---------------------------------------------------------------------------

@@ -1,15 +1,18 @@
 #!/usr/bin/make -f
+#
+# $Id$
+#
+# Simple Makefile example, works on Linux
+#
 
 MAKEFILE = Makefile.simple
-
-# set path to directory containing: crypto/xcrypt.nim
-ROOTDIR  = .
-
+ROOTDIR  = lib
 TARGET   = cwrap
+LIBS     = -ldl -lm
+
 NIMLIB   = `nim dump 2>&1 >/dev/null|sed '$$!d'`
 INCLUDES = -Inimcache -I$(NIMLIB)
 CFLAGS   = $(INCLUDES) $(CDEBUG)
-LIBS     = -ldl -lm
 NIMFLAGS = -p:$(ROOTDIR) --app:staticLib --noMain --header $(NIMDBG)
 
 # Settings for optimised code
@@ -20,7 +23,11 @@ REL_NIMDBG = -d:release --gc:none
 DBG_CDEBUG = -g
 DBG_NIMDBG = --debuginfo --lineDir:on --embedsrc --debugger=native
 
-# BUILD
+# ---------------------------------------------------------------------------
+# Convenience targets
+# ---------------------------------------------------------------------------
+
+# Default settings
 CDEBUG = $(REL_CDEBUG)
 NIMDBG = $(REL_NIMDBG)
 
@@ -31,7 +38,7 @@ help:
 	@echo
 	@echo '$(MAKE) -f $(MAKEFILE) [target]'
 	@echo
-	@echo 'target: default'
+	@echo 'target: default       -- release (unless done already)'
 	@echo '      | debug         -- force rebuild'
 	@echo '      | release       -- force rebuild'
 	@echo '      | [dist]clean'
@@ -45,6 +52,10 @@ release:
 	@rm -f $(TARGET)
 	$(MAKE) -f $(MAKEFILE) CDEBUG="$(REL_CDEBUG)" NIMDBG="$(REL_NIMDBG)"
 
+# ---------------------------------------------------------------------------
+# BUILD recipe
+# ---------------------------------------------------------------------------
+
 $(TARGET): main.o libsession.a
 	$(CC) -o $@ $(CFLAGS) main.c libsession.a $(LIBS)
 
@@ -53,6 +64,10 @@ main.o: main.c nimcache/session.h
 libsession.a nimcache/session.h: session.nim
 	nim cc $(NIMFLAGS) session.nim
 
+# ---------------------------------------------------------------------------
+# Clean up
+# ---------------------------------------------------------------------------
+
 clean distclean::
 	rm -rf nimcache
 	rm -f *.o libsession.a $(TARGET)
@@ -60,4 +75,6 @@ clean distclean::
 distclean::
 	rm -f *~
 
+# ---------------------------------------------------------------------------
 # End
+# ---------------------------------------------------------------------------

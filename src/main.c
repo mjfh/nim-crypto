@@ -32,7 +32,16 @@
  *    gcc -o main -Inimcache -I$nimlib main.c libsession.a -ldl -lm
  */
 
-#include "session.h"
+#ifdef SESSION_DYNLIB
+# include "session-dynlib.h"
+#endif
+#ifdef SESSION_STATIC
+# include "session-static.h"
+#endif
+#ifndef __session__
+# include "session.h"
+#endif
+
 #include <stdio.h>
 
 /* see kris kristofferson: to beat the devil */
