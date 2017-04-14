@@ -1,0 +1,38 @@
+bfc2f5b0 src/headers/tomcrypt_argchk.h (Tom St Denis    2004-12-30 23:55:53 +0000  1) /* Defines the LTC_ARGCHK macro used within the library */
+d24e9cd3 src/headers/tomcrypt_argchk.h (Uli Köhler      2015-03-27 21:41:51 +0100  2) /* ARGTYPE is defined in tomcrypt_cfg.h */
+^a6a5fc6 mycrypt_argchk.h              (Tom St Denis    2003-03-03 00:59:24 +0000  3) #if ARGTYPE == 0
+^a6a5fc6 mycrypt_argchk.h              (Tom St Denis    2003-03-03 00:59:24 +0000  4) 
+^a6a5fc6 mycrypt_argchk.h              (Tom St Denis    2003-03-03 00:59:24 +0000  5) #include <signal.h>
+^a6a5fc6 mycrypt_argchk.h              (Tom St Denis    2003-03-03 00:59:24 +0000  6) 
+d5fbe63b mycrypt_argchk.h              (Tom St Denis    2003-03-03 01:02:10 +0000  7) /* this is the default LibTomCrypt macro  */
+1c1822d5 mycrypt_argchk.h              (Tom St Denis    2004-10-30 03:00:26 +0000  8) void crypt_argchk(char *v, char *s, int d);
+bfc2f5b0 src/headers/tomcrypt_argchk.h (Tom St Denis    2004-12-30 23:55:53 +0000  9) #define LTC_ARGCHK(x) if (!(x)) { crypt_argchk(#x, __FILE__, __LINE__); }
+1eed98f6 src/headers/tomcrypt_argchk.h (Tom St Denis    2006-06-18 01:37:50 +0000 10) #define LTC_ARGCHKVD(x) LTC_ARGCHK(x)
+^a6a5fc6 mycrypt_argchk.h              (Tom St Denis    2003-03-03 00:59:24 +0000 11) 
+^a6a5fc6 mycrypt_argchk.h              (Tom St Denis    2003-03-03 00:59:24 +0000 12) #elif ARGTYPE == 1
+^a6a5fc6 mycrypt_argchk.h              (Tom St Denis    2003-03-03 00:59:24 +0000 13) 
+^a6a5fc6 mycrypt_argchk.h              (Tom St Denis    2003-03-03 00:59:24 +0000 14) /* fatal type of error */
+bfc2f5b0 src/headers/tomcrypt_argchk.h (Tom St Denis    2004-12-30 23:55:53 +0000 15) #define LTC_ARGCHK(x) assert((x))
+1eed98f6 src/headers/tomcrypt_argchk.h (Tom St Denis    2006-06-18 01:37:50 +0000 16) #define LTC_ARGCHKVD(x) LTC_ARGCHK(x)
+^a6a5fc6 mycrypt_argchk.h              (Tom St Denis    2003-03-03 00:59:24 +0000 17) 
+^a6a5fc6 mycrypt_argchk.h              (Tom St Denis    2003-03-03 00:59:24 +0000 18) #elif ARGTYPE == 2
+^a6a5fc6 mycrypt_argchk.h              (Tom St Denis    2003-03-03 00:59:24 +0000 19) 
+72412f6d src/headers/tomcrypt_argchk.h (Tom St Denis    2005-08-01 16:36:47 +0000 20) #define LTC_ARGCHK(x) if (!(x)) { fprintf(stderr, "\nwarning: ARGCHK failed at %s:%d\n", __FILE__, __LINE__); }
+1eed98f6 src/headers/tomcrypt_argchk.h (Tom St Denis    2006-06-18 01:37:50 +0000 21) #define LTC_ARGCHKVD(x) LTC_ARGCHK(x)
+72412f6d src/headers/tomcrypt_argchk.h (Tom St Denis    2005-08-01 16:36:47 +0000 22) 
+72412f6d src/headers/tomcrypt_argchk.h (Tom St Denis    2005-08-01 16:36:47 +0000 23) #elif ARGTYPE == 3
+72412f6d src/headers/tomcrypt_argchk.h (Tom St Denis    2005-08-01 16:36:47 +0000 24) 
+bfcf1eb2 src/headers/tomcrypt_argchk.h (Steffen Jaeckel 2012-07-26 14:43:15 +0200 25) #define LTC_ARGCHK(x)
+1eed98f6 src/headers/tomcrypt_argchk.h (Tom St Denis    2006-06-18 01:37:50 +0000 26) #define LTC_ARGCHKVD(x) LTC_ARGCHK(x)
+1eed98f6 src/headers/tomcrypt_argchk.h (Tom St Denis    2006-06-18 01:37:50 +0000 27) 
+1eed98f6 src/headers/tomcrypt_argchk.h (Tom St Denis    2006-06-18 01:37:50 +0000 28) #elif ARGTYPE == 4
+1eed98f6 src/headers/tomcrypt_argchk.h (Tom St Denis    2006-06-18 01:37:50 +0000 29) 
+479cc9c2 src/headers/tomcrypt_argchk.h (Tom St Denis    2006-08-30 23:30:00 +0000 30) #define LTC_ARGCHK(x)   if (!(x)) return CRYPT_INVALID_ARG;
+479cc9c2 src/headers/tomcrypt_argchk.h (Tom St Denis    2006-08-30 23:30:00 +0000 31) #define LTC_ARGCHKVD(x) if (!(x)) return;
+^a6a5fc6 mycrypt_argchk.h              (Tom St Denis    2003-03-03 00:59:24 +0000 32) 
+^a6a5fc6 mycrypt_argchk.h              (Tom St Denis    2003-03-03 00:59:24 +0000 33) #endif
+^a6a5fc6 mycrypt_argchk.h              (Tom St Denis    2003-03-03 00:59:24 +0000 34) 
+3964a652 src/headers/tomcrypt_argchk.h (Tom St Denis    2005-06-09 00:08:13 +0000 35) 
+3964a652 src/headers/tomcrypt_argchk.h (Tom St Denis    2005-06-09 00:08:13 +0000 36) /* $Source$ */
+3964a652 src/headers/tomcrypt_argchk.h (Tom St Denis    2005-06-09 00:08:13 +0000 37) /* $Revision$ */
+3964a652 src/headers/tomcrypt_argchk.h (Tom St Denis    2005-06-09 00:08:13 +0000 38) /* $Date$ */

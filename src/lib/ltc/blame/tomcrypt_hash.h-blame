@@ -1,0 +1,407 @@
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000   1) /* ---- HASH FUNCTIONS ---- */
+bbc52b9e (Tom St Denis    2007-07-20 17:48:02 +0000   2) #ifdef LTC_SHA512
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000   3) struct sha512_state {
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000   4)     ulong64  length, state[8];
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000   5)     unsigned long curlen;
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000   6)     unsigned char buf[128];
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000   7) };
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000   8) #endif
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000   9) 
+bbc52b9e (Tom St Denis    2007-07-20 17:48:02 +0000  10) #ifdef LTC_SHA256
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000  11) struct sha256_state {
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000  12)     ulong64 length;
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000  13)     ulong32 state[8], curlen;
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000  14)     unsigned char buf[64];
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000  15) };
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000  16) #endif
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000  17) 
+bbc52b9e (Tom St Denis    2007-07-20 17:48:02 +0000  18) #ifdef LTC_SHA1
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000  19) struct sha1_state {
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000  20)     ulong64 length;
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000  21)     ulong32 state[5], curlen;
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000  22)     unsigned char buf[64];
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000  23) };
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000  24) #endif
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000  25) 
+bbc52b9e (Tom St Denis    2007-07-20 17:48:02 +0000  26) #ifdef LTC_MD5
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000  27) struct md5_state {
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000  28)     ulong64 length;
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000  29)     ulong32 state[4], curlen;
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000  30)     unsigned char buf[64];
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000  31) };
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000  32) #endif
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000  33) 
+bbc52b9e (Tom St Denis    2007-07-20 17:48:02 +0000  34) #ifdef LTC_MD4
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000  35) struct md4_state {
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000  36)     ulong64 length;
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000  37)     ulong32 state[4], curlen;
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000  38)     unsigned char buf[64];
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000  39) };
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000  40) #endif
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000  41) 
+bbc52b9e (Tom St Denis    2007-07-20 17:48:02 +0000  42) #ifdef LTC_TIGER
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000  43) struct tiger_state {
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000  44)     ulong64 state[3], length;
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000  45)     unsigned long curlen;
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000  46)     unsigned char buf[64];
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000  47) };
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000  48) #endif
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000  49) 
+bbc52b9e (Tom St Denis    2007-07-20 17:48:02 +0000  50) #ifdef LTC_MD2
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000  51) struct md2_state {
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000  52)     unsigned char chksum[16], X[48], buf[16];
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000  53)     unsigned long curlen;
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000  54) };
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000  55) #endif
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000  56) 
+bbc52b9e (Tom St Denis    2007-07-20 17:48:02 +0000  57) #ifdef LTC_RIPEMD128
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000  58) struct rmd128_state {
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000  59)     ulong64 length;
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000  60)     unsigned char buf[64];
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000  61)     ulong32 curlen, state[4];
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000  62) };
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000  63) #endif
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000  64) 
+bbc52b9e (Tom St Denis    2007-07-20 17:48:02 +0000  65) #ifdef LTC_RIPEMD160
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000  66) struct rmd160_state {
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000  67)     ulong64 length;
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000  68)     unsigned char buf[64];
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000  69)     ulong32 curlen, state[5];
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000  70) };
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000  71) #endif
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000  72) 
+bbc52b9e (Tom St Denis    2007-07-20 17:48:02 +0000  73) #ifdef LTC_RIPEMD256
+2de2976d (Tom St Denis    2006-11-17 14:21:24 +0000  74) struct rmd256_state {
+2de2976d (Tom St Denis    2006-11-17 14:21:24 +0000  75)     ulong64 length;
+2de2976d (Tom St Denis    2006-11-17 14:21:24 +0000  76)     unsigned char buf[64];
+2de2976d (Tom St Denis    2006-11-17 14:21:24 +0000  77)     ulong32 curlen, state[8];
+2de2976d (Tom St Denis    2006-11-17 14:21:24 +0000  78) };
+2de2976d (Tom St Denis    2006-11-17 14:21:24 +0000  79) #endif
+2de2976d (Tom St Denis    2006-11-17 14:21:24 +0000  80) 
+bbc52b9e (Tom St Denis    2007-07-20 17:48:02 +0000  81) #ifdef LTC_RIPEMD320
+2de2976d (Tom St Denis    2006-11-17 14:21:24 +0000  82) struct rmd320_state {
+2de2976d (Tom St Denis    2006-11-17 14:21:24 +0000  83)     ulong64 length;
+2de2976d (Tom St Denis    2006-11-17 14:21:24 +0000  84)     unsigned char buf[64];
+2de2976d (Tom St Denis    2006-11-17 14:21:24 +0000  85)     ulong32 curlen, state[10];
+2de2976d (Tom St Denis    2006-11-17 14:21:24 +0000  86) };
+2de2976d (Tom St Denis    2006-11-17 14:21:24 +0000  87) #endif
+2de2976d (Tom St Denis    2006-11-17 14:21:24 +0000  88) 
+bbc52b9e (Tom St Denis    2007-07-20 17:48:02 +0000  89) #ifdef LTC_WHIRLPOOL
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000  90) struct whirlpool_state {
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000  91)     ulong64 length, state[8];
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000  92)     unsigned char buf[64];
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000  93)     ulong32 curlen;
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000  94) };
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000  95) #endif
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000  96) 
+bbc52b9e (Tom St Denis    2007-07-20 17:48:02 +0000  97) #ifdef LTC_CHC_HASH
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000  98) struct chc_state {
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000  99)     ulong64 length;
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000 100)     unsigned char state[MAXBLOCKSIZE], buf[MAXBLOCKSIZE];
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000 101)     ulong32 curlen;
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000 102) };
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000 103) #endif
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000 104) 
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000 105) typedef union Hash_state {
+2de2976d (Tom St Denis    2006-11-17 14:21:24 +0000 106)     char dummy[1];
+bbc52b9e (Tom St Denis    2007-07-20 17:48:02 +0000 107) #ifdef LTC_CHC_HASH
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000 108)     struct chc_state chc;
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000 109) #endif
+bbc52b9e (Tom St Denis    2007-07-20 17:48:02 +0000 110) #ifdef LTC_WHIRLPOOL
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000 111)     struct whirlpool_state whirlpool;
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000 112) #endif
+bbc52b9e (Tom St Denis    2007-07-20 17:48:02 +0000 113) #ifdef LTC_SHA512
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000 114)     struct sha512_state sha512;
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000 115) #endif
+bbc52b9e (Tom St Denis    2007-07-20 17:48:02 +0000 116) #ifdef LTC_SHA256
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000 117)     struct sha256_state sha256;
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000 118) #endif
+bbc52b9e (Tom St Denis    2007-07-20 17:48:02 +0000 119) #ifdef LTC_SHA1
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000 120)     struct sha1_state   sha1;
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000 121) #endif
+bbc52b9e (Tom St Denis    2007-07-20 17:48:02 +0000 122) #ifdef LTC_MD5
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000 123)     struct md5_state    md5;
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000 124) #endif
+bbc52b9e (Tom St Denis    2007-07-20 17:48:02 +0000 125) #ifdef LTC_MD4
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000 126)     struct md4_state    md4;
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000 127) #endif
+bbc52b9e (Tom St Denis    2007-07-20 17:48:02 +0000 128) #ifdef LTC_MD2
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000 129)     struct md2_state    md2;
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000 130) #endif
+bbc52b9e (Tom St Denis    2007-07-20 17:48:02 +0000 131) #ifdef LTC_TIGER
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000 132)     struct tiger_state  tiger;
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000 133) #endif
+bbc52b9e (Tom St Denis    2007-07-20 17:48:02 +0000 134) #ifdef LTC_RIPEMD128
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000 135)     struct rmd128_state rmd128;
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000 136) #endif
+bbc52b9e (Tom St Denis    2007-07-20 17:48:02 +0000 137) #ifdef LTC_RIPEMD160
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000 138)     struct rmd160_state rmd160;
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000 139) #endif
+bbc52b9e (Tom St Denis    2007-07-20 17:48:02 +0000 140) #ifdef LTC_RIPEMD256
+2de2976d (Tom St Denis    2006-11-17 14:21:24 +0000 141)     struct rmd256_state rmd256;
+2de2976d (Tom St Denis    2006-11-17 14:21:24 +0000 142) #endif
+bbc52b9e (Tom St Denis    2007-07-20 17:48:02 +0000 143) #ifdef LTC_RIPEMD320
+2de2976d (Tom St Denis    2006-11-17 14:21:24 +0000 144)     struct rmd320_state rmd320;
+2de2976d (Tom St Denis    2006-11-17 14:21:24 +0000 145) #endif
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000 146)     void *data;
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000 147) } hash_state;
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000 148) 
+72412f6d (Tom St Denis    2005-08-01 16:36:47 +0000 149) /** hash descriptor */
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000 150) extern  struct ltc_hash_descriptor {
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000 151)     /** name of hash */
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000 152)     char *name;
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000 153)     /** internal ID */
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000 154)     unsigned char ID;
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000 155)     /** Size of digest in octets */
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000 156)     unsigned long hashsize;
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000 157)     /** Input block size in octets */
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000 158)     unsigned long blocksize;
+3964a652 (Tom St Denis    2005-06-09 00:08:13 +0000 159)     /** ASN.1 OID */
+3964a652 (Tom St Denis    2005-06-09 00:08:13 +0000 160)     unsigned long OID[16];
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000 161)     /** Length of DER encoding */
+3964a652 (Tom St Denis    2005-06-09 00:08:13 +0000 162)     unsigned long OIDlen;
+3964a652 (Tom St Denis    2005-06-09 00:08:13 +0000 163) 
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000 164)     /** Init a hash state
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000 165)       @param hash   The hash to initialize
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000 166)       @return CRYPT_OK if successful
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000 167)     */
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000 168)     int (*init)(hash_state *hash);
+bfcf1eb2 (Steffen Jaeckel 2012-07-26 14:43:15 +0200 169)     /** Process a block of data
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000 170)       @param hash   The hash state
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000 171)       @param in     The data to hash
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000 172)       @param inlen  The length of the data (octets)
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000 173)       @return CRYPT_OK if successful
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000 174)     */
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000 175)     int (*process)(hash_state *hash, const unsigned char *in, unsigned long inlen);
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000 176)     /** Produce the digest and store it
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000 177)       @param hash   The hash state
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000 178)       @param out    [out] The destination of the digest
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000 179)       @return CRYPT_OK if successful
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000 180)     */
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000 181)     int (*done)(hash_state *hash, unsigned char *out);
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000 182)     /** Self-test
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000 183)       @return CRYPT_OK if successful, CRYPT_NOP if self-tests have been disabled
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000 184)     */
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000 185)     int (*test)(void);
+72412f6d (Tom St Denis    2005-08-01 16:36:47 +0000 186) 
+72412f6d (Tom St Denis    2005-08-01 16:36:47 +0000 187)     /* accelerated hmac callback: if you need to-do multiple packets just use the generic hmac_memory and provide a hash callback */
+72412f6d (Tom St Denis    2005-08-01 16:36:47 +0000 188)     int  (*hmac_block)(const unsigned char *key, unsigned long  keylen,
+bfcf1eb2 (Steffen Jaeckel 2012-07-26 14:43:15 +0200 189)                        const unsigned char *in,  unsigned long  inlen,
+72412f6d (Tom St Denis    2005-08-01 16:36:47 +0000 190)                              unsigned char *out, unsigned long *outlen);
+72412f6d (Tom St Denis    2005-08-01 16:36:47 +0000 191) 
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000 192) } hash_descriptor[];
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000 193) 
+bbc52b9e (Tom St Denis    2007-07-20 17:48:02 +0000 194) #ifdef LTC_CHC_HASH
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000 195) int chc_register(int cipher);
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000 196) int chc_init(hash_state * md);
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000 197) int chc_process(hash_state * md, const unsigned char *in, unsigned long inlen);
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000 198) int chc_done(hash_state * md, unsigned char *hash);
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000 199) int chc_test(void);
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000 200) extern const struct ltc_hash_descriptor chc_desc;
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000 201) #endif
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000 202) 
+bbc52b9e (Tom St Denis    2007-07-20 17:48:02 +0000 203) #ifdef LTC_WHIRLPOOL
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000 204) int whirlpool_init(hash_state * md);
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000 205) int whirlpool_process(hash_state * md, const unsigned char *in, unsigned long inlen);
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000 206) int whirlpool_done(hash_state * md, unsigned char *hash);
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000 207) int whirlpool_test(void);
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000 208) extern const struct ltc_hash_descriptor whirlpool_desc;
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000 209) #endif
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000 210) 
+bbc52b9e (Tom St Denis    2007-07-20 17:48:02 +0000 211) #ifdef LTC_SHA512
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000 212) int sha512_init(hash_state * md);
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000 213) int sha512_process(hash_state * md, const unsigned char *in, unsigned long inlen);
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000 214) int sha512_done(hash_state * md, unsigned char *hash);
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000 215) int sha512_test(void);
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000 216) extern const struct ltc_hash_descriptor sha512_desc;
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000 217) #endif
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000 218) 
+bbc52b9e (Tom St Denis    2007-07-20 17:48:02 +0000 219) #ifdef LTC_SHA384
+bbc52b9e (Tom St Denis    2007-07-20 17:48:02 +0000 220) #ifndef LTC_SHA512
+bbc52b9e (Tom St Denis    2007-07-20 17:48:02 +0000 221)    #error LTC_SHA512 is required for LTC_SHA384
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000 222) #endif
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000 223) int sha384_init(hash_state * md);
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000 224) #define sha384_process sha512_process
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000 225) int sha384_done(hash_state * md, unsigned char *hash);
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000 226) int sha384_test(void);
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000 227) extern const struct ltc_hash_descriptor sha384_desc;
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000 228) #endif
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000 229) 
+23fb224e (Steffen Jaeckel 2014-08-26 18:17:51 +0200 230) #ifdef LTC_SHA512_256
+23fb224e (Steffen Jaeckel 2014-08-26 18:17:51 +0200 231) #ifndef LTC_SHA512
+23fb224e (Steffen Jaeckel 2014-08-26 18:17:51 +0200 232)    #error LTC_SHA512 is required for LTC_SHA512_256
+23fb224e (Steffen Jaeckel 2014-08-26 18:17:51 +0200 233) #endif
+23fb224e (Steffen Jaeckel 2014-08-26 18:17:51 +0200 234) int sha512_256_init(hash_state * md);
+23fb224e (Steffen Jaeckel 2014-08-26 18:17:51 +0200 235) #define sha512_256_process sha512_process
+23fb224e (Steffen Jaeckel 2014-08-26 18:17:51 +0200 236) int sha512_256_done(hash_state * md, unsigned char *hash);
+23fb224e (Steffen Jaeckel 2014-08-26 18:17:51 +0200 237) int sha512_256_test(void);
+23fb224e (Steffen Jaeckel 2014-08-26 18:17:51 +0200 238) extern const struct ltc_hash_descriptor sha512_256_desc;
+23fb224e (Steffen Jaeckel 2014-08-26 18:17:51 +0200 239) #endif
+23fb224e (Steffen Jaeckel 2014-08-26 18:17:51 +0200 240) 
+23fb224e (Steffen Jaeckel 2014-08-26 18:17:51 +0200 241) #ifdef LTC_SHA512_224
+23fb224e (Steffen Jaeckel 2014-08-26 18:17:51 +0200 242) #ifndef LTC_SHA512
+23fb224e (Steffen Jaeckel 2014-08-26 18:17:51 +0200 243)    #error LTC_SHA512 is required for LTC_SHA512_224
+23fb224e (Steffen Jaeckel 2014-08-26 18:17:51 +0200 244) #endif
+23fb224e (Steffen Jaeckel 2014-08-26 18:17:51 +0200 245) int sha512_224_init(hash_state * md);
+23fb224e (Steffen Jaeckel 2014-08-26 18:17:51 +0200 246) #define sha512_224_process sha512_process
+23fb224e (Steffen Jaeckel 2014-08-26 18:17:51 +0200 247) int sha512_224_done(hash_state * md, unsigned char *hash);
+23fb224e (Steffen Jaeckel 2014-08-26 18:17:51 +0200 248) int sha512_224_test(void);
+23fb224e (Steffen Jaeckel 2014-08-26 18:17:51 +0200 249) extern const struct ltc_hash_descriptor sha512_224_desc;
+23fb224e (Steffen Jaeckel 2014-08-26 18:17:51 +0200 250) #endif
+23fb224e (Steffen Jaeckel 2014-08-26 18:17:51 +0200 251) 
+bbc52b9e (Tom St Denis    2007-07-20 17:48:02 +0000 252) #ifdef LTC_SHA256
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000 253) int sha256_init(hash_state * md);
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000 254) int sha256_process(hash_state * md, const unsigned char *in, unsigned long inlen);
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000 255) int sha256_done(hash_state * md, unsigned char *hash);
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000 256) int sha256_test(void);
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000 257) extern const struct ltc_hash_descriptor sha256_desc;
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000 258) 
+bbc52b9e (Tom St Denis    2007-07-20 17:48:02 +0000 259) #ifdef LTC_SHA224
+bbc52b9e (Tom St Denis    2007-07-20 17:48:02 +0000 260) #ifndef LTC_SHA256
+bbc52b9e (Tom St Denis    2007-07-20 17:48:02 +0000 261)    #error LTC_SHA256 is required for LTC_SHA224
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000 262) #endif
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000 263) int sha224_init(hash_state * md);
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000 264) #define sha224_process sha256_process
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000 265) int sha224_done(hash_state * md, unsigned char *hash);
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000 266) int sha224_test(void);
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000 267) extern const struct ltc_hash_descriptor sha224_desc;
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000 268) #endif
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000 269) #endif
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000 270) 
+bbc52b9e (Tom St Denis    2007-07-20 17:48:02 +0000 271) #ifdef LTC_SHA1
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000 272) int sha1_init(hash_state * md);
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000 273) int sha1_process(hash_state * md, const unsigned char *in, unsigned long inlen);
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000 274) int sha1_done(hash_state * md, unsigned char *hash);
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000 275) int sha1_test(void);
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000 276) extern const struct ltc_hash_descriptor sha1_desc;
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000 277) #endif
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000 278) 
+bbc52b9e (Tom St Denis    2007-07-20 17:48:02 +0000 279) #ifdef LTC_MD5
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000 280) int md5_init(hash_state * md);
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000 281) int md5_process(hash_state * md, const unsigned char *in, unsigned long inlen);
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000 282) int md5_done(hash_state * md, unsigned char *hash);
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000 283) int md5_test(void);
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000 284) extern const struct ltc_hash_descriptor md5_desc;
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000 285) #endif
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000 286) 
+bbc52b9e (Tom St Denis    2007-07-20 17:48:02 +0000 287) #ifdef LTC_MD4
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000 288) int md4_init(hash_state * md);
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000 289) int md4_process(hash_state * md, const unsigned char *in, unsigned long inlen);
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000 290) int md4_done(hash_state * md, unsigned char *hash);
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000 291) int md4_test(void);
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000 292) extern const struct ltc_hash_descriptor md4_desc;
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000 293) #endif
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000 294) 
+bbc52b9e (Tom St Denis    2007-07-20 17:48:02 +0000 295) #ifdef LTC_MD2
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000 296) int md2_init(hash_state * md);
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000 297) int md2_process(hash_state * md, const unsigned char *in, unsigned long inlen);
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000 298) int md2_done(hash_state * md, unsigned char *hash);
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000 299) int md2_test(void);
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000 300) extern const struct ltc_hash_descriptor md2_desc;
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000 301) #endif
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000 302) 
+bbc52b9e (Tom St Denis    2007-07-20 17:48:02 +0000 303) #ifdef LTC_TIGER
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000 304) int tiger_init(hash_state * md);
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000 305) int tiger_process(hash_state * md, const unsigned char *in, unsigned long inlen);
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000 306) int tiger_done(hash_state * md, unsigned char *hash);
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000 307) int tiger_test(void);
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000 308) extern const struct ltc_hash_descriptor tiger_desc;
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000 309) #endif
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000 310) 
+bbc52b9e (Tom St Denis    2007-07-20 17:48:02 +0000 311) #ifdef LTC_RIPEMD128
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000 312) int rmd128_init(hash_state * md);
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000 313) int rmd128_process(hash_state * md, const unsigned char *in, unsigned long inlen);
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000 314) int rmd128_done(hash_state * md, unsigned char *hash);
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000 315) int rmd128_test(void);
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000 316) extern const struct ltc_hash_descriptor rmd128_desc;
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000 317) #endif
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000 318) 
+bbc52b9e (Tom St Denis    2007-07-20 17:48:02 +0000 319) #ifdef LTC_RIPEMD160
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000 320) int rmd160_init(hash_state * md);
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000 321) int rmd160_process(hash_state * md, const unsigned char *in, unsigned long inlen);
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000 322) int rmd160_done(hash_state * md, unsigned char *hash);
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000 323) int rmd160_test(void);
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000 324) extern const struct ltc_hash_descriptor rmd160_desc;
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000 325) #endif
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000 326) 
+bbc52b9e (Tom St Denis    2007-07-20 17:48:02 +0000 327) #ifdef LTC_RIPEMD256
+2de2976d (Tom St Denis    2006-11-17 14:21:24 +0000 328) int rmd256_init(hash_state * md);
+2de2976d (Tom St Denis    2006-11-17 14:21:24 +0000 329) int rmd256_process(hash_state * md, const unsigned char *in, unsigned long inlen);
+2de2976d (Tom St Denis    2006-11-17 14:21:24 +0000 330) int rmd256_done(hash_state * md, unsigned char *hash);
+2de2976d (Tom St Denis    2006-11-17 14:21:24 +0000 331) int rmd256_test(void);
+2de2976d (Tom St Denis    2006-11-17 14:21:24 +0000 332) extern const struct ltc_hash_descriptor rmd256_desc;
+2de2976d (Tom St Denis    2006-11-17 14:21:24 +0000 333) #endif
+2de2976d (Tom St Denis    2006-11-17 14:21:24 +0000 334) 
+bbc52b9e (Tom St Denis    2007-07-20 17:48:02 +0000 335) #ifdef LTC_RIPEMD320
+2de2976d (Tom St Denis    2006-11-17 14:21:24 +0000 336) int rmd320_init(hash_state * md);
+2de2976d (Tom St Denis    2006-11-17 14:21:24 +0000 337) int rmd320_process(hash_state * md, const unsigned char *in, unsigned long inlen);
+2de2976d (Tom St Denis    2006-11-17 14:21:24 +0000 338) int rmd320_done(hash_state * md, unsigned char *hash);
+2de2976d (Tom St Denis    2006-11-17 14:21:24 +0000 339) int rmd320_test(void);
+2de2976d (Tom St Denis    2006-11-17 14:21:24 +0000 340) extern const struct ltc_hash_descriptor rmd320_desc;
+2de2976d (Tom St Denis    2006-11-17 14:21:24 +0000 341) #endif
+2de2976d (Tom St Denis    2006-11-17 14:21:24 +0000 342) 
+2de2976d (Tom St Denis    2006-11-17 14:21:24 +0000 343) 
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000 344) int find_hash(const char *name);
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000 345) int find_hash_id(unsigned char ID);
+72412f6d (Tom St Denis    2005-08-01 16:36:47 +0000 346) int find_hash_oid(const unsigned long *ID, unsigned long IDlen);
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000 347) int find_hash_any(const char *name, int digestlen);
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000 348) int register_hash(const struct ltc_hash_descriptor *hash);
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000 349) int unregister_hash(const struct ltc_hash_descriptor *hash);
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000 350) int hash_is_valid(int idx);
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000 351) 
+72412f6d (Tom St Denis    2005-08-01 16:36:47 +0000 352) LTC_MUTEX_PROTO(ltc_hash_mutex)
+9264e34f (Tom St Denis    2005-06-27 11:47:35 +0000 353) 
+bfcf1eb2 (Steffen Jaeckel 2012-07-26 14:43:15 +0200 354) int hash_memory(int hash,
+bfcf1eb2 (Steffen Jaeckel 2012-07-26 14:43:15 +0200 355)                 const unsigned char *in,  unsigned long inlen,
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000 356)                       unsigned char *out, unsigned long *outlen);
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000 357) int hash_memory_multi(int hash, unsigned char *out, unsigned long *outlen,
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000 358)                       const unsigned char *in, unsigned long inlen, ...);
+0a432b6b (Steffen Jaeckel 2009-10-01 12:24:45 +0200 359) 
+0a432b6b (Steffen Jaeckel 2009-10-01 12:24:45 +0200 360) #ifndef LTC_NO_FILE
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000 361) int hash_filehandle(int hash, FILE *in, unsigned char *out, unsigned long *outlen);
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000 362) int hash_file(int hash, const char *fname, unsigned char *out, unsigned long *outlen);
+0a432b6b (Steffen Jaeckel 2009-10-01 12:24:45 +0200 363) #endif
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000 364) 
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000 365) /* a simple macro for making hash "process" functions */
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000 366) #define HASH_PROCESS(func_name, compress_name, state_var, block_size)                       \
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000 367) int func_name (hash_state * md, const unsigned char *in, unsigned long inlen)               \
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000 368) {                                                                                           \
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000 369)     unsigned long n;                                                                        \
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000 370)     int           err;                                                                      \
+3964a652 (Tom St Denis    2005-06-09 00:08:13 +0000 371)     LTC_ARGCHK(md != NULL);                                                                 \
+3964a652 (Tom St Denis    2005-06-09 00:08:13 +0000 372)     LTC_ARGCHK(in != NULL);                                                                 \
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000 373)     if (md-> state_var .curlen > sizeof(md-> state_var .buf)) {                             \
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000 374)        return CRYPT_INVALID_ARG;                                                            \
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000 375)     }                                                                                       \
+ff736a61 (Jonathan Herzog 2008-01-20 21:57:25 -0800 376)     if ((md-> state_var .length + inlen) < md-> state_var .length) {	                    \
+ff736a61 (Jonathan Herzog 2008-01-20 21:57:25 -0800 377)       return CRYPT_HASH_OVERFLOW;                                                           \
+ff736a61 (Jonathan Herzog 2008-01-20 21:57:25 -0800 378)     }                                                                                       \
+3964a652 (Tom St Denis    2005-06-09 00:08:13 +0000 379)     while (inlen > 0) {                                                                     \
+3964a652 (Tom St Denis    2005-06-09 00:08:13 +0000 380)         if (md-> state_var .curlen == 0 && inlen >= block_size) {                           \
+3964a652 (Tom St Denis    2005-06-09 00:08:13 +0000 381)            if ((err = compress_name (md, (unsigned char *)in)) != CRYPT_OK) {               \
+3964a652 (Tom St Denis    2005-06-09 00:08:13 +0000 382)               return err;                                                                   \
+3964a652 (Tom St Denis    2005-06-09 00:08:13 +0000 383)            }                                                                                \
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000 384)            md-> state_var .length += block_size * 8;                                        \
+3964a652 (Tom St Denis    2005-06-09 00:08:13 +0000 385)            in             += block_size;                                                    \
+3964a652 (Tom St Denis    2005-06-09 00:08:13 +0000 386)            inlen          -= block_size;                                                    \
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000 387)         } else {                                                                            \
+3964a652 (Tom St Denis    2005-06-09 00:08:13 +0000 388)            n = MIN(inlen, (block_size - md-> state_var .curlen));                           \
+9782c09a (Steffen Jaeckel 2014-12-28 14:00:52 +0100 389)            XMEMCPY(md-> state_var .buf + md-> state_var.curlen, in, (size_t)n);              \
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000 390)            md-> state_var .curlen += n;                                                     \
+3964a652 (Tom St Denis    2005-06-09 00:08:13 +0000 391)            in             += n;                                                             \
+3964a652 (Tom St Denis    2005-06-09 00:08:13 +0000 392)            inlen          -= n;                                                             \
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000 393)            if (md-> state_var .curlen == block_size) {                                      \
+3964a652 (Tom St Denis    2005-06-09 00:08:13 +0000 394)               if ((err = compress_name (md, md-> state_var .buf)) != CRYPT_OK) {            \
+3964a652 (Tom St Denis    2005-06-09 00:08:13 +0000 395)                  return err;                                                                \
+3964a652 (Tom St Denis    2005-06-09 00:08:13 +0000 396)               }                                                                             \
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000 397)               md-> state_var .length += 8*block_size;                                       \
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000 398)               md-> state_var .curlen = 0;                                                   \
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000 399)            }                                                                                \
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000 400)        }                                                                                    \
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000 401)     }                                                                                       \
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000 402)     return CRYPT_OK;                                                                        \
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000 403) }
+3964a652 (Tom St Denis    2005-06-09 00:08:13 +0000 404) 
+3964a652 (Tom St Denis    2005-06-09 00:08:13 +0000 405) /* $Source$ */
+3964a652 (Tom St Denis    2005-06-09 00:08:13 +0000 406) /* $Revision$ */
+3964a652 (Tom St Denis    2005-06-09 00:08:13 +0000 407) /* $Date$ */

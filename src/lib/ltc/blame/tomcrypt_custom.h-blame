@@ -1,0 +1,520 @@
+bfc2f5b0 src/headers/tomcrypt_custom.h (Tom St Denis      2004-12-30 23:55:53 +0000   1) #ifndef TOMCRYPT_CUSTOM_H_
+bfc2f5b0 src/headers/tomcrypt_custom.h (Tom St Denis      2004-12-30 23:55:53 +0000   2) #define TOMCRYPT_CUSTOM_H_
+0f999a4e mycrypt_custom.h              (Tom St Denis      2003-03-03 01:03:50 +0000   3) 
+1a114162 mycrypt_custom.h              (Tom St Denis      2004-06-20 02:41:49 +0000   4) /* macros for various libc functions you can change for embedded targets */
+1eeff0bf src/headers/tomcrypt_custom.h (Tom St Denis      2005-11-24 11:57:58 +0000   5) #ifndef XMALLOC
+bfcf1eb2 src/headers/tomcrypt_custom.h (Steffen Jaeckel   2012-07-26 14:43:15 +0200   6)    #ifdef malloc
+e24b01d3 src/headers/tomcrypt_custom.h (Tom St Denis      2006-12-16 18:10:04 +0000   7)    #define LTC_NO_PROTOTYPES
+e24b01d3 src/headers/tomcrypt_custom.h (Tom St Denis      2006-12-16 18:10:04 +0000   8)    #endif
+1a114162 mycrypt_custom.h              (Tom St Denis      2004-06-20 02:41:49 +0000   9) #define XMALLOC  malloc
+1eeff0bf src/headers/tomcrypt_custom.h (Tom St Denis      2005-11-24 11:57:58 +0000  10) #endif
+1eeff0bf src/headers/tomcrypt_custom.h (Tom St Denis      2005-11-24 11:57:58 +0000  11) #ifndef XREALLOC
+bfcf1eb2 src/headers/tomcrypt_custom.h (Steffen Jaeckel   2012-07-26 14:43:15 +0200  12)    #ifdef realloc
+e24b01d3 src/headers/tomcrypt_custom.h (Tom St Denis      2006-12-16 18:10:04 +0000  13)    #define LTC_NO_PROTOTYPES
+e24b01d3 src/headers/tomcrypt_custom.h (Tom St Denis      2006-12-16 18:10:04 +0000  14)    #endif
+0f999a4e mycrypt_custom.h              (Tom St Denis      2003-03-03 01:03:50 +0000  15) #define XREALLOC realloc
+1eeff0bf src/headers/tomcrypt_custom.h (Tom St Denis      2005-11-24 11:57:58 +0000  16) #endif
+1eeff0bf src/headers/tomcrypt_custom.h (Tom St Denis      2005-11-24 11:57:58 +0000  17) #ifndef XCALLOC
+bfcf1eb2 src/headers/tomcrypt_custom.h (Steffen Jaeckel   2012-07-26 14:43:15 +0200  18)    #ifdef calloc
+e24b01d3 src/headers/tomcrypt_custom.h (Tom St Denis      2006-12-16 18:10:04 +0000  19)    #define LTC_NO_PROTOTYPES
+e24b01d3 src/headers/tomcrypt_custom.h (Tom St Denis      2006-12-16 18:10:04 +0000  20)    #endif
+1a114162 mycrypt_custom.h              (Tom St Denis      2004-06-20 02:41:49 +0000  21) #define XCALLOC  calloc
+1eeff0bf src/headers/tomcrypt_custom.h (Tom St Denis      2005-11-24 11:57:58 +0000  22) #endif
+1eeff0bf src/headers/tomcrypt_custom.h (Tom St Denis      2005-11-24 11:57:58 +0000  23) #ifndef XFREE
+e24b01d3 src/headers/tomcrypt_custom.h (Tom St Denis      2006-12-16 18:10:04 +0000  24)    #ifdef free
+e24b01d3 src/headers/tomcrypt_custom.h (Tom St Denis      2006-12-16 18:10:04 +0000  25)    #define LTC_NO_PROTOTYPES
+e24b01d3 src/headers/tomcrypt_custom.h (Tom St Denis      2006-12-16 18:10:04 +0000  26)    #endif
+1a114162 mycrypt_custom.h              (Tom St Denis      2004-06-20 02:41:49 +0000  27) #define XFREE    free
+1eeff0bf src/headers/tomcrypt_custom.h (Tom St Denis      2005-11-24 11:57:58 +0000  28) #endif
+1a114162 mycrypt_custom.h              (Tom St Denis      2004-06-20 02:41:49 +0000  29) 
+1eeff0bf src/headers/tomcrypt_custom.h (Tom St Denis      2005-11-24 11:57:58 +0000  30) #ifndef XMEMSET
+e24b01d3 src/headers/tomcrypt_custom.h (Tom St Denis      2006-12-16 18:10:04 +0000  31)    #ifdef memset
+e24b01d3 src/headers/tomcrypt_custom.h (Tom St Denis      2006-12-16 18:10:04 +0000  32)    #define LTC_NO_PROTOTYPES
+e24b01d3 src/headers/tomcrypt_custom.h (Tom St Denis      2006-12-16 18:10:04 +0000  33)    #endif
+1a114162 mycrypt_custom.h              (Tom St Denis      2004-06-20 02:41:49 +0000  34) #define XMEMSET  memset
+1eeff0bf src/headers/tomcrypt_custom.h (Tom St Denis      2005-11-24 11:57:58 +0000  35) #endif
+1eeff0bf src/headers/tomcrypt_custom.h (Tom St Denis      2005-11-24 11:57:58 +0000  36) #ifndef XMEMCPY
+e24b01d3 src/headers/tomcrypt_custom.h (Tom St Denis      2006-12-16 18:10:04 +0000  37)    #ifdef memcpy
+e24b01d3 src/headers/tomcrypt_custom.h (Tom St Denis      2006-12-16 18:10:04 +0000  38)    #define LTC_NO_PROTOTYPES
+e24b01d3 src/headers/tomcrypt_custom.h (Tom St Denis      2006-12-16 18:10:04 +0000  39)    #endif
+1a114162 mycrypt_custom.h              (Tom St Denis      2004-06-20 02:41:49 +0000  40) #define XMEMCPY  memcpy
+1eeff0bf src/headers/tomcrypt_custom.h (Tom St Denis      2005-11-24 11:57:58 +0000  41) #endif
+1eeff0bf src/headers/tomcrypt_custom.h (Tom St Denis      2005-11-24 11:57:58 +0000  42) #ifndef XMEMCMP
+bfcf1eb2 src/headers/tomcrypt_custom.h (Steffen Jaeckel   2012-07-26 14:43:15 +0200  43)    #ifdef memcmp
+e24b01d3 src/headers/tomcrypt_custom.h (Tom St Denis      2006-12-16 18:10:04 +0000  44)    #define LTC_NO_PROTOTYPES
+e24b01d3 src/headers/tomcrypt_custom.h (Tom St Denis      2006-12-16 18:10:04 +0000  45)    #endif
+1eeff0bf src/headers/tomcrypt_custom.h (Tom St Denis      2005-11-24 11:57:58 +0000  46) #define XMEMCMP  memcmp
+1eeff0bf src/headers/tomcrypt_custom.h (Tom St Denis      2005-11-24 11:57:58 +0000  47) #endif
+f20b5daf src/headers/tomcrypt_custom.h (Pascal Brand      2015-02-26 12:38:21 +0100  48) #ifndef XMEM_NEQ
+f20b5daf src/headers/tomcrypt_custom.h (Pascal Brand      2015-02-26 12:38:21 +0100  49) #define XMEM_NEQ  mem_neq
+f20b5daf src/headers/tomcrypt_custom.h (Pascal Brand      2015-02-26 12:38:21 +0100  50) #endif
+e24b01d3 src/headers/tomcrypt_custom.h (Tom St Denis      2006-12-16 18:10:04 +0000  51) #ifndef XSTRCMP
+e24b01d3 src/headers/tomcrypt_custom.h (Tom St Denis      2006-12-16 18:10:04 +0000  52)    #ifdef strcmp
+e24b01d3 src/headers/tomcrypt_custom.h (Tom St Denis      2006-12-16 18:10:04 +0000  53)    #define LTC_NO_PROTOTYPES
+e24b01d3 src/headers/tomcrypt_custom.h (Tom St Denis      2006-12-16 18:10:04 +0000  54)    #endif
+e24b01d3 src/headers/tomcrypt_custom.h (Tom St Denis      2006-12-16 18:10:04 +0000  55) #define XSTRCMP strcmp
+e24b01d3 src/headers/tomcrypt_custom.h (Tom St Denis      2006-12-16 18:10:04 +0000  56) #endif
+1a114162 mycrypt_custom.h              (Tom St Denis      2004-06-20 02:41:49 +0000  57) 
+1eeff0bf src/headers/tomcrypt_custom.h (Tom St Denis      2005-11-24 11:57:58 +0000  58) #ifndef XCLOCK
+1a114162 mycrypt_custom.h              (Tom St Denis      2004-06-20 02:41:49 +0000  59) #define XCLOCK   clock
+1eeff0bf src/headers/tomcrypt_custom.h (Tom St Denis      2005-11-24 11:57:58 +0000  60) #endif
+1eeff0bf src/headers/tomcrypt_custom.h (Tom St Denis      2005-11-24 11:57:58 +0000  61) #ifndef XCLOCKS_PER_SEC
+0f999a4e mycrypt_custom.h              (Tom St Denis      2003-03-03 01:03:50 +0000  62) #define XCLOCKS_PER_SEC CLOCKS_PER_SEC
+1eeff0bf src/headers/tomcrypt_custom.h (Tom St Denis      2005-11-24 11:57:58 +0000  63) #endif
+1eeff0bf src/headers/tomcrypt_custom.h (Tom St Denis      2005-11-24 11:57:58 +0000  64) 
+1eeff0bf src/headers/tomcrypt_custom.h (Tom St Denis      2005-11-24 11:57:58 +0000  65) #ifndef XQSORT
+e24b01d3 src/headers/tomcrypt_custom.h (Tom St Denis      2006-12-16 18:10:04 +0000  66)    #ifdef qsort
+e24b01d3 src/headers/tomcrypt_custom.h (Tom St Denis      2006-12-16 18:10:04 +0000  67)    #define LTC_NO_PROTOTYPES
+e24b01d3 src/headers/tomcrypt_custom.h (Tom St Denis      2006-12-16 18:10:04 +0000  68)    #endif
+1eeff0bf src/headers/tomcrypt_custom.h (Tom St Denis      2005-11-24 11:57:58 +0000  69) #define XQSORT qsort
+1eeff0bf src/headers/tomcrypt_custom.h (Tom St Denis      2005-11-24 11:57:58 +0000  70) #endif
+3fe312cc mycrypt_custom.h              (Tom St Denis      2004-05-31 02:36:47 +0000  71) 
+031e551c src/headers/tomcrypt_custom.h (Steffen Jaeckel   2013-08-14 16:12:56 +0200  72) /* shortcut to disable automatic inclusion */
+031e551c src/headers/tomcrypt_custom.h (Steffen Jaeckel   2013-08-14 16:12:56 +0200  73) #if defined LTC_NOTHING && !defined LTC_EASY
+3b7c6512 src/headers/tomcrypt_custom.h (mudzot            2013-11-17 09:53:14 +0700  74)   #define LTC_NO_MATH
+031e551c src/headers/tomcrypt_custom.h (Steffen Jaeckel   2013-08-14 16:12:56 +0200  75)   #define LTC_NO_CIPHERS
+031e551c src/headers/tomcrypt_custom.h (Steffen Jaeckel   2013-08-14 16:12:56 +0200  76)   #define LTC_NO_MODES
+031e551c src/headers/tomcrypt_custom.h (Steffen Jaeckel   2013-08-14 16:12:56 +0200  77)   #define LTC_NO_HASHES
+031e551c src/headers/tomcrypt_custom.h (Steffen Jaeckel   2013-08-14 16:12:56 +0200  78)   #define LTC_NO_MACS
+031e551c src/headers/tomcrypt_custom.h (Steffen Jaeckel   2013-08-14 16:12:56 +0200  79)   #define LTC_NO_PRNGS
+031e551c src/headers/tomcrypt_custom.h (Steffen Jaeckel   2013-08-14 16:12:56 +0200  80)   #define LTC_NO_PK
+031e551c src/headers/tomcrypt_custom.h (Steffen Jaeckel   2013-08-14 16:12:56 +0200  81)   #define LTC_NO_PKCS
+031e551c src/headers/tomcrypt_custom.h (Steffen Jaeckel   2013-08-14 16:12:56 +0200  82)   #define LTC_NO_MISC
+dfa938a4 src/headers/tomcrypt_custom.h (Steffen Jaeckel   2015-02-15 17:25:45 +0100  83)   #define LTC_NO_FILE
+031e551c src/headers/tomcrypt_custom.h (Steffen Jaeckel   2013-08-14 16:12:56 +0200  84) #endif /* LTC_NOTHING */
+031e551c src/headers/tomcrypt_custom.h (Steffen Jaeckel   2013-08-14 16:12:56 +0200  85) 
+a3ce807b src/headers/tomcrypt_custom.h (Tom St Denis      2006-01-26 18:11:56 +0000  86) /* Easy button? */
+a3ce807b src/headers/tomcrypt_custom.h (Tom St Denis      2006-01-26 18:11:56 +0000  87) #ifdef LTC_EASY
+a3ce807b src/headers/tomcrypt_custom.h (Tom St Denis      2006-01-26 18:11:56 +0000  88)    #define LTC_NO_CIPHERS
+bbc52b9e src/headers/tomcrypt_custom.h (Tom St Denis      2007-07-20 17:48:02 +0000  89)    #define LTC_RIJNDAEL
+bbc52b9e src/headers/tomcrypt_custom.h (Tom St Denis      2007-07-20 17:48:02 +0000  90)    #define LTC_BLOWFISH
+bbc52b9e src/headers/tomcrypt_custom.h (Tom St Denis      2007-07-20 17:48:02 +0000  91)    #define LTC_DES
+bbc52b9e src/headers/tomcrypt_custom.h (Tom St Denis      2007-07-20 17:48:02 +0000  92)    #define LTC_CAST5
+bfcf1eb2 src/headers/tomcrypt_custom.h (Steffen Jaeckel   2012-07-26 14:43:15 +0200  93) 
+a3ce807b src/headers/tomcrypt_custom.h (Tom St Denis      2006-01-26 18:11:56 +0000  94)    #define LTC_NO_MODES
+479cc9c2 src/headers/tomcrypt_custom.h (Tom St Denis      2006-08-30 23:30:00 +0000  95)    #define LTC_ECB_MODE
+479cc9c2 src/headers/tomcrypt_custom.h (Tom St Denis      2006-08-30 23:30:00 +0000  96)    #define LTC_CBC_MODE
+479cc9c2 src/headers/tomcrypt_custom.h (Tom St Denis      2006-08-30 23:30:00 +0000  97)    #define LTC_CTR_MODE
+bfcf1eb2 src/headers/tomcrypt_custom.h (Steffen Jaeckel   2012-07-26 14:43:15 +0200  98) 
+a3ce807b src/headers/tomcrypt_custom.h (Tom St Denis      2006-01-26 18:11:56 +0000  99)    #define LTC_NO_HASHES
+bbc52b9e src/headers/tomcrypt_custom.h (Tom St Denis      2007-07-20 17:48:02 +0000 100)    #define LTC_SHA1
+bbc52b9e src/headers/tomcrypt_custom.h (Tom St Denis      2007-07-20 17:48:02 +0000 101)    #define LTC_SHA512
+bbc52b9e src/headers/tomcrypt_custom.h (Tom St Denis      2007-07-20 17:48:02 +0000 102)    #define LTC_SHA384
+bbc52b9e src/headers/tomcrypt_custom.h (Tom St Denis      2007-07-20 17:48:02 +0000 103)    #define LTC_SHA256
+bbc52b9e src/headers/tomcrypt_custom.h (Tom St Denis      2007-07-20 17:48:02 +0000 104)    #define LTC_SHA224
+dfa938a4 src/headers/tomcrypt_custom.h (Steffen Jaeckel   2015-02-15 17:25:45 +0100 105)    #define LTC_HASH_HELPERS
+bfcf1eb2 src/headers/tomcrypt_custom.h (Steffen Jaeckel   2012-07-26 14:43:15 +0200 106) 
+a3ce807b src/headers/tomcrypt_custom.h (Tom St Denis      2006-01-26 18:11:56 +0000 107)    #define LTC_NO_MACS
+bbc52b9e src/headers/tomcrypt_custom.h (Tom St Denis      2007-07-20 17:48:02 +0000 108)    #define LTC_HMAC
+bbc52b9e src/headers/tomcrypt_custom.h (Tom St Denis      2007-07-20 17:48:02 +0000 109)    #define LTC_OMAC
+bbc52b9e src/headers/tomcrypt_custom.h (Tom St Denis      2007-07-20 17:48:02 +0000 110)    #define LTC_CCM_MODE
+a3ce807b src/headers/tomcrypt_custom.h (Tom St Denis      2006-01-26 18:11:56 +0000 111) 
+a3ce807b src/headers/tomcrypt_custom.h (Tom St Denis      2006-01-26 18:11:56 +0000 112)    #define LTC_NO_PRNGS
+bbc52b9e src/headers/tomcrypt_custom.h (Tom St Denis      2007-07-20 17:48:02 +0000 113)    #define LTC_SPRNG
+bbc52b9e src/headers/tomcrypt_custom.h (Tom St Denis      2007-07-20 17:48:02 +0000 114)    #define LTC_YARROW
+bbc52b9e src/headers/tomcrypt_custom.h (Tom St Denis      2007-07-20 17:48:02 +0000 115)    #define LTC_DEVRANDOM
+155a54ba src/headers/tomcrypt_custom.h (Steffen Jaeckel   2014-07-17 10:49:05 +0200 116)    #define LTC_TRY_URANDOM_FIRST
+dfa938a4 src/headers/tomcrypt_custom.h (Steffen Jaeckel   2015-02-15 17:25:45 +0100 117)    #define LTC_RNG_GET_BYTES
+dfa938a4 src/headers/tomcrypt_custom.h (Steffen Jaeckel   2015-02-15 17:25:45 +0100 118)    #define LTC_RNG_MAKE_PRNG
+bfcf1eb2 src/headers/tomcrypt_custom.h (Steffen Jaeckel   2012-07-26 14:43:15 +0200 119) 
+a3ce807b src/headers/tomcrypt_custom.h (Tom St Denis      2006-01-26 18:11:56 +0000 120)    #define LTC_NO_PK
+bbc52b9e src/headers/tomcrypt_custom.h (Tom St Denis      2007-07-20 17:48:02 +0000 121)    #define LTC_MRSA
+bbc52b9e src/headers/tomcrypt_custom.h (Tom St Denis      2007-07-20 17:48:02 +0000 122)    #define LTC_MECC
+a3ce807b src/headers/tomcrypt_custom.h (Tom St Denis      2006-01-26 18:11:56 +0000 123) 
+031e551c src/headers/tomcrypt_custom.h (Steffen Jaeckel   2013-08-14 16:12:56 +0200 124)    #define LTC_NO_MISC
+031e551c src/headers/tomcrypt_custom.h (Steffen Jaeckel   2013-08-14 16:12:56 +0200 125)    #define LTC_BASE64
+031e551c src/headers/tomcrypt_custom.h (Steffen Jaeckel   2013-08-14 16:12:56 +0200 126) #endif
+3fe312cc mycrypt_custom.h              (Tom St Denis      2004-05-31 02:36:47 +0000 127) 
+3fe312cc mycrypt_custom.h              (Tom St Denis      2004-05-31 02:36:47 +0000 128) /* Enable self-test test vector checking */
+3964a652 src/headers/tomcrypt_custom.h (Tom St Denis      2005-06-09 00:08:13 +0000 129) #ifndef LTC_NO_TEST
+3964a652 src/headers/tomcrypt_custom.h (Tom St Denis      2005-06-09 00:08:13 +0000 130)    #define LTC_TEST
+3964a652 src/headers/tomcrypt_custom.h (Tom St Denis      2005-06-09 00:08:13 +0000 131) #endif
+b895f134 src/headers/tomcrypt_custom.h (Steffen Jaeckel   2014-04-30 01:10:22 +0200 132) /* Enable extended self-tests */
+b895f134 src/headers/tomcrypt_custom.h (Steffen Jaeckel   2014-04-30 01:10:22 +0200 133) /* #define LTC_TEST_EXT */
+3fe312cc mycrypt_custom.h              (Tom St Denis      2004-05-31 02:36:47 +0000 134) 
+031e551c src/headers/tomcrypt_custom.h (Steffen Jaeckel   2013-08-14 16:12:56 +0200 135) /* Use small code where possible */
+031e551c src/headers/tomcrypt_custom.h (Steffen Jaeckel   2013-08-14 16:12:56 +0200 136) /* #define LTC_SMALL_CODE */
+031e551c src/headers/tomcrypt_custom.h (Steffen Jaeckel   2013-08-14 16:12:56 +0200 137) 
+3fe312cc mycrypt_custom.h              (Tom St Denis      2004-05-31 02:36:47 +0000 138) /* clean the stack of functions which put private information on stack */
+6ac99524 src/headers/tomcrypt_custom.h (Tom St Denis      2005-04-17 11:37:13 +0000 139) /* #define LTC_CLEAN_STACK */
+3fe312cc mycrypt_custom.h              (Tom St Denis      2004-05-31 02:36:47 +0000 140) 
+3fe312cc mycrypt_custom.h              (Tom St Denis      2004-05-31 02:36:47 +0000 141) /* disable all file related functions */
+6ac99524 src/headers/tomcrypt_custom.h (Tom St Denis      2005-04-17 11:37:13 +0000 142) /* #define LTC_NO_FILE */
+bfc2f5b0 src/headers/tomcrypt_custom.h (Tom St Denis      2004-12-30 23:55:53 +0000 143) 
+bfc2f5b0 src/headers/tomcrypt_custom.h (Tom St Denis      2004-12-30 23:55:53 +0000 144) /* disable all forms of ASM */
+6ac99524 src/headers/tomcrypt_custom.h (Tom St Denis      2005-04-17 11:37:13 +0000 145) /* #define LTC_NO_ASM */
+6ac99524 src/headers/tomcrypt_custom.h (Tom St Denis      2005-04-17 11:37:13 +0000 146) 
+6ac99524 src/headers/tomcrypt_custom.h (Tom St Denis      2005-04-17 11:37:13 +0000 147) /* disable FAST mode */
+6ac99524 src/headers/tomcrypt_custom.h (Tom St Denis      2005-04-17 11:37:13 +0000 148) /* #define LTC_NO_FAST */
+6ac99524 src/headers/tomcrypt_custom.h (Tom St Denis      2005-04-17 11:37:13 +0000 149) 
+6ac99524 src/headers/tomcrypt_custom.h (Tom St Denis      2005-04-17 11:37:13 +0000 150) /* disable BSWAP on x86 */
+6ac99524 src/headers/tomcrypt_custom.h (Tom St Denis      2005-04-17 11:37:13 +0000 151) /* #define LTC_NO_BSWAP */
+3fe312cc mycrypt_custom.h              (Tom St Denis      2004-05-31 02:36:47 +0000 152) 
+031e551c src/headers/tomcrypt_custom.h (Steffen Jaeckel   2013-08-14 16:12:56 +0200 153) /* ---> math provider? <--- */
+3b7c6512 src/headers/tomcrypt_custom.h (mudzot            2013-11-17 09:53:14 +0700 154) #ifndef LTC_NO_MATH
+3b7c6512 src/headers/tomcrypt_custom.h (mudzot            2013-11-17 09:53:14 +0700 155) 
+031e551c src/headers/tomcrypt_custom.h (Steffen Jaeckel   2013-08-14 16:12:56 +0200 156) /* LibTomMath */
+031e551c src/headers/tomcrypt_custom.h (Steffen Jaeckel   2013-08-14 16:12:56 +0200 157) /* #define LTM_DESC */
+031e551c src/headers/tomcrypt_custom.h (Steffen Jaeckel   2013-08-14 16:12:56 +0200 158) 
+031e551c src/headers/tomcrypt_custom.h (Steffen Jaeckel   2013-08-14 16:12:56 +0200 159) /* TomsFastMath */
+031e551c src/headers/tomcrypt_custom.h (Steffen Jaeckel   2013-08-14 16:12:56 +0200 160) /* #define TFM_DESC */
+031e551c src/headers/tomcrypt_custom.h (Steffen Jaeckel   2013-08-14 16:12:56 +0200 161) 
+3b7c6512 src/headers/tomcrypt_custom.h (mudzot            2013-11-17 09:53:14 +0700 162) #endif /* LTC_NO_MATH */
+3b7c6512 src/headers/tomcrypt_custom.h (mudzot            2013-11-17 09:53:14 +0700 163) 
+031e551c src/headers/tomcrypt_custom.h (Steffen Jaeckel   2013-08-14 16:12:56 +0200 164) /* GNU Multiple Precision Arithmetic Library */
+031e551c src/headers/tomcrypt_custom.h (Steffen Jaeckel   2013-08-14 16:12:56 +0200 165) /* #define GMP_DESC */
+031e551c src/headers/tomcrypt_custom.h (Steffen Jaeckel   2013-08-14 16:12:56 +0200 166) 
+bfc2f5b0 src/headers/tomcrypt_custom.h (Tom St Denis      2004-12-30 23:55:53 +0000 167) /* ---> Symmetric Block Ciphers <--- */
+3964a652 src/headers/tomcrypt_custom.h (Tom St Denis      2005-06-09 00:08:13 +0000 168) #ifndef LTC_NO_CIPHERS
+3964a652 src/headers/tomcrypt_custom.h (Tom St Denis      2005-06-09 00:08:13 +0000 169) 
+bbc52b9e src/headers/tomcrypt_custom.h (Tom St Denis      2007-07-20 17:48:02 +0000 170) #define LTC_BLOWFISH
+bbc52b9e src/headers/tomcrypt_custom.h (Tom St Denis      2007-07-20 17:48:02 +0000 171) #define LTC_RC2
+bbc52b9e src/headers/tomcrypt_custom.h (Tom St Denis      2007-07-20 17:48:02 +0000 172) #define LTC_RC5
+bbc52b9e src/headers/tomcrypt_custom.h (Tom St Denis      2007-07-20 17:48:02 +0000 173) #define LTC_RC6
+bbc52b9e src/headers/tomcrypt_custom.h (Tom St Denis      2007-07-20 17:48:02 +0000 174) #define LTC_SAFERP
+bbc52b9e src/headers/tomcrypt_custom.h (Tom St Denis      2007-07-20 17:48:02 +0000 175) #define LTC_RIJNDAEL
+bbc52b9e src/headers/tomcrypt_custom.h (Tom St Denis      2007-07-20 17:48:02 +0000 176) #define LTC_XTEA
+1c1822d5 mycrypt_custom.h              (Tom St Denis      2004-10-30 03:00:26 +0000 177) /* _TABLES tells it to use tables during setup, _SMALL means to use the smaller scheduled key format
+1c1822d5 mycrypt_custom.h              (Tom St Denis      2004-10-30 03:00:26 +0000 178)  * (saves 4KB of ram), _ALL_TABLES enables all tables during setup */
+bbc52b9e src/headers/tomcrypt_custom.h (Tom St Denis      2007-07-20 17:48:02 +0000 179) #define LTC_TWOFISH
+3964a652 src/headers/tomcrypt_custom.h (Tom St Denis      2005-06-09 00:08:13 +0000 180) #ifndef LTC_NO_TABLES
+bbc52b9e src/headers/tomcrypt_custom.h (Tom St Denis      2007-07-20 17:48:02 +0000 181)    #define LTC_TWOFISH_TABLES
+bbc52b9e src/headers/tomcrypt_custom.h (Tom St Denis      2007-07-20 17:48:02 +0000 182)    /* #define LTC_TWOFISH_ALL_TABLES */
+3964a652 src/headers/tomcrypt_custom.h (Tom St Denis      2005-06-09 00:08:13 +0000 183) #else
+bbc52b9e src/headers/tomcrypt_custom.h (Tom St Denis      2007-07-20 17:48:02 +0000 184)    #define LTC_TWOFISH_SMALL
+3964a652 src/headers/tomcrypt_custom.h (Tom St Denis      2005-06-09 00:08:13 +0000 185) #endif
+bbc52b9e src/headers/tomcrypt_custom.h (Tom St Denis      2007-07-20 17:48:02 +0000 186) /* #define LTC_TWOFISH_SMALL */
+b895f134 src/headers/tomcrypt_custom.h (Steffen Jaeckel   2014-04-30 01:10:22 +0200 187) /* LTC_DES includes EDE triple-DES */
+bbc52b9e src/headers/tomcrypt_custom.h (Tom St Denis      2007-07-20 17:48:02 +0000 188) #define LTC_DES
+bbc52b9e src/headers/tomcrypt_custom.h (Tom St Denis      2007-07-20 17:48:02 +0000 189) #define LTC_CAST5
+bbc52b9e src/headers/tomcrypt_custom.h (Tom St Denis      2007-07-20 17:48:02 +0000 190) #define LTC_NOEKEON
+bbc52b9e src/headers/tomcrypt_custom.h (Tom St Denis      2007-07-20 17:48:02 +0000 191) #define LTC_SKIPJACK
+bbc52b9e src/headers/tomcrypt_custom.h (Tom St Denis      2007-07-20 17:48:02 +0000 192) #define LTC_SAFER
+bbc52b9e src/headers/tomcrypt_custom.h (Tom St Denis      2007-07-20 17:48:02 +0000 193) #define LTC_KHAZAD
+bbc52b9e src/headers/tomcrypt_custom.h (Tom St Denis      2007-07-20 17:48:02 +0000 194) #define LTC_ANUBIS
+bbc52b9e src/headers/tomcrypt_custom.h (Tom St Denis      2007-07-20 17:48:02 +0000 195) #define LTC_ANUBIS_TWEAK
+bbc52b9e src/headers/tomcrypt_custom.h (Tom St Denis      2007-07-20 17:48:02 +0000 196) #define LTC_KSEED
+2de2976d src/headers/tomcrypt_custom.h (Tom St Denis      2006-11-17 14:21:24 +0000 197) #define LTC_KASUMI
+2f1fc7c5 src/headers/tomcrypt_custom.h (Steffen Jaeckel   2009-10-01 11:42:27 +0200 198) #define LTC_MULTI2
+2f1fc7c5 src/headers/tomcrypt_custom.h (Steffen Jaeckel   2009-10-01 11:42:27 +0200 199) #define LTC_CAMELLIA
+bfc2f5b0 src/headers/tomcrypt_custom.h (Tom St Denis      2004-12-30 23:55:53 +0000 200) 
+3964a652 src/headers/tomcrypt_custom.h (Tom St Denis      2005-06-09 00:08:13 +0000 201) #endif /* LTC_NO_CIPHERS */
+3964a652 src/headers/tomcrypt_custom.h (Tom St Denis      2005-06-09 00:08:13 +0000 202) 
+3fe312cc mycrypt_custom.h              (Tom St Denis      2004-05-31 02:36:47 +0000 203) 
+bfc2f5b0 src/headers/tomcrypt_custom.h (Tom St Denis      2004-12-30 23:55:53 +0000 204) /* ---> Block Cipher Modes of Operation <--- */
+3964a652 src/headers/tomcrypt_custom.h (Tom St Denis      2005-06-09 00:08:13 +0000 205) #ifndef LTC_NO_MODES
+3964a652 src/headers/tomcrypt_custom.h (Tom St Denis      2005-06-09 00:08:13 +0000 206) 
+479cc9c2 src/headers/tomcrypt_custom.h (Tom St Denis      2006-08-30 23:30:00 +0000 207) #define LTC_CFB_MODE
+479cc9c2 src/headers/tomcrypt_custom.h (Tom St Denis      2006-08-30 23:30:00 +0000 208) #define LTC_OFB_MODE
+479cc9c2 src/headers/tomcrypt_custom.h (Tom St Denis      2006-08-30 23:30:00 +0000 209) #define LTC_ECB_MODE
+479cc9c2 src/headers/tomcrypt_custom.h (Tom St Denis      2006-08-30 23:30:00 +0000 210) #define LTC_CBC_MODE
+479cc9c2 src/headers/tomcrypt_custom.h (Tom St Denis      2006-08-30 23:30:00 +0000 211) #define LTC_CTR_MODE
+3fe312cc mycrypt_custom.h              (Tom St Denis      2004-05-31 02:36:47 +0000 212) 
+1eed98f6 src/headers/tomcrypt_custom.h (Tom St Denis      2006-06-18 01:37:50 +0000 213) /* F8 chaining mode */
+1eed98f6 src/headers/tomcrypt_custom.h (Tom St Denis      2006-06-18 01:37:50 +0000 214) #define LTC_F8_MODE
+1eed98f6 src/headers/tomcrypt_custom.h (Tom St Denis      2006-06-18 01:37:50 +0000 215) 
+a3ce807b src/headers/tomcrypt_custom.h (Tom St Denis      2006-01-26 18:11:56 +0000 216) /* LRW mode */
+479cc9c2 src/headers/tomcrypt_custom.h (Tom St Denis      2006-08-30 23:30:00 +0000 217) #define LTC_LRW_MODE
+a3ce807b src/headers/tomcrypt_custom.h (Tom St Denis      2006-01-26 18:11:56 +0000 218) #ifndef LTC_NO_TABLES
+a3ce807b src/headers/tomcrypt_custom.h (Tom St Denis      2006-01-26 18:11:56 +0000 219)    /* like GCM mode this will enable 16 8x128 tables [64KB] that make
+bfcf1eb2 src/headers/tomcrypt_custom.h (Steffen Jaeckel   2012-07-26 14:43:15 +0200 220)     * seeking very fast.
+a3ce807b src/headers/tomcrypt_custom.h (Tom St Denis      2006-01-26 18:11:56 +0000 221)     */
+155a54ba src/headers/tomcrypt_custom.h (Steffen Jaeckel   2014-07-17 10:49:05 +0200 222)    #define LTC_LRW_TABLES
+a3ce807b src/headers/tomcrypt_custom.h (Tom St Denis      2006-01-26 18:11:56 +0000 223) #endif
+a3ce807b src/headers/tomcrypt_custom.h (Tom St Denis      2006-01-26 18:11:56 +0000 224) 
+bbc52b9e src/headers/tomcrypt_custom.h (Tom St Denis      2007-07-20 17:48:02 +0000 225) /* XTS mode */
+bbc52b9e src/headers/tomcrypt_custom.h (Tom St Denis      2007-07-20 17:48:02 +0000 226) #define LTC_XTS_MODE
+bbc52b9e src/headers/tomcrypt_custom.h (Tom St Denis      2007-07-20 17:48:02 +0000 227) 
+3964a652 src/headers/tomcrypt_custom.h (Tom St Denis      2005-06-09 00:08:13 +0000 228) #endif /* LTC_NO_MODES */
+3964a652 src/headers/tomcrypt_custom.h (Tom St Denis      2005-06-09 00:08:13 +0000 229) 
+bfc2f5b0 src/headers/tomcrypt_custom.h (Tom St Denis      2004-12-30 23:55:53 +0000 230) /* ---> One-Way Hash Functions <--- */
+bfcf1eb2 src/headers/tomcrypt_custom.h (Steffen Jaeckel   2012-07-26 14:43:15 +0200 231) #ifndef LTC_NO_HASHES
+3964a652 src/headers/tomcrypt_custom.h (Tom St Denis      2005-06-09 00:08:13 +0000 232) 
+bbc52b9e src/headers/tomcrypt_custom.h (Tom St Denis      2007-07-20 17:48:02 +0000 233) #define LTC_CHC_HASH
+bbc52b9e src/headers/tomcrypt_custom.h (Tom St Denis      2007-07-20 17:48:02 +0000 234) #define LTC_WHIRLPOOL
+bbc52b9e src/headers/tomcrypt_custom.h (Tom St Denis      2007-07-20 17:48:02 +0000 235) #define LTC_SHA512
+23fb224e src/headers/tomcrypt_custom.h (Steffen Jaeckel   2014-08-26 18:17:51 +0200 236) #define LTC_SHA512_256
+23fb224e src/headers/tomcrypt_custom.h (Steffen Jaeckel   2014-08-26 18:17:51 +0200 237) #define LTC_SHA512_224
+bbc52b9e src/headers/tomcrypt_custom.h (Tom St Denis      2007-07-20 17:48:02 +0000 238) #define LTC_SHA384
+bbc52b9e src/headers/tomcrypt_custom.h (Tom St Denis      2007-07-20 17:48:02 +0000 239) #define LTC_SHA256
+bbc52b9e src/headers/tomcrypt_custom.h (Tom St Denis      2007-07-20 17:48:02 +0000 240) #define LTC_SHA224
+bbc52b9e src/headers/tomcrypt_custom.h (Tom St Denis      2007-07-20 17:48:02 +0000 241) #define LTC_TIGER
+bbc52b9e src/headers/tomcrypt_custom.h (Tom St Denis      2007-07-20 17:48:02 +0000 242) #define LTC_SHA1
+bbc52b9e src/headers/tomcrypt_custom.h (Tom St Denis      2007-07-20 17:48:02 +0000 243) #define LTC_MD5
+bbc52b9e src/headers/tomcrypt_custom.h (Tom St Denis      2007-07-20 17:48:02 +0000 244) #define LTC_MD4
+bbc52b9e src/headers/tomcrypt_custom.h (Tom St Denis      2007-07-20 17:48:02 +0000 245) #define LTC_MD2
+bbc52b9e src/headers/tomcrypt_custom.h (Tom St Denis      2007-07-20 17:48:02 +0000 246) #define LTC_RIPEMD128
+bbc52b9e src/headers/tomcrypt_custom.h (Tom St Denis      2007-07-20 17:48:02 +0000 247) #define LTC_RIPEMD160
+bbc52b9e src/headers/tomcrypt_custom.h (Tom St Denis      2007-07-20 17:48:02 +0000 248) #define LTC_RIPEMD256
+bbc52b9e src/headers/tomcrypt_custom.h (Tom St Denis      2007-07-20 17:48:02 +0000 249) #define LTC_RIPEMD320
+3fe312cc mycrypt_custom.h              (Tom St Denis      2004-05-31 02:36:47 +0000 250) 
+dfa938a4 src/headers/tomcrypt_custom.h (Steffen Jaeckel   2015-02-15 17:25:45 +0100 251) #define LTC_HASH_HELPERS
+dfa938a4 src/headers/tomcrypt_custom.h (Steffen Jaeckel   2015-02-15 17:25:45 +0100 252) 
+3964a652 src/headers/tomcrypt_custom.h (Tom St Denis      2005-06-09 00:08:13 +0000 253) #endif /* LTC_NO_HASHES */
+3964a652 src/headers/tomcrypt_custom.h (Tom St Denis      2005-06-09 00:08:13 +0000 254) 
+bfc2f5b0 src/headers/tomcrypt_custom.h (Tom St Denis      2004-12-30 23:55:53 +0000 255) /* ---> MAC functions <--- */
+3964a652 src/headers/tomcrypt_custom.h (Tom St Denis      2005-06-09 00:08:13 +0000 256) #ifndef LTC_NO_MACS
+3964a652 src/headers/tomcrypt_custom.h (Tom St Denis      2005-06-09 00:08:13 +0000 257) 
+2de2976d src/headers/tomcrypt_custom.h (Tom St Denis      2006-11-17 14:21:24 +0000 258) #define LTC_HMAC
+2de2976d src/headers/tomcrypt_custom.h (Tom St Denis      2006-11-17 14:21:24 +0000 259) #define LTC_OMAC
+2de2976d src/headers/tomcrypt_custom.h (Tom St Denis      2006-11-17 14:21:24 +0000 260) #define LTC_PMAC
+2de2976d src/headers/tomcrypt_custom.h (Tom St Denis      2006-11-17 14:21:24 +0000 261) #define LTC_XCBC
+2de2976d src/headers/tomcrypt_custom.h (Tom St Denis      2006-11-17 14:21:24 +0000 262) #define LTC_F9_MODE
+bbc52b9e src/headers/tomcrypt_custom.h (Tom St Denis      2007-07-20 17:48:02 +0000 263) #define LTC_PELICAN
+6ac99524 src/headers/tomcrypt_custom.h (Tom St Denis      2005-04-17 11:37:13 +0000 264) 
+bfc2f5b0 src/headers/tomcrypt_custom.h (Tom St Denis      2004-12-30 23:55:53 +0000 265) /* ---> Encrypt + Authenticate Modes <--- */
+3964a652 src/headers/tomcrypt_custom.h (Tom St Denis      2005-06-09 00:08:13 +0000 266) 
+bbc52b9e src/headers/tomcrypt_custom.h (Tom St Denis      2007-07-20 17:48:02 +0000 267) #define LTC_EAX_MODE
+bfc2f5b0 src/headers/tomcrypt_custom.h (Tom St Denis      2004-12-30 23:55:53 +0000 268) 
+bbc52b9e src/headers/tomcrypt_custom.h (Tom St Denis      2007-07-20 17:48:02 +0000 269) #define LTC_OCB_MODE
+abab7089 src/headers/tomcrypt_custom.h (karel-m           2012-08-05 01:21:13 +0200 270) #define LTC_OCB3_MODE
+bbc52b9e src/headers/tomcrypt_custom.h (Tom St Denis      2007-07-20 17:48:02 +0000 271) #define LTC_CCM_MODE
+bbc52b9e src/headers/tomcrypt_custom.h (Tom St Denis      2007-07-20 17:48:02 +0000 272) #define LTC_GCM_MODE
+3964a652 src/headers/tomcrypt_custom.h (Tom St Denis      2005-06-09 00:08:13 +0000 273) 
+6ac99524 src/headers/tomcrypt_custom.h (Tom St Denis      2005-04-17 11:37:13 +0000 274) /* Use 64KiB tables */
+3964a652 src/headers/tomcrypt_custom.h (Tom St Denis      2005-06-09 00:08:13 +0000 275) #ifndef LTC_NO_TABLES
+bfcf1eb2 src/headers/tomcrypt_custom.h (Steffen Jaeckel   2012-07-26 14:43:15 +0200 276)    #define LTC_GCM_TABLES
+3964a652 src/headers/tomcrypt_custom.h (Tom St Denis      2005-06-09 00:08:13 +0000 277) #endif
+3964a652 src/headers/tomcrypt_custom.h (Tom St Denis      2005-06-09 00:08:13 +0000 278) 
+479cc9c2 src/headers/tomcrypt_custom.h (Tom St Denis      2006-08-30 23:30:00 +0000 279) /* USE SSE2? requires GCC works on x86_32 and x86_64*/
+bbc52b9e src/headers/tomcrypt_custom.h (Tom St Denis      2007-07-20 17:48:02 +0000 280) #ifdef LTC_GCM_TABLES
+bbc52b9e src/headers/tomcrypt_custom.h (Tom St Denis      2007-07-20 17:48:02 +0000 281) /* #define LTC_GCM_TABLES_SSE2 */
+479cc9c2 src/headers/tomcrypt_custom.h (Tom St Denis      2006-08-30 23:30:00 +0000 282) #endif
+479cc9c2 src/headers/tomcrypt_custom.h (Tom St Denis      2006-08-30 23:30:00 +0000 283) 
+3964a652 src/headers/tomcrypt_custom.h (Tom St Denis      2005-06-09 00:08:13 +0000 284) #endif /* LTC_NO_MACS */
+3fe312cc mycrypt_custom.h              (Tom St Denis      2004-05-31 02:36:47 +0000 285) 
+bfc2f5b0 src/headers/tomcrypt_custom.h (Tom St Denis      2004-12-30 23:55:53 +0000 286) /* --> Pseudo Random Number Generators <--- */
+3964a652 src/headers/tomcrypt_custom.h (Tom St Denis      2005-06-09 00:08:13 +0000 287) #ifndef LTC_NO_PRNGS
+3964a652 src/headers/tomcrypt_custom.h (Tom St Denis      2005-06-09 00:08:13 +0000 288) 
+69f289d6 mycrypt_custom.h              (Tom St Denis      2004-08-06 16:42:41 +0000 289) /* Yarrow */
+bbc52b9e src/headers/tomcrypt_custom.h (Tom St Denis      2007-07-20 17:48:02 +0000 290) #define LTC_YARROW
+6ac99524 src/headers/tomcrypt_custom.h (Tom St Denis      2005-04-17 11:37:13 +0000 291) /* which descriptor of AES to use?  */
+6ac99524 src/headers/tomcrypt_custom.h (Tom St Denis      2005-04-17 11:37:13 +0000 292) /* 0 = rijndael_enc 1 = aes_enc, 2 = rijndael [full], 3 = aes [full] */
+8e22b17a src/headers/tomcrypt_custom.h (Larry Bugbee      2013-03-06 19:52:22 +0100 293) #ifdef ENCRYPT_ONLY
+8e22b17a src/headers/tomcrypt_custom.h (Larry Bugbee      2013-03-06 19:52:22 +0100 294)   #define LTC_YARROW_AES 0
+8e22b17a src/headers/tomcrypt_custom.h (Larry Bugbee      2013-03-06 19:52:22 +0100 295) #else
+8e22b17a src/headers/tomcrypt_custom.h (Larry Bugbee      2013-03-06 19:52:22 +0100 296)   #define LTC_YARROW_AES 2
+8e22b17a src/headers/tomcrypt_custom.h (Larry Bugbee      2013-03-06 19:52:22 +0100 297) #endif
+69f289d6 mycrypt_custom.h              (Tom St Denis      2004-08-06 16:42:41 +0000 298) 
+bfc2f5b0 src/headers/tomcrypt_custom.h (Tom St Denis      2004-12-30 23:55:53 +0000 299) /* a PRNG that simply reads from an available system source */
+bbc52b9e src/headers/tomcrypt_custom.h (Tom St Denis      2007-07-20 17:48:02 +0000 300) #define LTC_SPRNG
+bfc2f5b0 src/headers/tomcrypt_custom.h (Tom St Denis      2004-12-30 23:55:53 +0000 301) 
+bbc52b9e src/headers/tomcrypt_custom.h (Tom St Denis      2007-07-20 17:48:02 +0000 302) /* The LTC_RC4 stream cipher */
+bbc52b9e src/headers/tomcrypt_custom.h (Tom St Denis      2007-07-20 17:48:02 +0000 303) #define LTC_RC4
+a21f63bb mycrypt_custom.h              (Tom St Denis      2004-07-23 15:40:22 +0000 304) 
+69f289d6 mycrypt_custom.h              (Tom St Denis      2004-08-06 16:42:41 +0000 305) /* Fortuna PRNG */
+bbc52b9e src/headers/tomcrypt_custom.h (Tom St Denis      2007-07-20 17:48:02 +0000 306) #define LTC_FORTUNA
+a21f63bb mycrypt_custom.h              (Tom St Denis      2004-07-23 15:40:22 +0000 307) /* reseed every N calls to the read function */
+bbc52b9e src/headers/tomcrypt_custom.h (Tom St Denis      2007-07-20 17:48:02 +0000 308) #define LTC_FORTUNA_WD    10
+69f289d6 mycrypt_custom.h              (Tom St Denis      2004-08-06 16:42:41 +0000 309) /* number of pools (4..32) can save a bit of ram by lowering the count */
+bbc52b9e src/headers/tomcrypt_custom.h (Tom St Denis      2007-07-20 17:48:02 +0000 310) #define LTC_FORTUNA_POOLS 32
+a21f63bb mycrypt_custom.h              (Tom St Denis      2004-07-23 15:40:22 +0000 311) 
+bbc52b9e src/headers/tomcrypt_custom.h (Tom St Denis      2007-07-20 17:48:02 +0000 312) /* Greg's LTC_SOBER128 PRNG ;-0 */
+bbc52b9e src/headers/tomcrypt_custom.h (Tom St Denis      2007-07-20 17:48:02 +0000 313) #define LTC_SOBER128
+a21f63bb mycrypt_custom.h              (Tom St Denis      2004-07-23 15:40:22 +0000 314) 
+bfc2f5b0 src/headers/tomcrypt_custom.h (Tom St Denis      2004-12-30 23:55:53 +0000 315) /* the *nix style /dev/random device */
+bbc52b9e src/headers/tomcrypt_custom.h (Tom St Denis      2007-07-20 17:48:02 +0000 316) #define LTC_DEVRANDOM
+bfc2f5b0 src/headers/tomcrypt_custom.h (Tom St Denis      2004-12-30 23:55:53 +0000 317) /* try /dev/urandom before trying /dev/random */
+155a54ba src/headers/tomcrypt_custom.h (Steffen Jaeckel   2014-07-17 10:49:05 +0200 318) #define LTC_TRY_URANDOM_FIRST
+dfa938a4 src/headers/tomcrypt_custom.h (Steffen Jaeckel   2015-02-15 17:25:45 +0100 319) /* rng_get_bytes() */
+dfa938a4 src/headers/tomcrypt_custom.h (Steffen Jaeckel   2015-02-15 17:25:45 +0100 320) #define LTC_RNG_GET_BYTES
+dfa938a4 src/headers/tomcrypt_custom.h (Steffen Jaeckel   2015-02-15 17:25:45 +0100 321) /* rng_make_prng() */
+dfa938a4 src/headers/tomcrypt_custom.h (Steffen Jaeckel   2015-02-15 17:25:45 +0100 322) #define LTC_RNG_MAKE_PRNG
+3fe312cc mycrypt_custom.h              (Tom St Denis      2004-05-31 02:36:47 +0000 323) 
+3964a652 src/headers/tomcrypt_custom.h (Tom St Denis      2005-06-09 00:08:13 +0000 324) #endif /* LTC_NO_PRNGS */
+3964a652 src/headers/tomcrypt_custom.h (Tom St Denis      2005-06-09 00:08:13 +0000 325) 
+bfc2f5b0 src/headers/tomcrypt_custom.h (Tom St Denis      2004-12-30 23:55:53 +0000 326) /* ---> Public Key Crypto <--- */
+3964a652 src/headers/tomcrypt_custom.h (Tom St Denis      2005-06-09 00:08:13 +0000 327) #ifndef LTC_NO_PK
+3964a652 src/headers/tomcrypt_custom.h (Tom St Denis      2005-06-09 00:08:13 +0000 328) 
+72412f6d src/headers/tomcrypt_custom.h (Tom St Denis      2005-08-01 16:36:47 +0000 329) /* Include RSA support */
+bbc52b9e src/headers/tomcrypt_custom.h (Tom St Denis      2007-07-20 17:48:02 +0000 330) #define LTC_MRSA
+1a114162 mycrypt_custom.h              (Tom St Denis      2004-06-20 02:41:49 +0000 331) 
+031e551c src/headers/tomcrypt_custom.h (Steffen Jaeckel   2013-08-14 16:12:56 +0200 332) #ifndef LTC_NO_RSA_BLINDING
+031e551c src/headers/tomcrypt_custom.h (Steffen Jaeckel   2013-08-14 16:12:56 +0200 333) /* Enable RSA blinding when doing private key operations by default */
+031e551c src/headers/tomcrypt_custom.h (Steffen Jaeckel   2013-08-14 16:12:56 +0200 334) #define LTC_RSA_BLINDING
+031e551c src/headers/tomcrypt_custom.h (Steffen Jaeckel   2013-08-14 16:12:56 +0200 335) #endif  /* LTC_NO_RSA_BLINDING */
+8dc8a2d5 src/headers/tomcrypt_custom.h (Steffen Jaeckel   2011-03-21 22:50:49 +0100 336) 
+6fecec10 src/headers/tomcrypt_custom.h (Steffen Jaeckel   2011-01-18 20:06:03 +0100 337) /* Include Diffie-Hellman support */
+233f207c src/headers/tomcrypt_custom.h (Patrick Pelletier 2011-09-25 17:24:52 -0700 338) #ifndef GMP_DESC
+233f207c src/headers/tomcrypt_custom.h (Patrick Pelletier 2011-09-25 17:24:52 -0700 339) /* is_prime fails for GMP */
+8e7777b5 src/headers/tomcrypt_custom.h (Steffen Jaeckel   2014-01-03 15:16:59 +0100 340) #define LTC_MDH
+6fecec10 src/headers/tomcrypt_custom.h (Steffen Jaeckel   2011-01-18 20:06:03 +0100 341) /* Supported Key Sizes */
+155a54ba src/headers/tomcrypt_custom.h (Steffen Jaeckel   2014-07-17 10:49:05 +0200 342) #define LTC_DH768
+155a54ba src/headers/tomcrypt_custom.h (Steffen Jaeckel   2014-07-17 10:49:05 +0200 343) #define LTC_DH1024
+155a54ba src/headers/tomcrypt_custom.h (Steffen Jaeckel   2014-07-17 10:49:05 +0200 344) #define LTC_DH1280
+155a54ba src/headers/tomcrypt_custom.h (Steffen Jaeckel   2014-07-17 10:49:05 +0200 345) #define LTC_DH1536
+155a54ba src/headers/tomcrypt_custom.h (Steffen Jaeckel   2014-07-17 10:49:05 +0200 346) #define LTC_DH1792
+155a54ba src/headers/tomcrypt_custom.h (Steffen Jaeckel   2014-07-17 10:49:05 +0200 347) #define LTC_DH2048
+6fecec10 src/headers/tomcrypt_custom.h (Steffen Jaeckel   2011-01-18 20:06:03 +0100 348) 
+6fecec10 src/headers/tomcrypt_custom.h (Steffen Jaeckel   2011-01-18 20:06:03 +0100 349) #ifndef TFM_DESC
+6fecec10 src/headers/tomcrypt_custom.h (Steffen Jaeckel   2011-01-18 20:06:03 +0100 350) /* tfm has a problem in fp_isprime for larger key sizes */
+155a54ba src/headers/tomcrypt_custom.h (Steffen Jaeckel   2014-07-17 10:49:05 +0200 351) #define LTC_DH2560
+155a54ba src/headers/tomcrypt_custom.h (Steffen Jaeckel   2014-07-17 10:49:05 +0200 352) #define LTC_DH3072
+155a54ba src/headers/tomcrypt_custom.h (Steffen Jaeckel   2014-07-17 10:49:05 +0200 353) #define LTC_DH4096
+6fecec10 src/headers/tomcrypt_custom.h (Steffen Jaeckel   2011-01-18 20:06:03 +0100 354) #endif
+6fecec10 src/headers/tomcrypt_custom.h (Steffen Jaeckel   2011-01-18 20:06:03 +0100 355) #endif
+6fecec10 src/headers/tomcrypt_custom.h (Steffen Jaeckel   2011-01-18 20:06:03 +0100 356) 
+1eeff0bf src/headers/tomcrypt_custom.h (Tom St Denis      2005-11-24 11:57:58 +0000 357) /* Include Katja (a Rabin variant like RSA) */
+155a54ba src/headers/tomcrypt_custom.h (Steffen Jaeckel   2014-07-17 10:49:05 +0200 358) /* #define LTC_MKAT */
+4a1a5796 src/headers/tomcrypt_custom.h (Tom St Denis      2005-11-18 05:15:37 +0000 359) 
+1a114162 mycrypt_custom.h              (Tom St Denis      2004-06-20 02:41:49 +0000 360) /* Digital Signature Algorithm */
+bbc52b9e src/headers/tomcrypt_custom.h (Tom St Denis      2007-07-20 17:48:02 +0000 361) #define LTC_MDSA
+1a114162 mycrypt_custom.h              (Tom St Denis      2004-06-20 02:41:49 +0000 362) 
+1a114162 mycrypt_custom.h              (Tom St Denis      2004-06-20 02:41:49 +0000 363) /* ECC */
+bbc52b9e src/headers/tomcrypt_custom.h (Tom St Denis      2007-07-20 17:48:02 +0000 364) #define LTC_MECC
+72412f6d src/headers/tomcrypt_custom.h (Tom St Denis      2005-08-01 16:36:47 +0000 365) 
+e24b01d3 src/headers/tomcrypt_custom.h (Tom St Denis      2006-12-16 18:10:04 +0000 366) /* use Shamir's trick for point mul (speeds up signature verification) */
+e24b01d3 src/headers/tomcrypt_custom.h (Tom St Denis      2006-12-16 18:10:04 +0000 367) #define LTC_ECC_SHAMIR
+e24b01d3 src/headers/tomcrypt_custom.h (Tom St Denis      2006-12-16 18:10:04 +0000 368) 
+0aee5f32 src/headers/tomcrypt_custom.h (Steffen Jaeckel   2014-03-04 21:29:40 +0100 369) #if defined(TFM_DESC) && defined(LTC_MECC)
+bbc52b9e src/headers/tomcrypt_custom.h (Tom St Denis      2007-07-20 17:48:02 +0000 370)    #define LTC_MECC_ACCEL
+bfcf1eb2 src/headers/tomcrypt_custom.h (Steffen Jaeckel   2012-07-26 14:43:15 +0200 371) #endif
+64d7ebe1 src/headers/tomcrypt_custom.h (Tom St Denis      2006-04-06 19:48:32 +0000 372) 
+2945dea3 src/headers/tomcrypt_custom.h (Tom St Denis      2006-05-29 23:12:56 +0000 373) /* do we want fixed point ECC */
+bbc52b9e src/headers/tomcrypt_custom.h (Tom St Denis      2007-07-20 17:48:02 +0000 374) /* #define LTC_MECC_FP */
+2945dea3 src/headers/tomcrypt_custom.h (Tom St Denis      2006-05-29 23:12:56 +0000 375) 
+c63c0433 src/headers/tomcrypt_custom.h (Steffen Jaeckel   2014-05-08 15:06:42 +0200 376) #ifndef LTC_NO_ECC_TIMING_RESISTANT
+c63c0433 src/headers/tomcrypt_custom.h (Steffen Jaeckel   2014-05-08 15:06:42 +0200 377) /* Enable ECC timing resistant version by default */
+c63c0433 src/headers/tomcrypt_custom.h (Steffen Jaeckel   2014-05-08 15:06:42 +0200 378) #define LTC_ECC_TIMING_RESISTANT
+c63c0433 src/headers/tomcrypt_custom.h (Steffen Jaeckel   2014-05-08 15:06:42 +0200 379) #endif
+72412f6d src/headers/tomcrypt_custom.h (Tom St Denis      2005-08-01 16:36:47 +0000 380) 
+3964a652 src/headers/tomcrypt_custom.h (Tom St Denis      2005-06-09 00:08:13 +0000 381) #endif /* LTC_NO_PK */
+3964a652 src/headers/tomcrypt_custom.h (Tom St Denis      2005-06-09 00:08:13 +0000 382) 
+90e968a2 src/headers/tomcrypt_custom.h (Steffen Jaeckel   2015-02-15 16:32:12 +0100 383) /* define these PK sizes out of LTC_NO_PK
+90e968a2 src/headers/tomcrypt_custom.h (Steffen Jaeckel   2015-02-15 16:32:12 +0100 384)  * to have them always defined
+90e968a2 src/headers/tomcrypt_custom.h (Steffen Jaeckel   2015-02-15 16:32:12 +0100 385)  */
+90e968a2 src/headers/tomcrypt_custom.h (Steffen Jaeckel   2015-02-15 16:32:12 +0100 386) #if defined(LTC_MRSA)
+90e968a2 src/headers/tomcrypt_custom.h (Steffen Jaeckel   2015-02-15 16:32:12 +0100 387) /* Min and Max RSA key sizes (in bits) */
+90e968a2 src/headers/tomcrypt_custom.h (Steffen Jaeckel   2015-02-15 16:32:12 +0100 388) #ifndef MIN_RSA_SIZE
+90e968a2 src/headers/tomcrypt_custom.h (Steffen Jaeckel   2015-02-15 16:32:12 +0100 389) #define MIN_RSA_SIZE 1024
+90e968a2 src/headers/tomcrypt_custom.h (Steffen Jaeckel   2015-02-15 16:32:12 +0100 390) #endif
+90e968a2 src/headers/tomcrypt_custom.h (Steffen Jaeckel   2015-02-15 16:32:12 +0100 391) #ifndef MAX_RSA_SIZE
+90e968a2 src/headers/tomcrypt_custom.h (Steffen Jaeckel   2015-02-15 16:32:12 +0100 392) #define MAX_RSA_SIZE 4096
+90e968a2 src/headers/tomcrypt_custom.h (Steffen Jaeckel   2015-02-15 16:32:12 +0100 393) #endif
+90e968a2 src/headers/tomcrypt_custom.h (Steffen Jaeckel   2015-02-15 16:32:12 +0100 394) #endif
+90e968a2 src/headers/tomcrypt_custom.h (Steffen Jaeckel   2015-02-15 16:32:12 +0100 395) 
+90e968a2 src/headers/tomcrypt_custom.h (Steffen Jaeckel   2015-02-15 16:32:12 +0100 396) /* in cases where you want ASN.1/DER functionality, but no
+90e968a2 src/headers/tomcrypt_custom.h (Steffen Jaeckel   2015-02-15 16:32:12 +0100 397)  * RSA, you can define this externally if 1024 is not enough
+90e968a2 src/headers/tomcrypt_custom.h (Steffen Jaeckel   2015-02-15 16:32:12 +0100 398)  */
+90e968a2 src/headers/tomcrypt_custom.h (Steffen Jaeckel   2015-02-15 16:32:12 +0100 399) #if defined(LTC_MRSA)
+90e968a2 src/headers/tomcrypt_custom.h (Steffen Jaeckel   2015-02-15 16:32:12 +0100 400) #define LTC_DER_MAX_PUBKEY_SIZE MAX_RSA_SIZE
+90e968a2 src/headers/tomcrypt_custom.h (Steffen Jaeckel   2015-02-15 16:32:12 +0100 401) #elif !defined(LTC_DER_MAX_PUBKEY_SIZE)
+90e968a2 src/headers/tomcrypt_custom.h (Steffen Jaeckel   2015-02-15 16:32:12 +0100 402) /* this includes DSA */
+90e968a2 src/headers/tomcrypt_custom.h (Steffen Jaeckel   2015-02-15 16:32:12 +0100 403) #define LTC_DER_MAX_PUBKEY_SIZE 1024
+90e968a2 src/headers/tomcrypt_custom.h (Steffen Jaeckel   2015-02-15 16:32:12 +0100 404) #endif
+90e968a2 src/headers/tomcrypt_custom.h (Steffen Jaeckel   2015-02-15 16:32:12 +0100 405) 
+90e968a2 src/headers/tomcrypt_custom.h (Steffen Jaeckel   2015-02-15 16:32:12 +0100 406) 
+8e7777b5 src/headers/tomcrypt_custom.h (Steffen Jaeckel   2014-01-03 15:16:59 +0100 407) /* PKCS #1 (RSA) and #5 (Password Handling) stuff */
+3964a652 src/headers/tomcrypt_custom.h (Tom St Denis      2005-06-09 00:08:13 +0000 408) #ifndef LTC_NO_PKCS
+3964a652 src/headers/tomcrypt_custom.h (Tom St Denis      2005-06-09 00:08:13 +0000 409) 
+bbc52b9e src/headers/tomcrypt_custom.h (Tom St Denis      2007-07-20 17:48:02 +0000 410) #define LTC_PKCS_1
+bbc52b9e src/headers/tomcrypt_custom.h (Tom St Denis      2007-07-20 17:48:02 +0000 411) #define LTC_PKCS_5
+40c5578a mycrypt_custom.h              (Tom St Denis      2004-05-12 20:42:16 +0000 412) 
+bfc2f5b0 src/headers/tomcrypt_custom.h (Tom St Denis      2004-12-30 23:55:53 +0000 413) /* Include ASN.1 DER (required by DSA/RSA) */
+bfc2f5b0 src/headers/tomcrypt_custom.h (Tom St Denis      2004-12-30 23:55:53 +0000 414) #define LTC_DER
+1eeff0bf src/headers/tomcrypt_custom.h (Tom St Denis      2005-11-24 11:57:58 +0000 415) 
+1eeff0bf src/headers/tomcrypt_custom.h (Tom St Denis      2005-11-24 11:57:58 +0000 416) #endif /* LTC_NO_PKCS */
+1eeff0bf src/headers/tomcrypt_custom.h (Tom St Denis      2005-11-24 11:57:58 +0000 417) 
+c0b8774c src/headers/tomcrypt_custom.h (Steffen Jaeckel   2013-08-14 15:47:07 +0200 418) /* misc stuff */
+c0b8774c src/headers/tomcrypt_custom.h (Steffen Jaeckel   2013-08-14 15:47:07 +0200 419) #ifndef LTC_NO_MISC
+c98857a4 src/headers/tomcrypt_custom.h (RyanC             2012-11-11 15:00:19 -0800 420) 
+031e551c src/headers/tomcrypt_custom.h (Steffen Jaeckel   2013-08-14 16:12:56 +0200 421) /* Various tidbits of modern neatoness */
+031e551c src/headers/tomcrypt_custom.h (Steffen Jaeckel   2013-08-14 16:12:56 +0200 422) #define LTC_BASE64
+d78aa37c src/headers/tomcrypt_custom.h (Steffen Jaeckel   2013-11-24 22:11:44 +0100 423) /* ... and it's URL safe version */
+d78aa37c src/headers/tomcrypt_custom.h (Steffen Jaeckel   2013-11-24 22:11:44 +0100 424) #define LTC_BASE64_URL
+c98857a4 src/headers/tomcrypt_custom.h (RyanC             2012-11-11 15:00:19 -0800 425) 
+c0b8774c src/headers/tomcrypt_custom.h (Steffen Jaeckel   2013-08-14 15:47:07 +0200 426) /* Keep LTC_NO_HKDF for compatibility reasons
+c0b8774c src/headers/tomcrypt_custom.h (Steffen Jaeckel   2013-08-14 15:47:07 +0200 427)  * superseeded by LTC_NO_MISC*/
+c0b8774c src/headers/tomcrypt_custom.h (Steffen Jaeckel   2013-08-14 15:47:07 +0200 428) #ifndef LTC_NO_HKDF
+b895f134 src/headers/tomcrypt_custom.h (Steffen Jaeckel   2014-04-30 01:10:22 +0200 429) /* HKDF Key Derivation/Expansion stuff */
+c0b8774c src/headers/tomcrypt_custom.h (Steffen Jaeckel   2013-08-14 15:47:07 +0200 430) #define LTC_HKDF
+c98857a4 src/headers/tomcrypt_custom.h (RyanC             2012-11-11 15:00:19 -0800 431) #endif /* LTC_NO_HKDF */
+c98857a4 src/headers/tomcrypt_custom.h (RyanC             2012-11-11 15:00:19 -0800 432) 
+c0b8774c src/headers/tomcrypt_custom.h (Steffen Jaeckel   2013-08-14 15:47:07 +0200 433) #endif /* LTC_NO_MISC */
+c0b8774c src/headers/tomcrypt_custom.h (Steffen Jaeckel   2013-08-14 15:47:07 +0200 434) 
+1eeff0bf src/headers/tomcrypt_custom.h (Tom St Denis      2005-11-24 11:57:58 +0000 435) /* cleanup */
+1eeff0bf src/headers/tomcrypt_custom.h (Tom St Denis      2005-11-24 11:57:58 +0000 436) 
+bbc52b9e src/headers/tomcrypt_custom.h (Tom St Denis      2007-07-20 17:48:02 +0000 437) #ifdef LTC_MECC
+1eeff0bf src/headers/tomcrypt_custom.h (Tom St Denis      2005-11-24 11:57:58 +0000 438) /* Supported ECC Key Sizes */
+1eeff0bf src/headers/tomcrypt_custom.h (Tom St Denis      2005-11-24 11:57:58 +0000 439) #ifndef LTC_NO_CURVES
+155a54ba src/headers/tomcrypt_custom.h (Steffen Jaeckel   2014-07-17 10:49:05 +0200 440)    #define LTC_ECC112
+155a54ba src/headers/tomcrypt_custom.h (Steffen Jaeckel   2014-07-17 10:49:05 +0200 441)    #define LTC_ECC128
+155a54ba src/headers/tomcrypt_custom.h (Steffen Jaeckel   2014-07-17 10:49:05 +0200 442)    #define LTC_ECC160
+155a54ba src/headers/tomcrypt_custom.h (Steffen Jaeckel   2014-07-17 10:49:05 +0200 443)    #define LTC_ECC192
+155a54ba src/headers/tomcrypt_custom.h (Steffen Jaeckel   2014-07-17 10:49:05 +0200 444)    #define LTC_ECC224
+155a54ba src/headers/tomcrypt_custom.h (Steffen Jaeckel   2014-07-17 10:49:05 +0200 445)    #define LTC_ECC256
+155a54ba src/headers/tomcrypt_custom.h (Steffen Jaeckel   2014-07-17 10:49:05 +0200 446)    #define LTC_ECC384
+155a54ba src/headers/tomcrypt_custom.h (Steffen Jaeckel   2014-07-17 10:49:05 +0200 447)    #define LTC_ECC521
+1eeff0bf src/headers/tomcrypt_custom.h (Tom St Denis      2005-11-24 11:57:58 +0000 448) #endif
+bfc2f5b0 src/headers/tomcrypt_custom.h (Tom St Denis      2004-12-30 23:55:53 +0000 449) #endif
+bfc2f5b0 src/headers/tomcrypt_custom.h (Tom St Denis      2004-12-30 23:55:53 +0000 450) 
+155a54ba src/headers/tomcrypt_custom.h (Steffen Jaeckel   2014-07-17 10:49:05 +0200 451) #if defined(LTC_MECC) || defined(LTC_MRSA) || defined(LTC_MDSA) || defined(LTC_MKAT)
+1eeff0bf src/headers/tomcrypt_custom.h (Tom St Denis      2005-11-24 11:57:58 +0000 452)    /* Include the MPI functionality?  (required by the PK algorithms) */
+155a54ba src/headers/tomcrypt_custom.h (Steffen Jaeckel   2014-07-17 10:49:05 +0200 453)    #define LTC_MPI
+bfc2f5b0 src/headers/tomcrypt_custom.h (Tom St Denis      2004-12-30 23:55:53 +0000 454) #endif
+bfc2f5b0 src/headers/tomcrypt_custom.h (Tom St Denis      2004-12-30 23:55:53 +0000 455) 
+bbc52b9e src/headers/tomcrypt_custom.h (Tom St Denis      2007-07-20 17:48:02 +0000 456) #ifdef LTC_MRSA
+bbc52b9e src/headers/tomcrypt_custom.h (Tom St Denis      2007-07-20 17:48:02 +0000 457)    #define LTC_PKCS_1
+bfcf1eb2 src/headers/tomcrypt_custom.h (Steffen Jaeckel   2012-07-26 14:43:15 +0200 458) #endif
+3964a652 src/headers/tomcrypt_custom.h (Tom St Denis      2005-06-09 00:08:13 +0000 459) 
+8dc8a2d5 src/headers/tomcrypt_custom.h (Steffen Jaeckel   2011-03-21 22:50:49 +0100 460) #if defined(TFM_DESC) && defined(LTC_RSA_BLINDING)
+8dc8a2d5 src/headers/tomcrypt_custom.h (Steffen Jaeckel   2011-03-21 22:50:49 +0100 461)     #warning RSA blinding currently not supported in combination with TFM
+8dc8a2d5 src/headers/tomcrypt_custom.h (Steffen Jaeckel   2011-03-21 22:50:49 +0100 462)     #undef LTC_RSA_BLINDING
+8dc8a2d5 src/headers/tomcrypt_custom.h (Steffen Jaeckel   2011-03-21 22:50:49 +0100 463) #endif
+8dc8a2d5 src/headers/tomcrypt_custom.h (Steffen Jaeckel   2011-03-21 22:50:49 +0100 464) 
+1d52f3b4 src/headers/tomcrypt_custom.h (Steffen Jaeckel   2014-03-04 18:03:14 +0100 465) #if defined(LTC_PELICAN) && !defined(LTC_RIJNDAEL)
+1d52f3b4 src/headers/tomcrypt_custom.h (Steffen Jaeckel   2014-03-04 18:03:14 +0100 466)    #error Pelican-MAC requires LTC_RIJNDAEL
+1d52f3b4 src/headers/tomcrypt_custom.h (Steffen Jaeckel   2014-03-04 18:03:14 +0100 467) #endif
+1d52f3b4 src/headers/tomcrypt_custom.h (Steffen Jaeckel   2014-03-04 18:03:14 +0100 468) 
+1d52f3b4 src/headers/tomcrypt_custom.h (Steffen Jaeckel   2014-03-04 18:03:14 +0100 469) #if defined(LTC_EAX_MODE) && !(defined(LTC_CTR_MODE) && defined(LTC_OMAC))
+1d52f3b4 src/headers/tomcrypt_custom.h (Steffen Jaeckel   2014-03-04 18:03:14 +0100 470)    #error LTC_EAX_MODE requires CTR and LTC_OMAC mode
+1d52f3b4 src/headers/tomcrypt_custom.h (Steffen Jaeckel   2014-03-04 18:03:14 +0100 471) #endif
+1d52f3b4 src/headers/tomcrypt_custom.h (Steffen Jaeckel   2014-03-04 18:03:14 +0100 472) 
+1d52f3b4 src/headers/tomcrypt_custom.h (Steffen Jaeckel   2014-03-04 18:03:14 +0100 473) #if defined(LTC_YARROW) && !defined(LTC_CTR_MODE)
+1d52f3b4 src/headers/tomcrypt_custom.h (Steffen Jaeckel   2014-03-04 18:03:14 +0100 474)    #error LTC_YARROW requires LTC_CTR_MODE chaining mode to be defined!
+1d52f3b4 src/headers/tomcrypt_custom.h (Steffen Jaeckel   2014-03-04 18:03:14 +0100 475) #endif
+1d52f3b4 src/headers/tomcrypt_custom.h (Steffen Jaeckel   2014-03-04 18:03:14 +0100 476) 
+155a54ba src/headers/tomcrypt_custom.h (Steffen Jaeckel   2014-07-17 10:49:05 +0200 477) #if defined(LTC_DER) && !defined(LTC_MPI)
+1eeff0bf src/headers/tomcrypt_custom.h (Tom St Denis      2005-11-24 11:57:58 +0000 478)    #error ASN.1 DER requires MPI functionality
+0f999a4e mycrypt_custom.h              (Tom St Denis      2003-03-03 01:03:50 +0000 479) #endif
+0f999a4e mycrypt_custom.h              (Tom St Denis      2003-03-03 01:03:50 +0000 480) 
+155a54ba src/headers/tomcrypt_custom.h (Steffen Jaeckel   2014-07-17 10:49:05 +0200 481) #if (defined(LTC_MDSA) || defined(LTC_MRSA) || defined(LTC_MECC) || defined(LTC_MKAT)) && !defined(LTC_DER)
+1eeff0bf src/headers/tomcrypt_custom.h (Tom St Denis      2005-11-24 11:57:58 +0000 482)    #error PK requires ASN.1 DER functionality, make sure LTC_DER is enabled
+1eeff0bf src/headers/tomcrypt_custom.h (Tom St Denis      2005-11-24 11:57:58 +0000 483) #endif
+3964a652 src/headers/tomcrypt_custom.h (Tom St Denis      2005-06-09 00:08:13 +0000 484) 
+9264e34f src/headers/tomcrypt_custom.h (Tom St Denis      2005-06-27 11:47:35 +0000 485) /* THREAD management */
+9264e34f src/headers/tomcrypt_custom.h (Tom St Denis      2005-06-27 11:47:35 +0000 486) #ifdef LTC_PTHREAD
+9264e34f src/headers/tomcrypt_custom.h (Tom St Denis      2005-06-27 11:47:35 +0000 487) 
+9264e34f src/headers/tomcrypt_custom.h (Tom St Denis      2005-06-27 11:47:35 +0000 488) #include <pthread.h>
+9264e34f src/headers/tomcrypt_custom.h (Tom St Denis      2005-06-27 11:47:35 +0000 489) 
+9264e34f src/headers/tomcrypt_custom.h (Tom St Denis      2005-06-27 11:47:35 +0000 490) #define LTC_MUTEX_GLOBAL(x)   pthread_mutex_t x = PTHREAD_MUTEX_INITIALIZER;
+9264e34f src/headers/tomcrypt_custom.h (Tom St Denis      2005-06-27 11:47:35 +0000 491) #define LTC_MUTEX_PROTO(x)    extern pthread_mutex_t x;
+4a1a5796 src/headers/tomcrypt_custom.h (Tom St Denis      2005-11-18 05:15:37 +0000 492) #define LTC_MUTEX_TYPE(x)     pthread_mutex_t x;
+4a1a5796 src/headers/tomcrypt_custom.h (Tom St Denis      2005-11-18 05:15:37 +0000 493) #define LTC_MUTEX_INIT(x)     pthread_mutex_init(x, NULL);
+9264e34f src/headers/tomcrypt_custom.h (Tom St Denis      2005-06-27 11:47:35 +0000 494) #define LTC_MUTEX_LOCK(x)     pthread_mutex_lock(x);
+9264e34f src/headers/tomcrypt_custom.h (Tom St Denis      2005-06-27 11:47:35 +0000 495) #define LTC_MUTEX_UNLOCK(x)   pthread_mutex_unlock(x);
+9264e34f src/headers/tomcrypt_custom.h (Tom St Denis      2005-06-27 11:47:35 +0000 496) 
+4a1a5796 src/headers/tomcrypt_custom.h (Tom St Denis      2005-11-18 05:15:37 +0000 497) #else
+9264e34f src/headers/tomcrypt_custom.h (Tom St Denis      2005-06-27 11:47:35 +0000 498) 
+9264e34f src/headers/tomcrypt_custom.h (Tom St Denis      2005-06-27 11:47:35 +0000 499) /* default no functions */
+9264e34f src/headers/tomcrypt_custom.h (Tom St Denis      2005-06-27 11:47:35 +0000 500) #define LTC_MUTEX_GLOBAL(x)
+9264e34f src/headers/tomcrypt_custom.h (Tom St Denis      2005-06-27 11:47:35 +0000 501) #define LTC_MUTEX_PROTO(x)
+4a1a5796 src/headers/tomcrypt_custom.h (Tom St Denis      2005-11-18 05:15:37 +0000 502) #define LTC_MUTEX_TYPE(x)
+4a1a5796 src/headers/tomcrypt_custom.h (Tom St Denis      2005-11-18 05:15:37 +0000 503) #define LTC_MUTEX_INIT(x)
+9264e34f src/headers/tomcrypt_custom.h (Tom St Denis      2005-06-27 11:47:35 +0000 504) #define LTC_MUTEX_LOCK(x)
+9264e34f src/headers/tomcrypt_custom.h (Tom St Denis      2005-06-27 11:47:35 +0000 505) #define LTC_MUTEX_UNLOCK(x)
+9264e34f src/headers/tomcrypt_custom.h (Tom St Denis      2005-06-27 11:47:35 +0000 506) 
+9264e34f src/headers/tomcrypt_custom.h (Tom St Denis      2005-06-27 11:47:35 +0000 507) #endif
+9264e34f src/headers/tomcrypt_custom.h (Tom St Denis      2005-06-27 11:47:35 +0000 508) 
+2de2976d src/headers/tomcrypt_custom.h (Tom St Denis      2006-11-17 14:21:24 +0000 509) /* Debuggers */
+2de2976d src/headers/tomcrypt_custom.h (Tom St Denis      2006-11-17 14:21:24 +0000 510) 
+bbc52b9e src/headers/tomcrypt_custom.h (Tom St Denis      2007-07-20 17:48:02 +0000 511) /* define this if you use Valgrind, note: it CHANGES the way SOBER-128 and LTC_RC4 work (see the code) */
+2de2976d src/headers/tomcrypt_custom.h (Tom St Denis      2006-11-17 14:21:24 +0000 512) /* #define LTC_VALGRIND */
+2de2976d src/headers/tomcrypt_custom.h (Tom St Denis      2006-11-17 14:21:24 +0000 513) 
+1eeff0bf src/headers/tomcrypt_custom.h (Tom St Denis      2005-11-24 11:57:58 +0000 514) #endif
+1eeff0bf src/headers/tomcrypt_custom.h (Tom St Denis      2005-11-24 11:57:58 +0000 515) 
+1eeff0bf src/headers/tomcrypt_custom.h (Tom St Denis      2005-11-24 11:57:58 +0000 516) 
+9264e34f src/headers/tomcrypt_custom.h (Tom St Denis      2005-06-27 11:47:35 +0000 517) 
+3964a652 src/headers/tomcrypt_custom.h (Tom St Denis      2005-06-09 00:08:13 +0000 518) /* $Source$ */
+3964a652 src/headers/tomcrypt_custom.h (Tom St Denis      2005-06-09 00:08:13 +0000 519) /* $Revision$ */
+3964a652 src/headers/tomcrypt_custom.h (Tom St Denis      2005-06-09 00:08:13 +0000 520) /* $Date$ */

@@ -1,0 +1,12 @@
+/*.exe
+/*.html
+/*.ndb
+/Makefile
+/Makefile.in
+/ecckey
+/ecckey_dumper
+/nim.sh
+/nimcache
+/rnd64
+/sesskey
+/xcrypt

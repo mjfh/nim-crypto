@@ -1,0 +1,5 @@
+http://github.com/tomstdenis/libtomcrypt/tree/develop
+http://www.libtom.net/LibTomCrypt/
+
+I added blame files in order to check the difference against the latest
+stable version 1.17, 2007-07-20 18:48:02 (if any).

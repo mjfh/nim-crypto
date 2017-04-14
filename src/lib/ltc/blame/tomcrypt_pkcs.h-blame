@@ -1,0 +1,90 @@
+8e7777b5 src/headers/tomcrypt_pkcs.h (Steffen Jaeckel 2014-01-03 15:16:59 +0100  1) /* PKCS Header Info */
+40c5578a mycrypt_pkcs.h              (Tom St Denis    2004-05-12 20:42:16 +0000  2) 
+8e7777b5 src/headers/tomcrypt_pkcs.h (Steffen Jaeckel 2014-01-03 15:16:59 +0100  3) /* ===> PKCS #1 -- RSA Cryptography <=== */
+bbc52b9e src/headers/tomcrypt_pkcs.h (Tom St Denis    2007-07-20 17:48:02 +0000  4) #ifdef LTC_PKCS_1
+40c5578a mycrypt_pkcs.h              (Tom St Denis    2004-05-12 20:42:16 +0000  5) 
+2de2976d src/headers/tomcrypt_pkcs.h (Tom St Denis    2006-11-17 14:21:24 +0000  6) enum ltc_pkcs_1_v1_5_blocks
+2de2976d src/headers/tomcrypt_pkcs.h (Tom St Denis    2006-11-17 14:21:24 +0000  7) {
+8e7777b5 src/headers/tomcrypt_pkcs.h (Steffen Jaeckel 2014-01-03 15:16:59 +0100  8)   LTC_PKCS_1_EMSA   = 1,        /* Block type 1 (PKCS #1 v1.5 signature padding) */
+8e7777b5 src/headers/tomcrypt_pkcs.h (Steffen Jaeckel 2014-01-03 15:16:59 +0100  9)   LTC_PKCS_1_EME    = 2         /* Block type 2 (PKCS #1 v1.5 encryption padding) */
+2de2976d src/headers/tomcrypt_pkcs.h (Tom St Denis    2006-11-17 14:21:24 +0000 10) };
+2de2976d src/headers/tomcrypt_pkcs.h (Tom St Denis    2006-11-17 14:21:24 +0000 11) 
+2de2976d src/headers/tomcrypt_pkcs.h (Tom St Denis    2006-11-17 14:21:24 +0000 12) enum ltc_pkcs_1_paddings
+2de2976d src/headers/tomcrypt_pkcs.h (Tom St Denis    2006-11-17 14:21:24 +0000 13) {
+8e7777b5 src/headers/tomcrypt_pkcs.h (Steffen Jaeckel 2014-01-03 15:16:59 +0100 14)   LTC_PKCS_1_V1_5     = 1,        /* PKCS #1 v1.5 padding (\sa ltc_pkcs_1_v1_5_blocks) */
+8e7777b5 src/headers/tomcrypt_pkcs.h (Steffen Jaeckel 2014-01-03 15:16:59 +0100 15)   LTC_PKCS_1_OAEP     = 2,        /* PKCS #1 v2.0 encryption padding */
+8e7777b5 src/headers/tomcrypt_pkcs.h (Steffen Jaeckel 2014-01-03 15:16:59 +0100 16)   LTC_PKCS_1_PSS      = 3         /* PKCS #1 v2.1 signature padding */
+2de2976d src/headers/tomcrypt_pkcs.h (Tom St Denis    2006-11-17 14:21:24 +0000 17) };
+2de2976d src/headers/tomcrypt_pkcs.h (Tom St Denis    2006-11-17 14:21:24 +0000 18) 
+4a1a5796 src/headers/tomcrypt_pkcs.h (Tom St Denis    2005-11-18 05:15:37 +0000 19) int pkcs_1_mgf1(      int            hash_idx,
+4a1a5796 src/headers/tomcrypt_pkcs.h (Tom St Denis    2005-11-18 05:15:37 +0000 20)                 const unsigned char *seed, unsigned long seedlen,
+40c5578a mycrypt_pkcs.h              (Tom St Denis    2004-05-12 20:42:16 +0000 21)                       unsigned char *mask, unsigned long masklen);
+40c5578a mycrypt_pkcs.h              (Tom St Denis    2004-05-12 20:42:16 +0000 22) 
+72412f6d src/headers/tomcrypt_pkcs.h (Tom St Denis    2005-08-01 16:36:47 +0000 23) int pkcs_1_i2osp(void *n, unsigned long modulus_len, unsigned char *out);
+72412f6d src/headers/tomcrypt_pkcs.h (Tom St Denis    2005-08-01 16:36:47 +0000 24) int pkcs_1_os2ip(void *n, unsigned char *in, unsigned long inlen);
+3fe312cc mycrypt_pkcs.h              (Tom St Denis    2004-05-31 02:36:47 +0000 25) 
+2de2976d src/headers/tomcrypt_pkcs.h (Tom St Denis    2006-11-17 14:21:24 +0000 26) /* *** v1.5 padding */
+bfcf1eb2 src/headers/tomcrypt_pkcs.h (Steffen Jaeckel 2012-07-26 14:43:15 +0200 27) int pkcs_1_v1_5_encode(const unsigned char *msg,
+2de2976d src/headers/tomcrypt_pkcs.h (Tom St Denis    2006-11-17 14:21:24 +0000 28)                              unsigned long  msglen,
+2de2976d src/headers/tomcrypt_pkcs.h (Tom St Denis    2006-11-17 14:21:24 +0000 29)                              int            block_type,
+2de2976d src/headers/tomcrypt_pkcs.h (Tom St Denis    2006-11-17 14:21:24 +0000 30)                              unsigned long  modulus_bitlen,
+bfcf1eb2 src/headers/tomcrypt_pkcs.h (Steffen Jaeckel 2012-07-26 14:43:15 +0200 31)                                 prng_state *prng,
+2de2976d src/headers/tomcrypt_pkcs.h (Tom St Denis    2006-11-17 14:21:24 +0000 32)                                        int  prng_idx,
+bfcf1eb2 src/headers/tomcrypt_pkcs.h (Steffen Jaeckel 2012-07-26 14:43:15 +0200 33)                              unsigned char *out,
+2de2976d src/headers/tomcrypt_pkcs.h (Tom St Denis    2006-11-17 14:21:24 +0000 34)                              unsigned long *outlen);
+2de2976d src/headers/tomcrypt_pkcs.h (Tom St Denis    2006-11-17 14:21:24 +0000 35) 
+bfcf1eb2 src/headers/tomcrypt_pkcs.h (Steffen Jaeckel 2012-07-26 14:43:15 +0200 36) int pkcs_1_v1_5_decode(const unsigned char *msg,
+2de2976d src/headers/tomcrypt_pkcs.h (Tom St Denis    2006-11-17 14:21:24 +0000 37)                              unsigned long  msglen,
+2de2976d src/headers/tomcrypt_pkcs.h (Tom St Denis    2006-11-17 14:21:24 +0000 38)                                        int  block_type,
+2de2976d src/headers/tomcrypt_pkcs.h (Tom St Denis    2006-11-17 14:21:24 +0000 39)                              unsigned long  modulus_bitlen,
+bfcf1eb2 src/headers/tomcrypt_pkcs.h (Steffen Jaeckel 2012-07-26 14:43:15 +0200 40)                              unsigned char *out,
+2de2976d src/headers/tomcrypt_pkcs.h (Tom St Denis    2006-11-17 14:21:24 +0000 41)                              unsigned long *outlen,
+2de2976d src/headers/tomcrypt_pkcs.h (Tom St Denis    2006-11-17 14:21:24 +0000 42)                                        int *is_valid);
+2de2976d src/headers/tomcrypt_pkcs.h (Tom St Denis    2006-11-17 14:21:24 +0000 43) 
+3964a652 src/headers/tomcrypt_pkcs.h (Tom St Denis    2005-06-09 00:08:13 +0000 44) /* *** v2.1 padding */
+40c5578a mycrypt_pkcs.h              (Tom St Denis    2004-05-12 20:42:16 +0000 45) int pkcs_1_oaep_encode(const unsigned char *msg,    unsigned long msglen,
+40c5578a mycrypt_pkcs.h              (Tom St Denis    2004-05-12 20:42:16 +0000 46)                        const unsigned char *lparam, unsigned long lparamlen,
+3fe312cc mycrypt_pkcs.h              (Tom St Denis    2004-05-31 02:36:47 +0000 47)                              unsigned long modulus_bitlen, prng_state *prng,
+3fe312cc mycrypt_pkcs.h              (Tom St Denis    2004-05-31 02:36:47 +0000 48)                              int           prng_idx,         int  hash_idx,
+40c5578a mycrypt_pkcs.h              (Tom St Denis    2004-05-12 20:42:16 +0000 49)                              unsigned char *out,    unsigned long *outlen);
+40c5578a mycrypt_pkcs.h              (Tom St Denis    2004-05-12 20:42:16 +0000 50) 
+40c5578a mycrypt_pkcs.h              (Tom St Denis    2004-05-12 20:42:16 +0000 51) int pkcs_1_oaep_decode(const unsigned char *msg,    unsigned long msglen,
+40c5578a mycrypt_pkcs.h              (Tom St Denis    2004-05-12 20:42:16 +0000 52)                        const unsigned char *lparam, unsigned long lparamlen,
+40c5578a mycrypt_pkcs.h              (Tom St Denis    2004-05-12 20:42:16 +0000 53)                              unsigned long modulus_bitlen, int hash_idx,
+3fe312cc mycrypt_pkcs.h              (Tom St Denis    2004-05-31 02:36:47 +0000 54)                              unsigned char *out,    unsigned long *outlen,
+3fe312cc mycrypt_pkcs.h              (Tom St Denis    2004-05-31 02:36:47 +0000 55)                              int           *res);
+40c5578a mycrypt_pkcs.h              (Tom St Denis    2004-05-12 20:42:16 +0000 56) 
+40c5578a mycrypt_pkcs.h              (Tom St Denis    2004-05-12 20:42:16 +0000 57) int pkcs_1_pss_encode(const unsigned char *msghash, unsigned long msghashlen,
+bfcf1eb2 src/headers/tomcrypt_pkcs.h (Steffen Jaeckel 2012-07-26 14:43:15 +0200 58)                             unsigned long saltlen,  prng_state   *prng,
+3fe312cc mycrypt_pkcs.h              (Tom St Denis    2004-05-31 02:36:47 +0000 59)                             int           prng_idx, int           hash_idx,
+40c5578a mycrypt_pkcs.h              (Tom St Denis    2004-05-12 20:42:16 +0000 60)                             unsigned long modulus_bitlen,
+40c5578a mycrypt_pkcs.h              (Tom St Denis    2004-05-12 20:42:16 +0000 61)                             unsigned char *out,     unsigned long *outlen);
+40c5578a mycrypt_pkcs.h              (Tom St Denis    2004-05-12 20:42:16 +0000 62) 
+40c5578a mycrypt_pkcs.h              (Tom St Denis    2004-05-12 20:42:16 +0000 63) int pkcs_1_pss_decode(const unsigned char *msghash, unsigned long msghashlen,
+40c5578a mycrypt_pkcs.h              (Tom St Denis    2004-05-12 20:42:16 +0000 64)                       const unsigned char *sig,     unsigned long siglen,
+40c5578a mycrypt_pkcs.h              (Tom St Denis    2004-05-12 20:42:16 +0000 65)                             unsigned long saltlen,  int           hash_idx,
+40c5578a mycrypt_pkcs.h              (Tom St Denis    2004-05-12 20:42:16 +0000 66)                             unsigned long modulus_bitlen, int    *res);
+40c5578a mycrypt_pkcs.h              (Tom St Denis    2004-05-12 20:42:16 +0000 67) 
+bbc52b9e src/headers/tomcrypt_pkcs.h (Tom St Denis    2007-07-20 17:48:02 +0000 68) #endif /* LTC_PKCS_1 */
+40c5578a mycrypt_pkcs.h              (Tom St Denis    2004-05-12 20:42:16 +0000 69) 
+8e7777b5 src/headers/tomcrypt_pkcs.h (Steffen Jaeckel 2014-01-03 15:16:59 +0100 70) /* ===> PKCS #5 -- Password Based Cryptography <=== */
+bbc52b9e src/headers/tomcrypt_pkcs.h (Tom St Denis    2007-07-20 17:48:02 +0000 71) #ifdef LTC_PKCS_5
+40c5578a mycrypt_pkcs.h              (Tom St Denis    2004-05-12 20:42:16 +0000 72) 
+40c5578a mycrypt_pkcs.h              (Tom St Denis    2004-05-12 20:42:16 +0000 73) /* Algorithm #1 (old) */
+bfcf1eb2 src/headers/tomcrypt_pkcs.h (Steffen Jaeckel 2012-07-26 14:43:15 +0200 74) int pkcs_5_alg1(const unsigned char *password, unsigned long password_len,
+bfcf1eb2 src/headers/tomcrypt_pkcs.h (Steffen Jaeckel 2012-07-26 14:43:15 +0200 75)                 const unsigned char *salt,
+40c5578a mycrypt_pkcs.h              (Tom St Denis    2004-05-12 20:42:16 +0000 76)                 int iteration_count,  int hash_idx,
+40c5578a mycrypt_pkcs.h              (Tom St Denis    2004-05-12 20:42:16 +0000 77)                 unsigned char *out,   unsigned long *outlen);
+40c5578a mycrypt_pkcs.h              (Tom St Denis    2004-05-12 20:42:16 +0000 78) 
+40c5578a mycrypt_pkcs.h              (Tom St Denis    2004-05-12 20:42:16 +0000 79) /* Algorithm #2 (new) */
+bfcf1eb2 src/headers/tomcrypt_pkcs.h (Steffen Jaeckel 2012-07-26 14:43:15 +0200 80) int pkcs_5_alg2(const unsigned char *password, unsigned long password_len,
+40c5578a mycrypt_pkcs.h              (Tom St Denis    2004-05-12 20:42:16 +0000 81)                 const unsigned char *salt,     unsigned long salt_len,
+40c5578a mycrypt_pkcs.h              (Tom St Denis    2004-05-12 20:42:16 +0000 82)                 int iteration_count,           int hash_idx,
+40c5578a mycrypt_pkcs.h              (Tom St Denis    2004-05-12 20:42:16 +0000 83)                 unsigned char *out,            unsigned long *outlen);
+40c5578a mycrypt_pkcs.h              (Tom St Denis    2004-05-12 20:42:16 +0000 84) 
+2adca467 src/headers/tomcrypt_pkcs.h (Steffen Jaeckel 2014-01-03 22:04:50 +0100 85) int pkcs_5_test (void);
+bbc52b9e src/headers/tomcrypt_pkcs.h (Tom St Denis    2007-07-20 17:48:02 +0000 86) #endif  /* LTC_PKCS_5 */
+3964a652 src/headers/tomcrypt_pkcs.h (Tom St Denis    2005-06-09 00:08:13 +0000 87) 
+3964a652 src/headers/tomcrypt_pkcs.h (Tom St Denis    2005-06-09 00:08:13 +0000 88) /* $Source$ */
+3964a652 src/headers/tomcrypt_pkcs.h (Tom St Denis    2005-06-09 00:08:13 +0000 89) /* $Revision$ */
+3964a652 src/headers/tomcrypt_pkcs.h (Tom St Denis    2005-06-09 00:08:13 +0000 90) /* $Date$ */

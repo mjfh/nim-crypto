@@ -1,0 +1,8 @@
+www.ecrypt.eu.org/stream/e2-salsa20.html
+
+subdirs:
+
+api      www.ecrypt.eu.org/stream/svn/viewcvs.cgi/ecrypt/trunk/api/
+include  www.ecrypt.eu.org/stream/svn/viewcvs.cgi/ecrypt/trunk/include/
+test     www.ecrypt.eu.org/stream/svn/viewcvs.cgi/ecrypt/trunk/test/
+merged   www.ecrypt.eu.org/stream/svn/viewcvs.cgi/ecrypt/trunk/submissions/salsa20/full/merged/

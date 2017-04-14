@@ -1,0 +1,34 @@
+libuecc v7 (2016/03/27)
+
+* Change conversion between Ed25519 and legacy representation. This should
+    not affect any operations unless Ed25519 and legacy load/store
+    functions are mixed when accessing a work structure. Doing so is now
+    officially supported, for example to convert a legacy public key to
+    Ed25519 format.
+* The changed representation allows to use the same
+    ecc_25519_work_default_base for both Ed25519 and legacy.
+    ecc_25519_work_default_base and ecc_25519_scalarmult_base have been
+    undeprecated, ecc_25519_work_base_ed25519 and
+    ecc_25519_work_base_legacy are deprecated now.
+* All points are now internally represented with Ed25519 coordinates, which
+    allows about 6% faster scalar multplication than the legacy
+    representation.
+* ecc_25519_scalarmult_base has been further optimized, making it another
+    6% faster than normal ecc_25519_scalarmult.
+
+
+libuecc v6 (2015/10/25)
+
+* Fixes a bug which might have caused a point's y coordinate to be negated
+    in certain circumstances when the point was stored in packed
+    representation and loaded again. It is extremely improbable that this
+    has ever actually happened, as only a small range of coordinates was
+    affected.
+* Use stdint types to clarify ABI and add support for systems with
+    sizeof(int) < 4 (this is not an ABI break in practise as all systems on
+    which libuecc has been used in the past should have int == int32_t)
+* Add point negation and subtraction functions
+* Rename all point access functions to bear a _legacy suffix (the old names
+    are still available, but marked as deprecated)
+* Add new point access functions and a new generator point that are
+    compatible with Ed25519

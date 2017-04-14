@@ -1,0 +1,82 @@
+# -*- makefile-automake -*-
+#
+# Automake snippet for SOURCES list
+#
+# $Id$
+#
+# Blame: Jordan Hrycaj <jordan@teddy-net.com>
+
+NIMNOCHECK +=
+
+# Note: d;release is effective only on the command line (as of NIM 0.15.3)
+if !USE_DEBUG
+NIM2CFLAGS += -d:release
+else
+NIM2XFLAGS += --verbosity:0
+endif
+
+all-local:: prepare
+
+# ---------------------------------------------------------------------------
+# Generate helper script
+# ---------------------------------------------------------------------------
+
+.PHONY: prep prepare
+prep prepare:: nim.sh
+	@for t in $(SUBDIRS); do (set -x; $(MAKE) -C $$t $@); done
+
+CLEANFILES += nim.sh *.nim~ *.ndb
+
+nim.sh:: Makefile.am
+	@rm -f $@
+	@echo Generating $@ ...
+	@echo '#! /bin/sh'                                      >> $@
+	@g="$(NIM2CFLAGS)";echo "set -x;$(NIM) cc $$g \"\$$@\"" >> $@
+	@chmod +x $@
+
+.PHONY: try
+try::
+	for t in $(SUBDIRS); do \
+	  case $$t in test) continue ; esac ; \
+	  (set -x; $(MAKE) -C $$t try); \
+	done
+
+try:: check-local
+
+check-local::
+	@for f in `ls *.nim 2>/dev/null|sort`; do \
+	  test -f "$$f" || continue ; \
+	  case " $(NIMNOCHECK)" in *" $$f"*) \
+	    echo "*** Igoring module: $$f"; \
+	    continue; \
+          esac; \
+	  g="$(NIM2CFLAGS)"; (set -x; \
+	      $(NIM) cc -r  $$g $(NIM2XFLAGS) -d:checkRun "$$f" \
+	  ) || exit ; \
+	done
+
+.PHONY: docs
+docs::
+	@for t in $(SUBDIRS); do (set -x; $(MAKE) -C $$t $@); done
+	@for f in *.nim; do \
+	  test -f "$$f" || continue ; \
+	  g="$(NIM2CFLAGS)"; (set -x; $(NIM) doc2 $$g "$$f") || exit; \
+	done
+
+# ---------------------------------------------------------------------------
+# Clean up cache and generated executables
+# ---------------------------------------------------------------------------
+
+clean-local::
+	@for f in *.nim; do \
+	  test -f "$$f" || continue ; \
+	  w=`basename "$$f" .nim` ; \
+	  test -x "$$w"      && (set -x; rm -f "$$w") ; \
+	  test -f "$$w.html" && (set -x; rm -f "$$w.html") ; \
+	  test -f "$$w.ndb"  && (set -x; rm -f "$$w.ndb") ; \
+	  done; :
+	rm -rf nimcache
+
+# ---------------------------------------------------------------------------
+# End
+# ---------------------------------------------------------------------------

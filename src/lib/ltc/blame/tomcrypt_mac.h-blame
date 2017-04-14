@@ -1,0 +1,496 @@
+2de2976d (Tom St Denis    2006-11-17 14:21:24 +0000   1) #ifdef LTC_HMAC
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000   2) typedef struct Hmac_state {
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000   3)      hash_state     md;
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000   4)      int            hash;
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000   5)      hash_state     hashstate;
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000   6)      unsigned char  *key;
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000   7) } hmac_state;
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000   8) 
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000   9) int hmac_init(hmac_state *hmac, int hash, const unsigned char *key, unsigned long keylen);
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000  10) int hmac_process(hmac_state *hmac, const unsigned char *in, unsigned long inlen);
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000  11) int hmac_done(hmac_state *hmac, unsigned char *out, unsigned long *outlen);
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000  12) int hmac_test(void);
+bfcf1eb2 (Steffen Jaeckel 2012-07-26 14:43:15 +0200  13) int hmac_memory(int hash,
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000  14)                 const unsigned char *key, unsigned long keylen,
+bfcf1eb2 (Steffen Jaeckel 2012-07-26 14:43:15 +0200  15)                 const unsigned char *in,  unsigned long inlen,
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000  16)                       unsigned char *out, unsigned long *outlen);
+bfcf1eb2 (Steffen Jaeckel 2012-07-26 14:43:15 +0200  17) int hmac_memory_multi(int hash,
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000  18)                 const unsigned char *key,  unsigned long keylen,
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000  19)                       unsigned char *out,  unsigned long *outlen,
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000  20)                 const unsigned char *in,   unsigned long inlen, ...);
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000  21) int hmac_file(int hash, const char *fname, const unsigned char *key,
+bfcf1eb2 (Steffen Jaeckel 2012-07-26 14:43:15 +0200  22)               unsigned long keylen,
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000  23)               unsigned char *dst, unsigned long *dstlen);
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000  24) #endif
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000  25) 
+2de2976d (Tom St Denis    2006-11-17 14:21:24 +0000  26) #ifdef LTC_OMAC
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000  27) 
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000  28) typedef struct {
+bfcf1eb2 (Steffen Jaeckel 2012-07-26 14:43:15 +0200  29)    int             cipher_idx,
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000  30)                    buflen,
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000  31)                    blklen;
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000  32)    unsigned char   block[MAXBLOCKSIZE],
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000  33)                    prev[MAXBLOCKSIZE],
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000  34)                    Lu[2][MAXBLOCKSIZE];
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000  35)    symmetric_key   key;
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000  36) } omac_state;
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000  37) 
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000  38) int omac_init(omac_state *omac, int cipher, const unsigned char *key, unsigned long keylen);
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000  39) int omac_process(omac_state *omac, const unsigned char *in, unsigned long inlen);
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000  40) int omac_done(omac_state *omac, unsigned char *out, unsigned long *outlen);
+bfcf1eb2 (Steffen Jaeckel 2012-07-26 14:43:15 +0200  41) int omac_memory(int cipher,
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000  42)                const unsigned char *key, unsigned long keylen,
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000  43)                const unsigned char *in,  unsigned long inlen,
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000  44)                      unsigned char *out, unsigned long *outlen);
+bfcf1eb2 (Steffen Jaeckel 2012-07-26 14:43:15 +0200  45) int omac_memory_multi(int cipher,
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000  46)                 const unsigned char *key, unsigned long keylen,
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000  47)                       unsigned char *out, unsigned long *outlen,
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000  48)                 const unsigned char *in,  unsigned long inlen, ...);
+bfcf1eb2 (Steffen Jaeckel 2012-07-26 14:43:15 +0200  49) int omac_file(int cipher,
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000  50)               const unsigned char *key, unsigned long keylen,
+bfcf1eb2 (Steffen Jaeckel 2012-07-26 14:43:15 +0200  51)               const          char *filename,
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000  52)                     unsigned char *out, unsigned long *outlen);
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000  53) int omac_test(void);
+bbc52b9e (Tom St Denis    2007-07-20 17:48:02 +0000  54) #endif /* LTC_OMAC */
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000  55) 
+2de2976d (Tom St Denis    2006-11-17 14:21:24 +0000  56) #ifdef LTC_PMAC
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000  57) 
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000  58) typedef struct {
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000  59)    unsigned char     Ls[32][MAXBLOCKSIZE],    /* L shifted by i bits to the left */
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000  60)                      Li[MAXBLOCKSIZE],        /* value of Li [current value, we calc from previous recall] */
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000  61)                      Lr[MAXBLOCKSIZE],        /* L * x^-1 */
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000  62)                      block[MAXBLOCKSIZE],     /* currently accumulated block */
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000  63)                      checksum[MAXBLOCKSIZE];  /* current checksum */
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000  64) 
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000  65)    symmetric_key     key;                     /* scheduled key for cipher */
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000  66)    unsigned long     block_index;             /* index # for current block */
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000  67)    int               cipher_idx,              /* cipher idx */
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000  68)                      block_len,               /* length of block */
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000  69)                      buflen;                  /* number of bytes in the buffer */
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000  70) } pmac_state;
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000  71) 
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000  72) int pmac_init(pmac_state *pmac, int cipher, const unsigned char *key, unsigned long keylen);
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000  73) int pmac_process(pmac_state *pmac, const unsigned char *in, unsigned long inlen);
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000  74) int pmac_done(pmac_state *pmac, unsigned char *out, unsigned long *outlen);
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000  75) 
+bfcf1eb2 (Steffen Jaeckel 2012-07-26 14:43:15 +0200  76) int pmac_memory(int cipher,
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000  77)                const unsigned char *key, unsigned long keylen,
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000  78)                const unsigned char *msg, unsigned long msglen,
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000  79)                      unsigned char *out, unsigned long *outlen);
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000  80) 
+bfcf1eb2 (Steffen Jaeckel 2012-07-26 14:43:15 +0200  81) int pmac_memory_multi(int cipher,
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000  82)                 const unsigned char *key, unsigned long keylen,
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000  83)                       unsigned char *out, unsigned long *outlen,
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000  84)                 const unsigned char *in, unsigned long inlen, ...);
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000  85) 
+bfcf1eb2 (Steffen Jaeckel 2012-07-26 14:43:15 +0200  86) int pmac_file(int cipher,
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000  87)              const unsigned char *key, unsigned long keylen,
+bfcf1eb2 (Steffen Jaeckel 2012-07-26 14:43:15 +0200  88)              const          char *filename,
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000  89)                    unsigned char *out, unsigned long *outlen);
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000  90) 
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000  91) int pmac_test(void);
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000  92) 
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000  93) /* internal functions */
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000  94) int pmac_ntz(unsigned long x);
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000  95) void pmac_shift_xor(pmac_state *pmac);
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000  96) 
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000  97) #endif /* PMAC */
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000  98) 
+bbc52b9e (Tom St Denis    2007-07-20 17:48:02 +0000  99) #ifdef LTC_EAX_MODE
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000 100) 
+2de2976d (Tom St Denis    2006-11-17 14:21:24 +0000 101) #if !(defined(LTC_OMAC) && defined(LTC_CTR_MODE))
+bbc52b9e (Tom St Denis    2007-07-20 17:48:02 +0000 102)    #error LTC_EAX_MODE requires LTC_OMAC and CTR
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000 103) #endif
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000 104) 
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000 105) typedef struct {
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000 106)    unsigned char N[MAXBLOCKSIZE];
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000 107)    symmetric_CTR ctr;
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000 108)    omac_state    headeromac, ctomac;
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000 109) } eax_state;
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000 110) 
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000 111) int eax_init(eax_state *eax, int cipher, const unsigned char *key, unsigned long keylen,
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000 112)              const unsigned char *nonce, unsigned long noncelen,
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000 113)              const unsigned char *header, unsigned long headerlen);
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000 114) 
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000 115) int eax_encrypt(eax_state *eax, const unsigned char *pt, unsigned char *ct, unsigned long length);
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000 116) int eax_decrypt(eax_state *eax, const unsigned char *ct, unsigned char *pt, unsigned long length);
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000 117) int eax_addheader(eax_state *eax, const unsigned char *header, unsigned long length);
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000 118) int eax_done(eax_state *eax, unsigned char *tag, unsigned long *taglen);
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000 119) 
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000 120) int eax_encrypt_authenticate_memory(int cipher,
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000 121)     const unsigned char *key,    unsigned long keylen,
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000 122)     const unsigned char *nonce,  unsigned long noncelen,
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000 123)     const unsigned char *header, unsigned long headerlen,
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000 124)     const unsigned char *pt,     unsigned long ptlen,
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000 125)           unsigned char *ct,
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000 126)           unsigned char *tag,    unsigned long *taglen);
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000 127) 
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000 128) int eax_decrypt_verify_memory(int cipher,
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000 129)     const unsigned char *key,    unsigned long keylen,
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000 130)     const unsigned char *nonce,  unsigned long noncelen,
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000 131)     const unsigned char *header, unsigned long headerlen,
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000 132)     const unsigned char *ct,     unsigned long ctlen,
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000 133)           unsigned char *pt,
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000 134)           unsigned char *tag,    unsigned long taglen,
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000 135)           int           *stat);
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000 136) 
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000 137)  int eax_test(void);
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000 138) #endif /* EAX MODE */
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000 139) 
+bbc52b9e (Tom St Denis    2007-07-20 17:48:02 +0000 140) #ifdef LTC_OCB_MODE
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000 141) typedef struct {
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000 142)    unsigned char     L[MAXBLOCKSIZE],         /* L value */
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000 143)                      Ls[32][MAXBLOCKSIZE],    /* L shifted by i bits to the left */
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000 144)                      Li[MAXBLOCKSIZE],        /* value of Li [current value, we calc from previous recall] */
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000 145)                      Lr[MAXBLOCKSIZE],        /* L * x^-1 */
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000 146)                      R[MAXBLOCKSIZE],         /* R value */
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000 147)                      checksum[MAXBLOCKSIZE];  /* current checksum */
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000 148) 
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000 149)    symmetric_key     key;                     /* scheduled key for cipher */
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000 150)    unsigned long     block_index;             /* index # for current block */
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000 151)    int               cipher,                  /* cipher idx */
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000 152)                      block_len;               /* length of block */
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000 153) } ocb_state;
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000 154) 
+bfcf1eb2 (Steffen Jaeckel 2012-07-26 14:43:15 +0200 155) int ocb_init(ocb_state *ocb, int cipher,
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000 156)              const unsigned char *key, unsigned long keylen, const unsigned char *nonce);
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000 157) 
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000 158) int ocb_encrypt(ocb_state *ocb, const unsigned char *pt, unsigned char *ct);
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000 159) int ocb_decrypt(ocb_state *ocb, const unsigned char *ct, unsigned char *pt);
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000 160) 
+bfcf1eb2 (Steffen Jaeckel 2012-07-26 14:43:15 +0200 161) int ocb_done_encrypt(ocb_state *ocb,
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000 162)                      const unsigned char *pt,  unsigned long ptlen,
+bfcf1eb2 (Steffen Jaeckel 2012-07-26 14:43:15 +0200 163)                            unsigned char *ct,
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000 164)                            unsigned char *tag, unsigned long *taglen);
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000 165) 
+bfcf1eb2 (Steffen Jaeckel 2012-07-26 14:43:15 +0200 166) int ocb_done_decrypt(ocb_state *ocb,
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000 167)                      const unsigned char *ct,  unsigned long ctlen,
+bfcf1eb2 (Steffen Jaeckel 2012-07-26 14:43:15 +0200 168)                            unsigned char *pt,
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000 169)                      const unsigned char *tag, unsigned long taglen, int *stat);
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000 170) 
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000 171) int ocb_encrypt_authenticate_memory(int cipher,
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000 172)     const unsigned char *key,    unsigned long keylen,
+bfcf1eb2 (Steffen Jaeckel 2012-07-26 14:43:15 +0200 173)     const unsigned char *nonce,
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000 174)     const unsigned char *pt,     unsigned long ptlen,
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000 175)           unsigned char *ct,
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000 176)           unsigned char *tag,    unsigned long *taglen);
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000 177) 
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000 178) int ocb_decrypt_verify_memory(int cipher,
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000 179)     const unsigned char *key,    unsigned long keylen,
+bfcf1eb2 (Steffen Jaeckel 2012-07-26 14:43:15 +0200 180)     const unsigned char *nonce,
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000 181)     const unsigned char *ct,     unsigned long ctlen,
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000 182)           unsigned char *pt,
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000 183)     const unsigned char *tag,    unsigned long taglen,
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000 184)           int           *stat);
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000 185) 
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000 186) int ocb_test(void);
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000 187) 
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000 188) /* internal functions */
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000 189) void ocb_shift_xor(ocb_state *ocb, unsigned char *Z);
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000 190) int ocb_ntz(unsigned long x);
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000 191) int s_ocb_done(ocb_state *ocb, const unsigned char *pt, unsigned long ptlen,
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000 192)                unsigned char *ct, unsigned char *tag, unsigned long *taglen, int mode);
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000 193) 
+bbc52b9e (Tom St Denis    2007-07-20 17:48:02 +0000 194) #endif /* LTC_OCB_MODE */
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000 195) 
+abab7089 (karel-m         2012-08-05 01:21:13 +0200 196) #ifdef LTC_OCB3_MODE
+abab7089 (karel-m         2012-08-05 01:21:13 +0200 197) typedef struct {
+abab7089 (karel-m         2012-08-05 01:21:13 +0200 198)    unsigned char     Offset_0[MAXBLOCKSIZE],       /* Offset_0 value */
+abab7089 (karel-m         2012-08-05 01:21:13 +0200 199)                      Offset_current[MAXBLOCKSIZE], /* Offset_{current_block_index} value */
+abab7089 (karel-m         2012-08-05 01:21:13 +0200 200)                      L_dollar[MAXBLOCKSIZE],       /* L_$ value */
+abab7089 (karel-m         2012-08-05 01:21:13 +0200 201)                      L_star[MAXBLOCKSIZE],         /* L_* value */
+abab7089 (karel-m         2012-08-05 01:21:13 +0200 202)                      L_[32][MAXBLOCKSIZE],         /* L_{i} values */
+abab7089 (karel-m         2012-08-05 01:21:13 +0200 203)                      tag_part[MAXBLOCKSIZE],       /* intermediate result of tag calculation */
+abab7089 (karel-m         2012-08-05 01:21:13 +0200 204)                      checksum[MAXBLOCKSIZE];       /* current checksum */
+abab7089 (karel-m         2012-08-05 01:21:13 +0200 205) 
+abab7089 (karel-m         2012-08-05 01:21:13 +0200 206)    /* AAD related members */
+abab7089 (karel-m         2012-08-05 01:21:13 +0200 207)    unsigned char     aSum_current[MAXBLOCKSIZE],    /* AAD related helper variable */
+abab7089 (karel-m         2012-08-05 01:21:13 +0200 208)                      aOffset_current[MAXBLOCKSIZE], /* AAD related helper variable */
+abab7089 (karel-m         2012-08-05 01:21:13 +0200 209)                      adata_buffer[MAXBLOCKSIZE];    /* AAD buffer */
+abab7089 (karel-m         2012-08-05 01:21:13 +0200 210)    int               adata_buffer_bytes;            /* bytes in AAD buffer */
+abab7089 (karel-m         2012-08-05 01:21:13 +0200 211)    unsigned long     ablock_index;                  /* index # for current adata (AAD) block */
+abab7089 (karel-m         2012-08-05 01:21:13 +0200 212) 
+abab7089 (karel-m         2012-08-05 01:21:13 +0200 213)    symmetric_key     key;                     /* scheduled key for cipher */
+abab7089 (karel-m         2012-08-05 01:21:13 +0200 214)    unsigned long     block_index;             /* index # for current data block */
+abab7089 (karel-m         2012-08-05 01:21:13 +0200 215)    int               cipher,                  /* cipher idx */
+abab7089 (karel-m         2012-08-05 01:21:13 +0200 216)                      block_len;               /* length of block */
+abab7089 (karel-m         2012-08-05 01:21:13 +0200 217) } ocb3_state;
+abab7089 (karel-m         2012-08-05 01:21:13 +0200 218) 
+abab7089 (karel-m         2012-08-05 01:21:13 +0200 219) int ocb3_init(ocb3_state *ocb, int cipher,
+abab7089 (karel-m         2012-08-05 01:21:13 +0200 220)              const unsigned char *key, unsigned long keylen,
+abab7089 (karel-m         2012-08-05 01:21:13 +0200 221)              const unsigned char *nonce, unsigned long noncelen);
+abab7089 (karel-m         2012-08-05 01:21:13 +0200 222) 
+abab7089 (karel-m         2012-08-05 01:21:13 +0200 223) int ocb3_encrypt(ocb3_state *ocb, const unsigned char *pt, unsigned long ptlen, unsigned char *ct);
+abab7089 (karel-m         2012-08-05 01:21:13 +0200 224) int ocb3_decrypt(ocb3_state *ocb, const unsigned char *ct, unsigned long ctlen, unsigned char *pt);
+abab7089 (karel-m         2012-08-05 01:21:13 +0200 225) int ocb3_encrypt_last(ocb3_state *ocb, const unsigned char *pt, unsigned long ptlen, unsigned char *ct);
+abab7089 (karel-m         2012-08-05 01:21:13 +0200 226) int ocb3_decrypt_last(ocb3_state *ocb, const unsigned char *ct, unsigned long ctlen, unsigned char *pt);
+abab7089 (karel-m         2012-08-05 01:21:13 +0200 227) int ocb3_add_aad(ocb3_state *ocb, const unsigned char *aad, unsigned long aadlen);
+abab7089 (karel-m         2012-08-05 01:21:13 +0200 228) int ocb3_done(ocb3_state *ocb, unsigned char *tag, unsigned long *taglen);
+abab7089 (karel-m         2012-08-05 01:21:13 +0200 229) 
+abab7089 (karel-m         2012-08-05 01:21:13 +0200 230) int ocb3_encrypt_authenticate_memory(int cipher,
+abab7089 (karel-m         2012-08-05 01:21:13 +0200 231)     const unsigned char *key,    unsigned long keylen,
+abab7089 (karel-m         2012-08-05 01:21:13 +0200 232)     const unsigned char *nonce,  unsigned long noncelen,
+abab7089 (karel-m         2012-08-05 01:21:13 +0200 233)     const unsigned char *adata,  unsigned long adatalen,
+abab7089 (karel-m         2012-08-05 01:21:13 +0200 234)     const unsigned char *pt,     unsigned long ptlen,
+abab7089 (karel-m         2012-08-05 01:21:13 +0200 235)           unsigned char *ct,
+abab7089 (karel-m         2012-08-05 01:21:13 +0200 236)           unsigned char *tag,    unsigned long *taglen);
+abab7089 (karel-m         2012-08-05 01:21:13 +0200 237) 
+abab7089 (karel-m         2012-08-05 01:21:13 +0200 238) int ocb3_decrypt_verify_memory(int cipher,
+abab7089 (karel-m         2012-08-05 01:21:13 +0200 239)     const unsigned char *key,    unsigned long keylen,
+abab7089 (karel-m         2012-08-05 01:21:13 +0200 240)     const unsigned char *nonce,  unsigned long noncelen,
+abab7089 (karel-m         2012-08-05 01:21:13 +0200 241)     const unsigned char *adata,  unsigned long adatalen,
+abab7089 (karel-m         2012-08-05 01:21:13 +0200 242)     const unsigned char *ct,     unsigned long ctlen,
+abab7089 (karel-m         2012-08-05 01:21:13 +0200 243)           unsigned char *pt,
+abab7089 (karel-m         2012-08-05 01:21:13 +0200 244)     const unsigned char *tag,    unsigned long taglen,
+abab7089 (karel-m         2012-08-05 01:21:13 +0200 245)           int           *stat);
+abab7089 (karel-m         2012-08-05 01:21:13 +0200 246) 
+abab7089 (karel-m         2012-08-05 01:21:13 +0200 247) int ocb3_test(void);
+abab7089 (karel-m         2012-08-05 01:21:13 +0200 248) 
+abab7089 (karel-m         2012-08-05 01:21:13 +0200 249) /* internal helper functions */
+abab7089 (karel-m         2012-08-05 01:21:13 +0200 250) int ocb3_int_aad_add_block(ocb3_state *ocb, const unsigned char *aad_block);
+abab7089 (karel-m         2012-08-05 01:21:13 +0200 251) void ocb3_int_calc_offset_zero(ocb3_state *ocb, const unsigned char *nonce, unsigned long noncelen);
+abab7089 (karel-m         2012-08-05 01:21:13 +0200 252) int ocb3_int_ntz(unsigned long x);
+abab7089 (karel-m         2012-08-05 01:21:13 +0200 253) void ocb3_int_xor_blocks(unsigned char *out, const unsigned char *block_a, const unsigned char *block_b, unsigned long block_len);
+abab7089 (karel-m         2012-08-05 01:21:13 +0200 254) 
+abab7089 (karel-m         2012-08-05 01:21:13 +0200 255) #endif /* LTC_OCB3_MODE */
+abab7089 (karel-m         2012-08-05 01:21:13 +0200 256) 
+bbc52b9e (Tom St Denis    2007-07-20 17:48:02 +0000 257) #ifdef LTC_CCM_MODE
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000 258) 
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000 259) #define CCM_ENCRYPT 0
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000 260) #define CCM_DECRYPT 1
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000 261) 
+992506cb (Pascal Brand    2014-10-17 08:50:01 +0200 262) typedef struct {
+992506cb (Pascal Brand    2014-10-17 08:50:01 +0200 263)    symmetric_key       K;
+992506cb (Pascal Brand    2014-10-17 08:50:01 +0200 264)    int                 cipher,               /* which cipher */
+992506cb (Pascal Brand    2014-10-17 08:50:01 +0200 265)                        taglen,               /* length of the tag */
+992506cb (Pascal Brand    2014-10-17 08:50:01 +0200 266)                        x;                    /* index in PAD */
+992506cb (Pascal Brand    2014-10-17 08:50:01 +0200 267) 
+992506cb (Pascal Brand    2014-10-17 08:50:01 +0200 268)    unsigned long       L,                    /* L value */
+992506cb (Pascal Brand    2014-10-17 08:50:01 +0200 269)                        ptlen,                /* length that will be enc / dec */
+992506cb (Pascal Brand    2014-10-17 08:50:01 +0200 270)                        current_ptlen,        /* current processed length */
+992506cb (Pascal Brand    2014-10-17 08:50:01 +0200 271)                        aadlen,               /* length of the aad */
+992506cb (Pascal Brand    2014-10-17 08:50:01 +0200 272)                        current_aadlen,       /* length of the currently provided add */
+992506cb (Pascal Brand    2014-10-17 08:50:01 +0200 273)                        noncelen;             /* length of the nonce */
+992506cb (Pascal Brand    2014-10-17 08:50:01 +0200 274) 
+992506cb (Pascal Brand    2014-10-17 08:50:01 +0200 275)    unsigned char       PAD[16],
+992506cb (Pascal Brand    2014-10-17 08:50:01 +0200 276)                        ctr[16],
+992506cb (Pascal Brand    2014-10-17 08:50:01 +0200 277)                        CTRPAD[16],
+992506cb (Pascal Brand    2014-10-17 08:50:01 +0200 278)                        CTRlen;
+992506cb (Pascal Brand    2014-10-17 08:50:01 +0200 279) } ccm_state;
+992506cb (Pascal Brand    2014-10-17 08:50:01 +0200 280) 
+992506cb (Pascal Brand    2014-10-17 08:50:01 +0200 281) int ccm_init(ccm_state *ccm, int cipher,
+992506cb (Pascal Brand    2014-10-17 08:50:01 +0200 282)              const unsigned char *key, int keylen, int ptlen, int taglen, int aad_len);
+992506cb (Pascal Brand    2014-10-17 08:50:01 +0200 283) 
+992506cb (Pascal Brand    2014-10-17 08:50:01 +0200 284) int ccm_reset(ccm_state *ccm);
+992506cb (Pascal Brand    2014-10-17 08:50:01 +0200 285) 
+992506cb (Pascal Brand    2014-10-17 08:50:01 +0200 286) int ccm_add_nonce(ccm_state *ccm,
+992506cb (Pascal Brand    2014-10-17 08:50:01 +0200 287)                   const unsigned char *nonce,     unsigned long noncelen);
+992506cb (Pascal Brand    2014-10-17 08:50:01 +0200 288) 
+992506cb (Pascal Brand    2014-10-17 08:50:01 +0200 289) int ccm_add_aad(ccm_state *ccm,
+992506cb (Pascal Brand    2014-10-17 08:50:01 +0200 290)                 const unsigned char *adata,  unsigned long adatalen);
+992506cb (Pascal Brand    2014-10-17 08:50:01 +0200 291) 
+992506cb (Pascal Brand    2014-10-17 08:50:01 +0200 292) int ccm_process(ccm_state *ccm,
+992506cb (Pascal Brand    2014-10-17 08:50:01 +0200 293)                 unsigned char *pt,     unsigned long ptlen,
+992506cb (Pascal Brand    2014-10-17 08:50:01 +0200 294)                 unsigned char *ct,
+992506cb (Pascal Brand    2014-10-17 08:50:01 +0200 295)                 int direction);
+992506cb (Pascal Brand    2014-10-17 08:50:01 +0200 296) 
+992506cb (Pascal Brand    2014-10-17 08:50:01 +0200 297) int ccm_done(ccm_state *ccm,
+992506cb (Pascal Brand    2014-10-17 08:50:01 +0200 298)              unsigned char *tag,    unsigned long *taglen);
+992506cb (Pascal Brand    2014-10-17 08:50:01 +0200 299) 
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000 300) int ccm_memory(int cipher,
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000 301)     const unsigned char *key,    unsigned long keylen,
+4a1a5796 (Tom St Denis    2005-11-18 05:15:37 +0000 302)     symmetric_key       *uskey,
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000 303)     const unsigned char *nonce,  unsigned long noncelen,
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000 304)     const unsigned char *header, unsigned long headerlen,
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000 305)           unsigned char *pt,     unsigned long ptlen,
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000 306)           unsigned char *ct,
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000 307)           unsigned char *tag,    unsigned long *taglen,
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000 308)                     int  direction);
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000 309) 
+2f1fc7c5 (Steffen Jaeckel 2009-10-01 11:42:27 +0200 310) int ccm_memory_ex(int cipher,
+2f1fc7c5 (Steffen Jaeckel 2009-10-01 11:42:27 +0200 311)     const unsigned char *key,    unsigned long keylen,
+2f1fc7c5 (Steffen Jaeckel 2009-10-01 11:42:27 +0200 312)     symmetric_key       *uskey,
+2f1fc7c5 (Steffen Jaeckel 2009-10-01 11:42:27 +0200 313)     const unsigned char *nonce,  unsigned long noncelen,
+2f1fc7c5 (Steffen Jaeckel 2009-10-01 11:42:27 +0200 314)     const unsigned char *header, unsigned long headerlen,
+2f1fc7c5 (Steffen Jaeckel 2009-10-01 11:42:27 +0200 315)           unsigned char *pt,     unsigned long ptlen,
+2f1fc7c5 (Steffen Jaeckel 2009-10-01 11:42:27 +0200 316)           unsigned char *ct,
+2f1fc7c5 (Steffen Jaeckel 2009-10-01 11:42:27 +0200 317)           unsigned char *tag,    unsigned long *taglen,
+2f1fc7c5 (Steffen Jaeckel 2009-10-01 11:42:27 +0200 318)                     int  direction,
+2f1fc7c5 (Steffen Jaeckel 2009-10-01 11:42:27 +0200 319)     const unsigned char *B0,
+2f1fc7c5 (Steffen Jaeckel 2009-10-01 11:42:27 +0200 320)     const unsigned char *CTR,
+2f1fc7c5 (Steffen Jaeckel 2009-10-01 11:42:27 +0200 321)                     int  ctrwidth);
+2f1fc7c5 (Steffen Jaeckel 2009-10-01 11:42:27 +0200 322) 
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000 323) int ccm_test(void);
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000 324) 
+bbc52b9e (Tom St Denis    2007-07-20 17:48:02 +0000 325) #endif /* LTC_CCM_MODE */
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000 326) 
+bbc52b9e (Tom St Denis    2007-07-20 17:48:02 +0000 327) #if defined(LRW_MODE) || defined(LTC_GCM_MODE)
+a3ce807b (Tom St Denis    2006-01-26 18:11:56 +0000 328) void gcm_gf_mult(const unsigned char *a, const unsigned char *b, unsigned char *c);
+a3ce807b (Tom St Denis    2006-01-26 18:11:56 +0000 329) #endif
+a3ce807b (Tom St Denis    2006-01-26 18:11:56 +0000 330) 
+99b6d032 (Tom St Denis    2006-02-11 08:19:10 +0000 331) 
+99b6d032 (Tom St Denis    2006-02-11 08:19:10 +0000 332) /* table shared between GCM and LRW */
+155a54ba (Steffen Jaeckel 2014-07-17 10:49:05 +0200 333) #if defined(LTC_GCM_TABLES) || defined(LTC_LRW_TABLES) || ((defined(LTC_GCM_MODE) || defined(LTC_GCM_MODE)) && defined(LTC_FAST))
+99b6d032 (Tom St Denis    2006-02-11 08:19:10 +0000 334) extern const unsigned char gcm_shift_table[];
+99b6d032 (Tom St Denis    2006-02-11 08:19:10 +0000 335) #endif
+99b6d032 (Tom St Denis    2006-02-11 08:19:10 +0000 336) 
+bbc52b9e (Tom St Denis    2007-07-20 17:48:02 +0000 337) #ifdef LTC_GCM_MODE
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000 338) 
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000 339) #define GCM_ENCRYPT 0
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000 340) #define GCM_DECRYPT 1
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000 341) 
+bbc52b9e (Tom St Denis    2007-07-20 17:48:02 +0000 342) #define LTC_GCM_MODE_IV    0
+bbc52b9e (Tom St Denis    2007-07-20 17:48:02 +0000 343) #define LTC_GCM_MODE_AAD   1
+bbc52b9e (Tom St Denis    2007-07-20 17:48:02 +0000 344) #define LTC_GCM_MODE_TEXT  2
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000 345) 
+bfcf1eb2 (Steffen Jaeckel 2012-07-26 14:43:15 +0200 346) typedef struct {
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000 347)    symmetric_key       K;
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000 348)    unsigned char       H[16],        /* multiplier */
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000 349)                        X[16],        /* accumulator */
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000 350)                        Y[16],        /* counter */
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000 351)                        Y_0[16],      /* initial counter */
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000 352)                        buf[16];      /* buffer for stuff */
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000 353) 
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000 354)    int                 cipher,       /* which cipher */
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000 355)                        ivmode,       /* Which mode is the IV in? */
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000 356)                        mode,         /* mode the GCM code is in */
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000 357)                        buflen;       /* length of data in buf */
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000 358) 
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000 359)    ulong64             totlen,       /* 64-bit counter used for IV and AAD */
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000 360)                        pttotlen;     /* 64-bit counter for the PT */
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000 361) 
+bbc52b9e (Tom St Denis    2007-07-20 17:48:02 +0000 362) #ifdef LTC_GCM_TABLES
+479cc9c2 (Tom St Denis    2006-08-30 23:30:00 +0000 363)    unsigned char       PC[16][256][16]  /* 16 tables of 8x128 */
+bbc52b9e (Tom St Denis    2007-07-20 17:48:02 +0000 364) #ifdef LTC_GCM_TABLES_SSE2
+479cc9c2 (Tom St Denis    2006-08-30 23:30:00 +0000 365) __attribute__ ((aligned (16)))
+479cc9c2 (Tom St Denis    2006-08-30 23:30:00 +0000 366) #endif
+479cc9c2 (Tom St Denis    2006-08-30 23:30:00 +0000 367) ;
+bfcf1eb2 (Steffen Jaeckel 2012-07-26 14:43:15 +0200 368) #endif
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000 369) } gcm_state;
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000 370) 
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000 371) void gcm_mult_h(gcm_state *gcm, unsigned char *I);
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000 372) 
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000 373) int gcm_init(gcm_state *gcm, int cipher,
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000 374)              const unsigned char *key, int keylen);
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000 375) 
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000 376) int gcm_reset(gcm_state *gcm);
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000 377) 
+bfcf1eb2 (Steffen Jaeckel 2012-07-26 14:43:15 +0200 378) int gcm_add_iv(gcm_state *gcm,
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000 379)                const unsigned char *IV,     unsigned long IVlen);
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000 380) 
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000 381) int gcm_add_aad(gcm_state *gcm,
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000 382)                const unsigned char *adata,  unsigned long adatalen);
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000 383) 
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000 384) int gcm_process(gcm_state *gcm,
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000 385)                      unsigned char *pt,     unsigned long ptlen,
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000 386)                      unsigned char *ct,
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000 387)                      int direction);
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000 388) 
+bfcf1eb2 (Steffen Jaeckel 2012-07-26 14:43:15 +0200 389) int gcm_done(gcm_state *gcm,
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000 390)                      unsigned char *tag,    unsigned long *taglen);
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000 391) 
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000 392) int gcm_memory(      int           cipher,
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000 393)                const unsigned char *key,    unsigned long keylen,
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000 394)                const unsigned char *IV,     unsigned long IVlen,
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000 395)                const unsigned char *adata,  unsigned long adatalen,
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000 396)                      unsigned char *pt,     unsigned long ptlen,
+bfcf1eb2 (Steffen Jaeckel 2012-07-26 14:43:15 +0200 397)                      unsigned char *ct,
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000 398)                      unsigned char *tag,    unsigned long *taglen,
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000 399)                                int direction);
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000 400) int gcm_test(void);
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000 401) 
+bbc52b9e (Tom St Denis    2007-07-20 17:48:02 +0000 402) #endif /* LTC_GCM_MODE */
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000 403) 
+bbc52b9e (Tom St Denis    2007-07-20 17:48:02 +0000 404) #ifdef LTC_PELICAN
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000 405) 
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000 406) typedef struct pelican_state
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000 407) {
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000 408)     symmetric_key K;
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000 409)     unsigned char state[16];
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000 410)     int           buflen;
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000 411) } pelican_state;
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000 412) 
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000 413) int pelican_init(pelican_state *pelmac, const unsigned char *key, unsigned long keylen);
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000 414) int pelican_process(pelican_state *pelmac, const unsigned char *in, unsigned long inlen);
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000 415) int pelican_done(pelican_state *pelmac, unsigned char *out);
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000 416) int pelican_test(void);
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000 417) 
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000 418) int pelican_memory(const unsigned char *key, unsigned long keylen,
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000 419)                    const unsigned char *in, unsigned long inlen,
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000 420)                          unsigned char *out);
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000 421) 
+6ac99524 (Tom St Denis    2005-04-17 11:37:13 +0000 422) #endif
+3964a652 (Tom St Denis    2005-06-09 00:08:13 +0000 423) 
+2de2976d (Tom St Denis    2006-11-17 14:21:24 +0000 424) #ifdef LTC_XCBC
+2de2976d (Tom St Denis    2006-11-17 14:21:24 +0000 425) 
+bbc52b9e (Tom St Denis    2007-07-20 17:48:02 +0000 426) /* add this to "keylen" to xcbc_init to use a pure three-key XCBC MAC */
+bbc52b9e (Tom St Denis    2007-07-20 17:48:02 +0000 427) #define LTC_XCBC_PURE  0x8000UL
+bbc52b9e (Tom St Denis    2007-07-20 17:48:02 +0000 428) 
+2de2976d (Tom St Denis    2006-11-17 14:21:24 +0000 429) typedef struct {
+2de2976d (Tom St Denis    2006-11-17 14:21:24 +0000 430)    unsigned char K[3][MAXBLOCKSIZE],
+2de2976d (Tom St Denis    2006-11-17 14:21:24 +0000 431)                  IV[MAXBLOCKSIZE];
+2de2976d (Tom St Denis    2006-11-17 14:21:24 +0000 432) 
+2de2976d (Tom St Denis    2006-11-17 14:21:24 +0000 433)    symmetric_key key;
+2de2976d (Tom St Denis    2006-11-17 14:21:24 +0000 434) 
+2de2976d (Tom St Denis    2006-11-17 14:21:24 +0000 435)              int cipher,
+2de2976d (Tom St Denis    2006-11-17 14:21:24 +0000 436)                  buflen,
+2de2976d (Tom St Denis    2006-11-17 14:21:24 +0000 437)                  blocksize;
+2de2976d (Tom St Denis    2006-11-17 14:21:24 +0000 438) } xcbc_state;
+2de2976d (Tom St Denis    2006-11-17 14:21:24 +0000 439) 
+2de2976d (Tom St Denis    2006-11-17 14:21:24 +0000 440) int xcbc_init(xcbc_state *xcbc, int cipher, const unsigned char *key, unsigned long keylen);
+2de2976d (Tom St Denis    2006-11-17 14:21:24 +0000 441) int xcbc_process(xcbc_state *xcbc, const unsigned char *in, unsigned long inlen);
+2de2976d (Tom St Denis    2006-11-17 14:21:24 +0000 442) int xcbc_done(xcbc_state *xcbc, unsigned char *out, unsigned long *outlen);
+bfcf1eb2 (Steffen Jaeckel 2012-07-26 14:43:15 +0200 443) int xcbc_memory(int cipher,
+2de2976d (Tom St Denis    2006-11-17 14:21:24 +0000 444)                const unsigned char *key, unsigned long keylen,
+2de2976d (Tom St Denis    2006-11-17 14:21:24 +0000 445)                const unsigned char *in,  unsigned long inlen,
+2de2976d (Tom St Denis    2006-11-17 14:21:24 +0000 446)                      unsigned char *out, unsigned long *outlen);
+bfcf1eb2 (Steffen Jaeckel 2012-07-26 14:43:15 +0200 447) int xcbc_memory_multi(int cipher,
+2de2976d (Tom St Denis    2006-11-17 14:21:24 +0000 448)                 const unsigned char *key, unsigned long keylen,
+2de2976d (Tom St Denis    2006-11-17 14:21:24 +0000 449)                       unsigned char *out, unsigned long *outlen,
+2de2976d (Tom St Denis    2006-11-17 14:21:24 +0000 450)                 const unsigned char *in,  unsigned long inlen, ...);
+bfcf1eb2 (Steffen Jaeckel 2012-07-26 14:43:15 +0200 451) int xcbc_file(int cipher,
+2de2976d (Tom St Denis    2006-11-17 14:21:24 +0000 452)               const unsigned char *key, unsigned long keylen,
+bfcf1eb2 (Steffen Jaeckel 2012-07-26 14:43:15 +0200 453)               const          char *filename,
+2de2976d (Tom St Denis    2006-11-17 14:21:24 +0000 454)                     unsigned char *out, unsigned long *outlen);
+2de2976d (Tom St Denis    2006-11-17 14:21:24 +0000 455) int xcbc_test(void);
+2de2976d (Tom St Denis    2006-11-17 14:21:24 +0000 456) 
+2de2976d (Tom St Denis    2006-11-17 14:21:24 +0000 457) #endif
+2de2976d (Tom St Denis    2006-11-17 14:21:24 +0000 458) 
+2de2976d (Tom St Denis    2006-11-17 14:21:24 +0000 459) #ifdef LTC_F9_MODE
+2de2976d (Tom St Denis    2006-11-17 14:21:24 +0000 460) 
+2de2976d (Tom St Denis    2006-11-17 14:21:24 +0000 461) typedef struct {
+2de2976d (Tom St Denis    2006-11-17 14:21:24 +0000 462)    unsigned char akey[MAXBLOCKSIZE],
+2de2976d (Tom St Denis    2006-11-17 14:21:24 +0000 463)                  ACC[MAXBLOCKSIZE],
+2de2976d (Tom St Denis    2006-11-17 14:21:24 +0000 464)                  IV[MAXBLOCKSIZE];
+2de2976d (Tom St Denis    2006-11-17 14:21:24 +0000 465) 
+2de2976d (Tom St Denis    2006-11-17 14:21:24 +0000 466)    symmetric_key key;
+2de2976d (Tom St Denis    2006-11-17 14:21:24 +0000 467) 
+2de2976d (Tom St Denis    2006-11-17 14:21:24 +0000 468)              int cipher,
+2de2976d (Tom St Denis    2006-11-17 14:21:24 +0000 469)                  buflen,
+2de2976d (Tom St Denis    2006-11-17 14:21:24 +0000 470)                  keylen,
+2de2976d (Tom St Denis    2006-11-17 14:21:24 +0000 471)                  blocksize;
+2de2976d (Tom St Denis    2006-11-17 14:21:24 +0000 472) } f9_state;
+2de2976d (Tom St Denis    2006-11-17 14:21:24 +0000 473) 
+2de2976d (Tom St Denis    2006-11-17 14:21:24 +0000 474) int f9_init(f9_state *f9, int cipher, const unsigned char *key, unsigned long keylen);
+2de2976d (Tom St Denis    2006-11-17 14:21:24 +0000 475) int f9_process(f9_state *f9, const unsigned char *in, unsigned long inlen);
+2de2976d (Tom St Denis    2006-11-17 14:21:24 +0000 476) int f9_done(f9_state *f9, unsigned char *out, unsigned long *outlen);
+bfcf1eb2 (Steffen Jaeckel 2012-07-26 14:43:15 +0200 477) int f9_memory(int cipher,
+2de2976d (Tom St Denis    2006-11-17 14:21:24 +0000 478)                const unsigned char *key, unsigned long keylen,
+2de2976d (Tom St Denis    2006-11-17 14:21:24 +0000 479)                const unsigned char *in,  unsigned long inlen,
+2de2976d (Tom St Denis    2006-11-17 14:21:24 +0000 480)                      unsigned char *out, unsigned long *outlen);
+bfcf1eb2 (Steffen Jaeckel 2012-07-26 14:43:15 +0200 481) int f9_memory_multi(int cipher,
+2de2976d (Tom St Denis    2006-11-17 14:21:24 +0000 482)                 const unsigned char *key, unsigned long keylen,
+2de2976d (Tom St Denis    2006-11-17 14:21:24 +0000 483)                       unsigned char *out, unsigned long *outlen,
+2de2976d (Tom St Denis    2006-11-17 14:21:24 +0000 484)                 const unsigned char *in,  unsigned long inlen, ...);
+bfcf1eb2 (Steffen Jaeckel 2012-07-26 14:43:15 +0200 485) int f9_file(int cipher,
+2de2976d (Tom St Denis    2006-11-17 14:21:24 +0000 486)               const unsigned char *key, unsigned long keylen,
+bfcf1eb2 (Steffen Jaeckel 2012-07-26 14:43:15 +0200 487)               const          char *filename,
+2de2976d (Tom St Denis    2006-11-17 14:21:24 +0000 488)                     unsigned char *out, unsigned long *outlen);
+2de2976d (Tom St Denis    2006-11-17 14:21:24 +0000 489) int f9_test(void);
+2de2976d (Tom St Denis    2006-11-17 14:21:24 +0000 490) 
+2de2976d (Tom St Denis    2006-11-17 14:21:24 +0000 491) #endif
+2de2976d (Tom St Denis    2006-11-17 14:21:24 +0000 492) 
+2de2976d (Tom St Denis    2006-11-17 14:21:24 +0000 493) 
+3964a652 (Tom St Denis    2005-06-09 00:08:13 +0000 494) /* $Source$ */
+3964a652 (Tom St Denis    2005-06-09 00:08:13 +0000 495) /* $Revision$ */
+3964a652 (Tom St Denis    2005-06-09 00:08:13 +0000 496) /* $Date$ */

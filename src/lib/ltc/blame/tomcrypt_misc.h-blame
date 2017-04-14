@@ -1,0 +1,75 @@
+bbc52b9e (Tom St Denis    2007-07-20 17:48:02 +0000  1) /* ---- LTC_BASE64 Routines ---- */
+bbc52b9e (Tom St Denis    2007-07-20 17:48:02 +0000  2) #ifdef LTC_BASE64
+bfcf1eb2 (Steffen Jaeckel 2012-07-26 14:43:15 +0200  3) int base64_encode(const unsigned char *in,  unsigned long len,
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000  4)                         unsigned char *out, unsigned long *outlen);
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000  5) 
+bfcf1eb2 (Steffen Jaeckel 2012-07-26 14:43:15 +0200  6) int base64_decode(const unsigned char *in,  unsigned long len,
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000  7)                         unsigned char *out, unsigned long *outlen);
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000  8) #endif
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000  9) 
+d78aa37c (Steffen Jaeckel 2013-11-24 22:11:44 +0100 10) #ifdef LTC_BASE64_URL
+947fe41b (Karel Miko      2013-10-27 21:49:26 +0200 11) int base64url_encode(const unsigned char *in,  unsigned long len,
+947fe41b (Karel Miko      2013-10-27 21:49:26 +0200 12)                         unsigned char *out, unsigned long *outlen);
+947fe41b (Karel Miko      2013-10-27 21:49:26 +0200 13) 
+947fe41b (Karel Miko      2013-10-27 21:49:26 +0200 14) int base64url_decode(const unsigned char *in,  unsigned long len,
+947fe41b (Karel Miko      2013-10-27 21:49:26 +0200 15)                         unsigned char *out, unsigned long *outlen);
+d78aa37c (Steffen Jaeckel 2013-11-24 22:11:44 +0100 16) #endif
+947fe41b (Karel Miko      2013-10-27 21:49:26 +0200 17) 
+c0b8774c (Steffen Jaeckel 2013-08-14 15:47:07 +0200 18) /* ===> LTC_HKDF -- RFC5869 HMAC-based Key Derivation Function <=== */
+c0b8774c (Steffen Jaeckel 2013-08-14 15:47:07 +0200 19) #ifdef LTC_HKDF
+c0b8774c (Steffen Jaeckel 2013-08-14 15:47:07 +0200 20) 
+c0b8774c (Steffen Jaeckel 2013-08-14 15:47:07 +0200 21) int hkdf_test(void);
+c0b8774c (Steffen Jaeckel 2013-08-14 15:47:07 +0200 22) 
+c0b8774c (Steffen Jaeckel 2013-08-14 15:47:07 +0200 23) int hkdf_extract(int hash_idx,
+c0b8774c (Steffen Jaeckel 2013-08-14 15:47:07 +0200 24)                  const unsigned char *salt, unsigned long saltlen,
+c0b8774c (Steffen Jaeckel 2013-08-14 15:47:07 +0200 25)                  const unsigned char *in,   unsigned long inlen,
+c0b8774c (Steffen Jaeckel 2013-08-14 15:47:07 +0200 26)                        unsigned char *out,  unsigned long *outlen);
+c0b8774c (Steffen Jaeckel 2013-08-14 15:47:07 +0200 27) 
+c0b8774c (Steffen Jaeckel 2013-08-14 15:47:07 +0200 28) int hkdf_expand(int hash_idx,
+c0b8774c (Steffen Jaeckel 2013-08-14 15:47:07 +0200 29)                 const unsigned char *info, unsigned long infolen,
+c0b8774c (Steffen Jaeckel 2013-08-14 15:47:07 +0200 30)                 const unsigned char *in,   unsigned long inlen,
+c0b8774c (Steffen Jaeckel 2013-08-14 15:47:07 +0200 31)                       unsigned char *out,  unsigned long outlen);
+c0b8774c (Steffen Jaeckel 2013-08-14 15:47:07 +0200 32) 
+c0b8774c (Steffen Jaeckel 2013-08-14 15:47:07 +0200 33) int hkdf(int hash_idx,
+c0b8774c (Steffen Jaeckel 2013-08-14 15:47:07 +0200 34)          const unsigned char *salt, unsigned long saltlen,
+c0b8774c (Steffen Jaeckel 2013-08-14 15:47:07 +0200 35)          const unsigned char *info, unsigned long infolen,
+c0b8774c (Steffen Jaeckel 2013-08-14 15:47:07 +0200 36)          const unsigned char *in,   unsigned long inlen,
+c0b8774c (Steffen Jaeckel 2013-08-14 15:47:07 +0200 37)                unsigned char *out,  unsigned long outlen);
+c0b8774c (Steffen Jaeckel 2013-08-14 15:47:07 +0200 38) 
+c0b8774c (Steffen Jaeckel 2013-08-14 15:47:07 +0200 39) #endif  /* LTC_HKDF */
+c0b8774c (Steffen Jaeckel 2013-08-14 15:47:07 +0200 40) 
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000 41) /* ---- MEM routines ---- */
+26c5d54e (Steffen Jaeckel 2014-11-12 23:59:27 +0100 42) int mem_neq(const void *a, const void *b, size_t len);
+7050bdb7 (Steffen Jaeckel 2012-11-23 00:53:54 +0100 43) void zeromem(volatile void *dst, size_t len);
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000 44) void burn_stack(unsigned long len);
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000 45) 
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000 46) const char *error_to_string(int err);
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000 47) 
+bfc2f5b0 (Tom St Denis    2004-12-30 23:55:53 +0000 48) extern const char *crypt_build_settings;
+3964a652 (Tom St Denis    2005-06-09 00:08:13 +0000 49) 
+2de2976d (Tom St Denis    2006-11-17 14:21:24 +0000 50) /* ---- HMM ---- */
+2de2976d (Tom St Denis    2006-11-17 14:21:24 +0000 51) int crypt_fsa(void *mp, ...);
+2de2976d (Tom St Denis    2006-11-17 14:21:24 +0000 52) 
+3f9144c9 (Larry Bugbee    2014-03-08 12:16:07 -0800 53) /* ---- Dynamic language support ---- */
+3f9144c9 (Larry Bugbee    2014-03-08 12:16:07 -0800 54) int crypt_get_constant(const char* namein, int *valueout);
+7842e338 (Steffen Jaeckel 2014-09-29 23:30:02 +0200 55) int crypt_list_all_constants(char *names_list, unsigned int *names_list_size);
+3f9144c9 (Larry Bugbee    2014-03-08 12:16:07 -0800 56) 
+7842e338 (Steffen Jaeckel 2014-09-29 23:30:02 +0200 57) int crypt_get_size(const char* namein, unsigned int *sizeout);
+7842e338 (Steffen Jaeckel 2014-09-29 23:30:02 +0200 58) int crypt_list_all_sizes(char *names_list, unsigned int *names_list_size);
+3f9144c9 (Larry Bugbee    2014-03-08 12:16:07 -0800 59) 
+542ba999 (Steffen Jaeckel 2014-07-15 15:38:18 +0200 60) #ifdef LTM_DESC
+ef1fe79c (Larry Bugbee    2014-03-11 22:25:27 -0700 61) void init_LTM(void);
+542ba999 (Steffen Jaeckel 2014-07-15 15:38:18 +0200 62) #endif
+542ba999 (Steffen Jaeckel 2014-07-15 15:38:18 +0200 63) #ifdef TFM_DESC
+ef1fe79c (Larry Bugbee    2014-03-11 22:25:27 -0700 64) void init_TFM(void);
+542ba999 (Steffen Jaeckel 2014-07-15 15:38:18 +0200 65) #endif
+542ba999 (Steffen Jaeckel 2014-07-15 15:38:18 +0200 66) /*                          *** use of GMP is untested ***
+542ba999 (Steffen Jaeckel 2014-07-15 15:38:18 +0200 67) #ifdef GMP_DESC
+542ba999 (Steffen Jaeckel 2014-07-15 15:38:18 +0200 68) void init_GMP(void);
+542ba999 (Steffen Jaeckel 2014-07-15 15:38:18 +0200 69) #endif
+542ba999 (Steffen Jaeckel 2014-07-15 15:38:18 +0200 70) */
+ef1fe79c (Larry Bugbee    2014-03-11 22:25:27 -0700 71) 
+ef1fe79c (Larry Bugbee    2014-03-11 22:25:27 -0700 72) 
+3964a652 (Tom St Denis    2005-06-09 00:08:13 +0000 73) /* $Source$ */
+3964a652 (Tom St Denis    2005-06-09 00:08:13 +0000 74) /* $Revision$ */
+3964a652 (Tom St Denis    2005-06-09 00:08:13 +0000 75) /* $Date$ */
