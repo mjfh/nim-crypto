@@ -74,6 +74,8 @@ AC_DEFUN([_AC_CHECK_OS_NIM],[
   AC_SUBST([NIMLIB])
   AC_SUBST([NIMBLE])
   AC_SUBST([NIM2C])
+  AC_SUBST([NIM2A])
+  AC_SUBST([NIM2L])
 ])
 
 # ---------------------------------------------------------------------------
@@ -115,7 +117,9 @@ AC_DEFUN([AC_CHECK_LOCAL_NIM],[
      AC_MSG_ERROR([Cannot find NIM library])
   fi
 
-  dnl NIM2C
+  dnl NIM2A, NIM2L, NIM2C
+  NIM2A="$NIM cc --noMain --app:staticLib --header"
+  NIM2L="$NIM cc --noMain --app:lib --header"
   NIM2C="$NIM cc -c --noMain --noLinking --header"
   AC_MSG_CHECKING([for NIM options to generate C code])
   f=conftest

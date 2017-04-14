@@ -1,0 +1,391 @@
+#!/usr/bin/make -f
+#
+# Configuration bootstrap, handy generator script
+#
+# $Id: e0a6b25637df2de321af76b1e1cf90175c0aa087 $
+#
+# Blame: Jordan Hrycaj <jordan@teddy-net.com>
+
+# ---------------------------------------------------------------------------
+# Configure options for compiler targets
+# ---------------------------------------------------------------------------
+
+NATIVE_DIST  =
+NATIVE_DEBUG = --enable-debug
+I386_DIST    =
+I386_DEBUG   = --enable-debug
+WIN32_DIST   =
+WIN32_DEBUG  = --enable-debug
+WIN64_DIST   =
+WIN64_DEBUG  = --enable-debug
+MGW64_DIST   =
+MGW64_DEBUG  = --enable-debug
+MGW32_DIST   =
+MGW32_DEBUG  = --enable-debug
+
+PROFILE      =
+VALGRIND     =
+
+# ---------------------------------------------------------------------------
+# Handy settings
+# ---------------------------------------------------------------------------
+
+# Local base for sub-systems
+IMPORT    = tools/import
+BUILD_NIM = /bin/sh tools/sh/build-nim.sh $(IMPORT)
+
+# Dependencies - must be set for non- wrapping/include mode
+CONFIGURE = configure
+
+# Dependencies - can be set for wrapping/include mode
+# CUSTOM = .custom
+
+BUILD    = $(MAKE) -f Build$(CUSTOM)
+SHELL    = /bin/sh
+MKDIR_P  = mkdir -p
+SED      = sed
+AWK      = awk
+
+NOTROOT  = test x0 != "x`id|$(SED) 's/^[a-z]*=0(.*/0/'`"
+USEROK   = $(NOTROOT) || (echo Cannot be run as root; exit 1)
+
+AUTOVS   = .git/hooks/post-checkout
+AUTOVS  += .git/hooks/post-update
+AUTOVS  += .git/hooks/post-commit
+VERSION  = echo \\\#`(git describe --long 2>/dev/null||echo 0)`
+
+# Check for debian installation
+CHKDEB  = dpkg-architecture
+VFYDEB  = $(CHKDEB)>/dev/null||(echo "*** Notice: not a Debian system";false)
+
+# Check whether we can try cross compiling
+MGW32OK  = ( $(CHKDEB) && dpkg -s gcc-mingw-w64-i686|$(AWK)		\
+	     '$$1=="Status:"&&$$2=="install"{rc=1}END{exit rc!=1}'	\
+	   ) >/dev/null 2>&1
+
+MGW64OK  = ( $(CHKDEB) && dpkg -s gcc-mingw-w64-x86-64|$(AWK)		\
+	     '$$1=="Status:"&&$$2=="install"{rc=1}END{exit rc!=1}'	\
+	   ) >/dev/null 2>&1
+
+# Applies to target tag "win##"
+MGW32HO  = --host=i686-w64-mingw32
+MGW64HO  = --host=x86_64-w64-mingw32
+
+# Applies to mgwXX
+MGW64T64 = --host=x86_64-w64-mingw32 \
+           --build=x86_64-w64-mingw32 --enable-cpu=64
+MGW64T32 = --host=x86_64-w64-mingw32 \
+           --build=x86_64-w64-mingw32 --enable-cpu=32
+
+# Applies to i386/amd64
+NATIVE32 = --enable-cpu=32
+NATIVE64 = --enable-cpu=64
+
+# Support automake compatibility for older versions
+AMKVERS  = `automake --version|sed -e 's/.* \([0-9]*\.[0-9]*\).*/\1/' -eq`
+
+# Build will generate a stub file
+AUTOADD  = NEWS README AUTHORS ChangeLog
+
+# Extra delete with clobber target
+CLOBBER  = NEWS README AUTHORS INSTALL VERSION
+CLOBBER += compile depcomp install-sh missing ltmain.sh autoscan.log
+CLOBBER += libtool amcompat.m4 ar-lib configure aclocal.m4 config.*
+
+# manage list of sub-modules and paths
+GITBRANCH = `git status|awk '{print $$NF;exit}'`
+GITPULL   = git pull origin $(GITBRANCH)
+GITCHKOUT = git checkout $(GITBRANCH)
+GITMODCFG = git config -f .gitmodules --get-regexp
+GITSUBLST = `$(GITMODCFG) '^submodule\..*path$$'|\
+                sed -e 's/submodule\.//' -e 's/\.path//' -e 's/ /:/'`
+
+# ---------------------------------------------------------------------------
+# Start Makefile
+# ---------------------------------------------------------------------------
+
+help::
+	@echo "Usage: ./Build <target>"
+	@echo
+	@echo "with <target>: <admin> | <debugging> | <release>"
+	@echo
+	@echo "      <admin>: nim[-lang]"
+	@echo "             | conf[ig]      -- create Configure script"
+	@echo "             | update        -- update VERSION file from git"
+	@echo "             | pull          -- pull from git repository"
+	@echo "             | clean | distclean | clobber"
+	@echo
+	@echo "  <debugging>: prof[ile] | valg[rind]"
+	@echo
+	@echo "    <release>: <buildsys>"
+	@echo "             | <linkage>"
+	@echo "             | <buildsys>-<linkage>"
+	@echo
+	@echo "   <buildsys>: native        -- default, try your best :)"
+	@echo "             | i386  | amd64 -- native variants"
+	@echo "             | win32 | win64 -- MinGW cross compiling"
+	@echo "             | mgw64 | mgw32 -- MinGW/64 variants on Windows"
+	@echo
+	@echo "    <linkage>: dist          -- set up default configuration"
+	@echo "             | debug         -- set up for debugging"
+
+# ---------------------------------------------------------------------------
+# General helper targets
+# ---------------------------------------------------------------------------
+
+.PHONY: package-configure
+package-configure: $(CONFIGURE)
+	@echo "Target => $@"
+	@$(USEROK)
+	-test \! -f Makefile || $(MAKE) distclean
+	@$(MKDIR_P) m4lib
+	./configure $(ARGV)
+
+# ---------------------------------------------------------------------------
+# Cross compiling helper targets
+# ---------------------------------------------------------------------------
+
+.PHONY: native-configure win32-configure win64-configure mgw64-configure
+
+native-configure: $(CONFIGURE)
+	@echo "Target => $@"
+	@$(BUILD) package-configure ARGV="$(ARGV)"
+
+i386-configure: $(CONFIGURE)
+	@echo "Target => $@"
+	@$(BUILD) package-configure ARGV="$(ARGV) $(NATIVE32)"
+
+amd64-configure: $(CONFIGURE)
+	@echo "Target => $@"
+	@$(BUILD) package-configure ARGV="$(ARGV) $(NATIVE64)"
+
+win32-configure: $(CONFIGURE)
+	@echo "Target => $@"
+	@$(MGW32OK) && $(BUILD) package-configure ARGV="$(ARGV) $(MGW32HO)"
+
+win64-configure: $(CONFIGURE)
+	@echo "Target => $@"
+	@$(MGW64OK) && $(BUILD) package-configure ARGV="$(ARGV) $(MGW64HO)"
+
+mgw32-configure: $(CONFIGURE)
+	@echo "Target => $@"
+	@$(BUILD) package-configure ARGV="$(ARGV) $(MGW64T32)"
+
+mgw64-configure: $(CONFIGURE)
+	@echo "Target => $@"
+	@$(BUILD) package-configure ARGV="$(ARGV) $(MGW64T64)"
+
+# add more cross compiling recipies here
+# ...
+
+# ---------------------------------------------------------------------------
+# Cross compiling targets
+# ---------------------------------------------------------------------------
+
+.PHONY: native-dist native-debug
+.PHONY: i386-dist i386-debug
+.PHONY: win32-dist win32-debug win64-dist win64-debug
+.PHONY: mgw32-dist mgw32-debug mgw64-dist mgw64-debug
+
+native-dist:
+	@echo "Target => $@"
+	@$(BUILD) native-configure ARGV="$(NATIVE_DIST)"
+
+native-debug:
+	@echo "Target => $@"
+	@$(BUILD) native-configure ARGV="$(NATIVE_DEBUG)"
+
+i386-dist:
+	@echo "Target => $@"
+	@$(BUILD) i386-configure ARGV="$(I386_DIST)"
+
+i386-debug:
+	@echo "Target => $@"
+	@$(BUILD) i386-configure ARGV="$(I386_DEBUG)"
+
+amd64-dist:
+	@echo "Target => $@"
+	@$(BUILD) amd64-configure ARGV="$(AMD64_DIST)"
+
+amd64-debug:
+	@echo "Target => $@"
+	@$(BUILD) amd64-configure ARGV="$(AMD64_DEBUG)"
+
+win32-dist:
+	@echo "Target => $@"
+	@$(BUILD) win32-configure ARGV="$(WIN32_DIST)"
+
+win32-debug:
+	@echo "Target => $@"
+	@$(BUILD) win32-configure ARGV="$(WIN32_DEBUG)"
+
+win64-dist:
+	@echo "Target => $@"
+	@$(BUILD) win64-configure ARGV="$(WIN64_DIST)"
+
+win64-debug:
+	@echo "Target => $@"
+	@$(BUILD) win64-configure ARGV="$(WIN64_DEBUG)"
+
+mgw32-dist:
+	@echo "Target => $@"
+	@$(BUILD) mgw32-configure ARGV="$(MGW32_DIST)"
+
+mgw32-debug:
+	@echo "Target => $@"
+	@$(BUILD) mgw32-configure ARGV="$(MGW32_DEBUG)"
+
+mgw64-dist:
+	@echo "Target => $@"
+	@$(BUILD) mgw64-configure ARGV="$(MGW64_DIST)"
+
+mgw64-debug:
+	@echo "Target => $@"
+	@$(BUILD) mgw64-configure ARGV="$(MGW64_DEBUG)"
+
+# add cross compiling recipies here
+# ...
+
+# ---------------------------------------------------------------------------
+# Shortcuts, debugging
+# ---------------------------------------------------------------------------
+
+.PHONY: native i386 win32 win64 debug dist profile prof valgrind valg
+
+native: native-dist
+i386:   i386-dist
+amd64:  amd64-dist
+win32:  win32-dist
+win64:  win64-dist
+mgw64:  mgw64-dist
+mgw32:  mgw32-dist
+
+debug:  native-debug
+dist:   native-dist
+
+prof profile:
+	@echo "Target => $@"
+	@$(BUILD) package-configure ARGV="$(PROFILE)"
+
+valg valgrind:
+	@echo "Target => $@"
+	@$(BUILD) package-configure ARGV="$(VALGRIND)"
+
+# ---------------------------------------------------------------------------
+# Configuration bootstrap
+# ---------------------------------------------------------------------------
+
+.PHONY: conf config
+conf config: update configure
+
+$(AUTOADD):
+	@echo Creating $@
+	@echo "# Placeholder file" >> $@
+	@echo "# $$""Id""$$"       >> $@
+
+amcompat.m4:
+	@f="tools/am/compat-$(AMKVERS)"; rm -f $@; \
+		if test -f "$$f"; then \
+			echo "Automake $(AMKVERS) compatibility mode" >&2; \
+			echo "m4_include([$$f])";\
+		else echo "# $$f"; fi >> $@
+
+.PHONY: configure
+configure conf/config.h.in: $(AUTOADD) \
+		configure.ac VERSION amcompat.m4
+	@$(USEROK)
+	$(MKDIR_P) conf m4lib
+	aclocal
+	autoheader
+	libtoolize --automake --copy
+	autoconf
+	automake --add-missing --copy
+
+.PHONY: nim nim-lang nimlang
+nim nim-lang nimlang:
+	@$(USEROK)
+	@if test \! -d $(IMPORT)/nim; then \
+	   echo; echo ">>> Installing NIM"; echo; \
+	   $(BUILD) force-nimlang; \
+	 elif test \! -x $(IMPORT)/nim/bin/nim -o \
+                    \! -x $(IMPORT)/nim/bin/nimgrep; then \
+	   echo; echo ">>> Re-installing NIM"; echo; \
+	   $(BUILD) force-nimlang; \
+	 else \
+	   echo; echo ">>>NIM is already installed"; echo; \
+	 fi
+
+.PHONY: force-nimlang
+force-nimlang:
+	@$(USEROK)
+	@rm -rf $(IMPORT)/nim~           2>/dev/null ||:
+	mv $(IMPORT)/nim $(IMPORT)/nim~  2>/dev/null ||:
+	$(BUILD_NIM)
+
+VERSION:
+	@$(USEROK)
+	@for f in . $(AUTOVS); do \
+		test $$f = . -o -f $$f && continue; \
+		test -d `dirname $$f`  || continue; \
+		echo Creating $$f; { \
+			echo "#! /bin/sh"; \
+			echo 'rm -f $@'; \
+			echo '$(VERSION)>$@'; \
+		} >>$$f; \
+		chmod +x $$f; \
+	done
+	@rm -f $@
+	@$(VERSION) > $@
+	@echo "Current VERSION: `$(SED) s/\#// $@`"
+
+.PHONY: update
+update:
+	@$(USEROK)
+	@rm -f VERSION~
+	@$(VERSION) > VERSION~
+	@cmp -s VERSION~ VERSION||(rm -f VERSION;set -x;$(BUILD) VERSION)
+	@rm -f VERSION~
+
+.PHONY: pull
+pull:
+	@for m in $(GITSUBLST); do \
+	   bra=$(GITBRANCH)                 ;\
+	   mod=`expr "$$m" : '\([^:]*\)'`   ;\
+	   pth=`expr "$$m" : '[^:]*:\(.*\)'`;\
+	   test -d "$$pth/.git" || ( \
+             pat="submodule.$$mod.url"                           ;\
+	     url=`$(GITMODCFG) "^$$pat"|awk '{print $$NF;exit}'` ;\
+	     (set -x; git clone -b $$bra $$url $$pth)) || exit ;\
+	   (cd "$$pth" && $(GITCHKOUT) && $(GITPULL))  || exit ;\
+	done
+	@$(GITPULL)
+
+# ---------------------------------------------------------------------------
+# Clean up
+# ---------------------------------------------------------------------------
+
+.PHONY: clean distclean
+clean distclean:
+	-test \! -f Makefile || $(MAKE) $@
+	rm -rf autom4te.cache
+
+.PHONY: clobber
+clobber:
+	@$(USEROK)
+	-test \! -f Makefile      || $(MAKE) distclean
+	-test \! -f config.status || $(SHELL) config.status
+	@find . -type f -name Makefile.am -print | while read f; do \
+		case $$f in */private/*)continue;esac; \
+		d=`dirname $$f`; \
+		(set -x;rm -f $$d/Makefile $$d/Makefile.in); \
+	done
+	@find . -type f -name \*~ -print | while read f; do \
+	      (set -x;rm -f $$f); \
+	done
+	rm -rf m4lib autom4te.cache cache $(IMPORT) conf/pkgs
+	rm -f conf/* $(CLOBBER) VERSION test-driver */nim.cfg
+	rmdir conf 2>/dev/null || :
+
+# ---------------------------------------------------------------------------
+# End
+# ---------------------------------------------------------------------------

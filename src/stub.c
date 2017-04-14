@@ -1,0 +1,1 @@
+/* Libtool stub, deliberately empty */

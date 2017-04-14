@@ -1,0 +1,63 @@
+#!/usr/bin/make -f
+
+MAKEFILE = Makefile.simple
+
+# set path to directory containing: crypto/xcrypt.nim
+ROOTDIR  = .
+
+TARGET   = cwrap
+NIMLIB   = `nim dump 2>&1 >/dev/null|sed '$$!d'`
+INCLUDES = -Inimcache -I$(NIMLIB)
+CFLAGS   = $(INCLUDES) $(CDEBUG)
+LIBS     = -ldl -lm
+NIMFLAGS = -p:$(ROOTDIR) --app:staticLib --noMain --header $(NIMDBG)
+
+# Settings for optimised code
+REL_CDEBUG = -O2 -s
+REL_NIMDBG = -d:release --gc:none
+
+# Settings for GDB debugging session
+DBG_CDEBUG = -g
+DBG_NIMDBG = --debuginfo --lineDir:on --embedsrc --debugger=native
+
+# BUILD
+CDEBUG = $(REL_CDEBUG)
+NIMDBG = $(REL_NIMDBG)
+
+.PHONY: default debug release help
+default: $(TARGET)
+
+help:
+	@echo
+	@echo '$(MAKE) -f $(MAKEFILE) [target]'
+	@echo
+	@echo 'target: default'
+	@echo '      | debug         -- force rebuild'
+	@echo '      | release       -- force rebuild'
+	@echo '      | [dist]clean'
+	@echo
+
+debug:
+	@rm -f $(TARGET)
+	$(MAKE) -f $(MAKEFILE) CDEBUG="$(DBG_CDEBUG)" NIMDBG="$(DBG_NIMDBG)"
+
+release:
+	@rm -f $(TARGET)
+	$(MAKE) -f $(MAKEFILE) CDEBUG="$(REL_CDEBUG)" NIMDBG="$(REL_NIMDBG)"
+
+$(TARGET): main.o libsession.a
+	$(CC) -o $@ $(CFLAGS) main.c libsession.a $(LIBS)
+
+main.o: main.c nimcache/session.h
+
+libsession.a nimcache/session.h: session.nim
+	nim cc $(NIMFLAGS) session.nim
+
+clean distclean::
+	rm -rf nimcache
+	rm -f *.o libsession.a $(TARGET)
+
+distclean::
+	rm -f *~
+
+# End
