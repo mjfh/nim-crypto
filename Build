@@ -88,7 +88,7 @@ AMKVERS  = `automake --version|sed -e 's/.* \([0-9]*\.[0-9]*\).*/\1/' -eq`
 AUTOADD  = NEWS README AUTHORS ChangeLog
 
 # Extra delete with clobber target
-CLOBBER  = NEWS README AUTHORS INSTALL VERSION
+CLOBBER  = NEWS README AUTHORS INSTALL VERSION ChangeLog
 CLOBBER += compile depcomp install-sh missing ltmain.sh autoscan.log
 CLOBBER += libtool amcompat.m4 ar-lib configure aclocal.m4 config.*
 

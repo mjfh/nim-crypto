@@ -10,18 +10,22 @@ NAME = session
 # target library
 LIBNAME = lib$(NAME)
 
-# target demo program
-bin_PROGRAMS = cwrap
+# target demo program: default is static, Linux also supports dynlib
+bin_PROGRAMS = cwraps
+
+if !USE_MINGW
+bin_PROGRAMS += cwrapd
+endif
 
 SUBDIRS      = lib
-CLEANFILES   = *.exe *.html $(NIMLIBWRAP)
+CLEANFILES   = *.exe *.html cwrap $(NIMLIBWRAP)
 
-if USE_DEBUG
-# Settings for GDB debugging session
-NIMDBG = --debuginfo --lineDir:on --embedsrc --debugger=native
-else
-# Settings for optimising code
-NIMDBG = -d:release --gc:none
+if USE_DEBUG # Settings for GDB debugging session
+NIMDBG    = --debuginfo --lineDir:on --embedsrc --debugger=native
+AM_CFLAGS = -g
+else         # Settings for optimising code
+NIMDBG    = -d:release --gc:none
+AM_CFLAGS = -s
 endif
 
 NIM2CFLAGS =
@@ -95,12 +99,6 @@ stub.lo: stub.c
 #         note that libtool checks for a particular header which is
 #         extracted from stub.lo
 #
-if USE_MINGW
-LINK_LIBS  = -lm
-LINK_FLAGS = -no-undefined
-else
-LINK_LIBS  = -lm -ldl
-endif
 CLEANFILES += $(LIBNAME).la
 $(LIBNAME).la: nimcache/static/$(NAME).h nimcache/dynlib/$(NAME).h stub.lo
 	@rm -f $@ nimcache/*.lo
@@ -112,7 +110,7 @@ $(LIBNAME).la: nimcache/static/$(NAME).h nimcache/dynlib/$(NAME).h stub.lo
 	  echo "pic_object='dynlib/$$o'"                 >> $$l ;\
 	  echo "non_pic_object='static/$$o'"             >> $$l ;\
 	done
-	$(LINK) $(LINK_FLAGS) -rpath $(libdir) nimcache/*.lo $(LINK_LIBS)
+	$(LINK) -no-undefined -rpath $(libdir) nimcache/*.lo -lm
 
 $(LIBNAME).a: $(LIBNAME).la
 	@rm -f $@
@@ -136,28 +134,19 @@ $(NAME)-dynlib.h: $(LIBNAME).la
 # Build target programs
 # ---------------------------------------------------------------------------
 
-cwrap_SOURCES = main.c
-cwrap_LDFLAGS =
-cwrap_CFLAGS  = -I$(NIMLIB) -Inimcache
-cwrap_LDADD   =
+main.c: $(NAME)-static.h $(NAME)-dynlib.h $(LIBNAME).a
 
-main.c: $(main_c_deps)
+AM_CFLAGS += -I$(NIMLIB) -Inimcache
 
-if USE_MINGW
-main_c_deps   = $(NAME)-static.h $(LIBNAME).a
-cwrap_CFLAGS += -DSESSION_STATIC
-cwrap_LDADD  += $(LIBNAME).a
-else
-main_c_deps   = $(NAME)-dynlib.h
-cwrap_CFLAGS += -DSESSION_DYNLIB
-cwrap_LDADD  += -l$(NAME)
-endif
+cwraps_SOURCES = main.c
+cwraps_CFLAGS  = $(AM_CFLAGS) -DSESSION_STATIC
+cwraps_LDFLAGS =
+cwraps_LDADD   = $(LIBNAME).a -ldl
 
-if USE_DEBUG
-cwrap_CFLAGS += -g
-else
-cwrap_CFLAGS += -O2 -s
-endif
+cwrapd_SOURCES = main.c
+cwrapd_CFLAGS  = $(AM_CFLAGS) -DSESSION_DYNLIB
+cwrapd_LDFLAGS =
+cwrapd_LDADD   = -l$(NAME) -ldl
 
 # ---------------------------------------------------------------------------
 # Helper

@@ -87,12 +87,14 @@ proc freekey*(key: pointer) {.exportc.} =
 
 when isMainModule:
 
-  proc pull_in_library =
-    discard b64_encrypt(nil, nil)
-    discard b64_decrypt(nil, nil)
-    discard prvkey()
-    discard pubkey(nil)
-    freekey(nil)
+  const
+    txt = "Hi There"
+  let
+    prv = prvkey
+    pub = prvKey.pubkey
+    b64 = txt.b64_encrypt(pub)
+
+  doAssert txt == b64.b64_decrypt(prv)
 
   when not defined(check_run):
     echo "*** compiles OK"
