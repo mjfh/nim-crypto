@@ -2,14 +2,13 @@
 #
 # generate file with public/private key pair for NIM import
 #
-# $Id: e36fef0e79b794b79079e2f1020d0d30d34f20da $
+# $Id$
 #
 # Copyright (c) 2017 Jordan Hrycaj <jordan@teddy-net.com>
 # All rights reserved.
 #
 # Permission to use, copy, modify, and distribute this software for any
-# purpose with or without fee is hereby granted, provided that the above
-# copyright notice and this permission notice appear in all copies.
+# purpose with or without fee is hereby granted.
 #
 # The author or authors of this code dedicate any and all copyright interest
 # in this code to the public domain. We make this dedication for the benefit

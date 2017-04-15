@@ -2,14 +2,13 @@
  *
  * debugging helper function
  *
- * $Id: fe6cb93a9baacc3c10aafcf631cda1f2b423e436 $
+ * $Id$
  *
  * Copyright (c) 2017 Jordan Hrycaj <jordan@teddy-net.com>
  * All rights reserved.
  *
  * Permission to use, copy, modify, and distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
+ * purpose with or without fee is hereby granted.
  *
  * The author or authors of this code dedicate any and all copyright interest
  * in this code to the public domain. We make this dedication for the benefit

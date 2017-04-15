@@ -1,0 +1,15 @@
+*		text=auto
+*-TODO		ident eol=lf
+*-VERSION	ident eol=lf
+*.[ch]		ident
+*.ac		ident eol=lf
+*.am		ident eol=lf
+*.build		ident
+*.m4		ident eol=lf
+*.mak		ident eol=crlf
+*.nim		ident eol=lf
+*.sh		ident eol=lf
+Build		ident eol=lf
+Makefile.*	ident eol=lf
+README		ident
+README.*	ident

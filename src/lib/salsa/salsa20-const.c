@@ -2,14 +2,13 @@
  *
  * interface for salsa20 constants
  *
- * $Id: 53cb100201551db9348b38f8444032fa52fbaf00 $
+ * $Id$
  *
  * Copyright (c) 2017 Jordan Hrycaj <jordan@teddy-net.com>
  * All rights reserved.
  *
  * Permission to use, copy, modify, and distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
+ * purpose with or without fee is hereby granted.
  *
  * The author or authors of this code dedicate any and all copyright interest
  * in this code to the public domain. We make this dedication for the benefit

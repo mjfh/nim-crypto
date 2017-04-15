@@ -1,0 +1,22 @@
+# $Id$
+
+src/lib/ltc:
+   Sam Hocevar <sam@hocevar.net>
+   Tom St Denis <tomstdenis@gmail.com>
+
+src/lib/ltc/aesd:
+   Vincent Rijmen <vincent.rijmen@esat.kuleuven.ac.be>
+   Antoon Bosselaers <antoon.bosselaers@esat.kuleuven.ac.be>
+   Paulo Barreto <paulo.barreto@terra.com.br>
+
+src/lib/xoro:
+   David Blackman and Sebastiano Vigna <vigna@acm.org>
+
+src/lib/spmx:
+   Sebastiano Vigna <vigna@acm.org>
+
+src/lib/uecc:
+   Matthias Schiffer <mschiffer@universe-factory.net>
+   Rautenkranz <tobias@rautenkranz.ch>
+
+Jordan Hrycaj <jordan@teddy-net.com>
