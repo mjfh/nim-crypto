@@ -312,8 +312,13 @@ nim nim-lang nimlang:
 	   echo; echo ">>> Re-installing NIM"; echo; \
 	   $(BUILD) force-nimlang; \
 	 else \
-	   echo; echo ">>>NIM is already installed"; echo; \
+	   echo; echo ">>> NIM is already installed"; echo; \
 	 fi
+
+.PHONY: update-nimlang
+update-nimlang:
+	@$(USEROK)
+	$(BUILD_NIM)
 
 .PHONY: force-nimlang
 force-nimlang:
