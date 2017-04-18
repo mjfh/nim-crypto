@@ -58,14 +58,17 @@ void jump(void) {
 
 	uint64_t s0 = 0;
 	uint64_t s1 = 0;
-	for(int i = 0; i < sizeof JUMP / sizeof *JUMP; i++)
-		for(int b = 0; b < 64; b++) {
+	int i ; /* patched for non-C99 -- jordan */
+	for(/* int */ i = 0; i < sizeof JUMP / sizeof *JUMP; i++) {
+		int b ; /* patched for non-C99 -- jordan */
+		for(/* int */ b = 0; b < 64; b++) {
 			if (JUMP[i] & 1ULL << b) {
 				s0 ^= s[0];
 				s1 ^= s[1];
 			}
 			next();
 		}
+	}
 
 	s[0] = s0;
 	s[1] = s1;
