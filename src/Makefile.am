@@ -28,6 +28,7 @@ NIMDBG    = -d:release --gc:none
 AM_CFLAGS = -s
 endif
 
+NIMDOCHTML = session
 NIM2CFLAGS =
 NIM2XFLAGS =
 NIMNOCHECK =
