@@ -1,0 +1,29 @@
+matrix:
+  include:
+    - os: linux       # add another OS to the default OS
+      dist: trusty    # need ubuntu with autoconf >= 2.69
+      sudo: required  # needed for apt-get
+
+notifications:
+  email:
+    on_success: never
+    on_failure: change
+
+language: c
+compiler: gcc
+
+before_install:
+  - rm -f :*                                                   # clear any left overs
+  - touch :`lsb_release -cs`                                   # store Debian/Ubuntu code name
+  - if [ -f :trusty ];                 then touch :os-ok;  fi  # accept Ubuntu "trusty"
+  - if [ jenkins = "$TRAVIS_BRANCH" ]; then touch :git-ok; fi  # accept git branch "jenkins"
+  - test \! -f :os-ok -o \! -f :git-ok || touch :travis-ok     # enable runner (if any)
+  - ls -l :*                                                   # show flags in log file
+  - test \! -f :travis-ok || sudo apt-get -qq update
+  - test \! -f :travis-ok || sudo apt-get install -y autoconf=2.69* automake libtool
+
+install:
+  - test \! -f :travis-ok || ./Build nim
+
+script:
+  - test \! -f :travis-ok || ( ./Build debug && make check )

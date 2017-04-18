@@ -1,6 +1,6 @@
 # nim-crypto
 
-Travis/Build Status [![Build Status](https://travis-ci.org/mjfh/nim-crypto.svg?branch=jenkins)](https://travis-ci.org/mjfh/nim-crypto)
+Travis/Build Status, Branch=*jenkins* &nbsp; [![Build Status](https://travis-ci.org/mjfh/nim-crypto.svg?branch=jenkins)](https://travis-ci.org/mjfh/nim-crypto)
 
 # Simple Crypto Session Tool for C and NIM
 
