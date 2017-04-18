@@ -72,7 +72,8 @@ clean-local::
 	  test -f "$$f" || continue ; \
 	  w=`basename "$$f" .nim` ; \
 	  test -x "$$w"      && (set -x; rm -f "$$w") ; \
-	  test -f "$$w.html" && (set -x; rm -f "$$w.html") ; \
+	  case " $(NIMDOCHTML) " in *" $$w"*);;*) \
+	    test -f "$$w.html" && (set -x; rm -f "$$w.html"); esac; \
 	  test -f "$$w.ndb"  && (set -x; rm -f "$$w.ndb") ; \
 	  done; :
 	rm -rf nimcache

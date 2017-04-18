@@ -1,11 +1,11 @@
 # -*- makefile-automake -*-
 #
-# $Id: 2211f7f8e7477735783df6418a58d064e4227d9a $
+# $Id$
 #
 # Blame: Jordan Hrycaj <jordan@teddy-net.com>
 
 SUBDIRS =
-CLEANFILES = *.exe *.html uecc
+CLEANFILES = *.exe uecc
 
 NIM2CFLAGS =
 NIM2XFLAGS =

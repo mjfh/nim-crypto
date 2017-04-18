@@ -1,11 +1,11 @@
 # -*- makefile-automake -*-
 #
-# $Id: 6eb26f6c1b6bf5272940725583e9848f1ca6e39b $
+# $Id$
 #
 # Blame: Jordan Hrycaj <jordan@teddy-net.com>
 
 SUBDIRS =
-CLEANFILES = *.exe *.html salsa
+CLEANFILES = *.exe salsa
 
 NIM2CFLAGS =
 NIM2XFLAGS =

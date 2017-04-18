@@ -1,10 +1,10 @@
 /*.exe
-/*.html
 /*.ndb
 /Makefile
 /Makefile.in
 /ecckey
 /ecckey_dumper
+/ecckey_dumper.html
 /nim.sh
 /nimcache
 /rnd64

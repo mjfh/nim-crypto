@@ -1,6 +1,6 @@
 # -*- autoconf -*-
 #
-# $Id: 96f0a408a9e57c878039c465490c2c1f37212feb $
+# $Id$
 #
 # Blame: Jordan Hrycaj <jordan@teddy-net.com>
 

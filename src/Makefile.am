@@ -1,6 +1,6 @@
 # -*- makefile-automake -*-
 #
-# $Id: ca75d92dd4048d9c4a0b0abd521f736195ee5f15 $
+# $Id$
 #
 # Blame: Jordan Hrycaj <jordan@teddy-net.com>
 
@@ -18,7 +18,7 @@ bin_PROGRAMS += cwrapd
 endif
 
 SUBDIRS      = lib
-CLEANFILES   = *.exe *.html cwrap $(NIMLIBWRAP)
+CLEANFILES   = *.exe cwrap $(NIMLIBWRAP)
 
 if USE_DEBUG # Settings for GDB debugging session
 NIMDBG    = --debuginfo --lineDir:on --embedsrc --debugger=native

@@ -1,6 +1,6 @@
 # -*- makefile-automake -*-
 #
-# $Id: a31393d760ce440365bef6c3b677b1bc03a77c29 $
+# $Id$
 #
 # Blame: Jordan Hrycaj <jordan@teddy-net.com>
 

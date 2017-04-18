@@ -1,11 +1,11 @@
 # -*- makefile-automake -*-
 #
-# $Id: 7b58c2f9f348eadcde6638d52abbb578cae83e90 $
+# $Id$
 #
 # Blame: Jordan Hrycaj <jordan@teddy-net.com>
 
 SUBDIRS =
-CLEANFILES = *.exe *.html xoro
+CLEANFILES = *.exe xoro
 
 NIM2CFLAGS =
 NIM2XFLAGS =
