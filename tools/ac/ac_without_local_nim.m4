@@ -36,7 +36,9 @@ AC_DEFUN([_AC_CHECK_OS_NIM],[
   if test -z "$NIM"; then
     AC_CHECK_PROG([nim],[nim],[yes],[no])
     if test "$nim" = yes; then
-      NIM=nim$NIMEXE
+      NIM=`which nim 2>/dev/null`
+      case "$NIM" in /usr/*|/opt/*|'')NIM=nim; esac
+      NIM=$NIM$NIMEXE
     fi
   fi
 
@@ -159,7 +161,7 @@ AC_DEFUN([AC_CHECK_LOCAL_NIM],[
                          [ac_nim_cv_ssl=yes],[ac_nim_cv_ssl=no])
       if test "$ac_nim_cv_ssl" != yes; then
         msg="Compatible SSL lib is reqired by NIMBLE"
-        inf="on Debian consider installing 'libssl1.0-dev'"
+        inf="on Debian consider installing 'libssl-dev' or 'libssl1.0-dev'"
         AC_MSG_ERROR([$msg - $inf])
       fi
     fi
