@@ -1,5 +1,13 @@
 #! /bin/sh
 
+# does not work with MinGW/64 bit GCC
+case `gcc -dumpmachine 2>/dev/null` in
+x86_64-w64-mingw32)
+	echo "*** `basename $0`: WARNING: falling back to 32bit MinGW" >&2
+	excl=`which gcc|sed 's!/[^/]*$!!'`
+	PATH=`echo $PATH|tr ':' '\n'|sed "\!$excl!d"|tr '\n' ':'`
+esac
+
 dir=${1:-tools/sub}
 
 mkdir -p $dir

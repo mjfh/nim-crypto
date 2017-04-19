@@ -17,9 +17,10 @@ AC_DEFUN([_AC_CHECK_LOCAL_NIM],[
             -x $p/bin/nimble$NIMEXE -a \
 	    -s $p/lib/nimbase.h; then
       NIM=$p/bin/nim$NIMEXE
-      NIMBLE="env PATH=$p/bin:$PATH $p/bin/nimble"
+      NIMBLE="env 'PATH=$p/bin:$PATH' $p/bin/nimble"
       NIMLIB=$p/lib
       use_local_nim=yes
+      AC_MSG_RESULT([yes])
     else
       AC_MSG_RESULT([no])
       use_local_nim=no
