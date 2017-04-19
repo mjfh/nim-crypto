@@ -189,8 +189,9 @@ in
 
 This repository compiles on MinGW32/MSys (tested on Windows 7). Optionally,
 for 64bit systems a gcc64 bit compiler might be used (e.g.
-[tdm64](//tdm-gcc.tdragon.net)). It will work if the command path has
-precedence in the PATH environment variable. For gcc64 related build use
+[tdm64](//sourceforge.net/projects/tdm-gcc)). It will work if the command
+path has precedence in the PATH environment variable. For gcc64 related
+build use
 
     ./Build mgw32
 
