@@ -6,10 +6,10 @@ Travis/Build Status, Branch=*jenkins* &nbsp; [![Build Status](https://travis-ci.
 
 This repository is an excerpt from my
 [PAN scanner](//mjh-it.com/post/deadpan-tooling)
-where I needed a small encryption tool for storing data journals safely.
+where I needed a small encryption tool for safely storing journal data.
 For the [PAN scanner](//mjh-it.com/post/deadpan-tooling), encrypted
-journals are produced on-site, then transported to a safe site for decryption
-and further processing.
+journals are produced on-site, then transported to a safe site for
+decryption and further processing.
 
 ### This library supports
 
@@ -23,8 +23,9 @@ and further processing.
  * Supported and tested auto-configure platforms for C and NIM:
    + Linux64: native and Linux32
    + Linux64/MinGW: Win32/64
- * Direct source import for NIM:
-   + Linux64
+   + MinGW32/MSys, MinGW32/MSys + gcc64
+ * On-the-fly NIM compilation (within repository):
+   + Linux, MinGW32/MSys (will ignore gcc64)
  * Nimble (NIM package manager)
    + *TODO*
    
@@ -183,5 +184,25 @@ available. The resulting binary might be tested on Linux with *wine* as
 in
 
      wine src/cwraps.exe
+
+# Windows Architectures
+
+This repository compiles on MinGW32/MSys (tested on Windows 7). Optionally,
+for 64bit systems a gcc64 bit compiler might be used (e.g.
+[tdm64](//tdm-gcc.tdragon.net)). It will work if the command path has
+precedence in the PATH environment variable. For gcc64 related build use
+
+    ./Build mgw32
+
+or
+
+    ./Build mgw64
+
+for bootstrapping (or alternatively the targets *mgw32-debug* or
+*mgw64-debug*). Otherwise
+
+    ./Build native
+
+(or the target *native-debug*) must be used.
 
 -- jordan
