@@ -28,6 +28,7 @@ NIMDBG    = -d:release --gc:none
 AM_CFLAGS = -s
 endif
 
+NIMDOCHTML = session
 NIM2CFLAGS =
 NIM2XFLAGS =
 NIMNOCHECK =
@@ -138,19 +139,28 @@ main.c: $(NAME)-static.h $(NAME)-dynlib.h $(LIBNAME).a
 
 AM_CFLAGS += -I$(NIMLIB) -Inimcache
 
+if    !USE_MINGW
+AM_LDFLAGS = -ldl
+endif !USE_MINGW
+
+
 cwraps_SOURCES = main.c
 cwraps_CFLAGS  = $(AM_CFLAGS) -DSESSION_STATIC
 cwraps_LDFLAGS =
-cwraps_LDADD   = $(LIBNAME).a -ldl
+cwraps_LDADD   = $(LIBNAME).a $(AM_LDFLAGS)
 
 cwrapd_SOURCES = main.c
 cwrapd_CFLAGS  = $(AM_CFLAGS) -DSESSION_DYNLIB
 cwrapd_LDFLAGS =
-cwrapd_LDADD   = -l$(NAME) -ldl
+cwrapd_LDADD   = -l$(NAME) $(AM_LDFLAGS)
 
 # ---------------------------------------------------------------------------
 # Helper
 # ---------------------------------------------------------------------------
+
+# make check: need a clean cache
+check-local::
+	rm -f nimcache/* || :
 
 include ../tools/am/Makefile.nimhelper
 
