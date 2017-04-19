@@ -37,8 +37,11 @@ AC_DEFUN([_AC_CHECK_OS_NIM],[
     AC_CHECK_PROG([nim],[nim],[yes],[no])
     if test "$nim" = yes; then
       NIM=`which nim 2>/dev/null`
-      case "$NIM" in /usr/*|/opt/*|'')NIM=nim; esac
-      NIM=$NIM$NIMEXE
+      case "$NIM" in
+      /usr/*|/opt/*|'') NIM=nim$NIMEXE ;;
+      *.exe) ;;
+      *) NIM=$NIM$NIMEXE
+      esac
     fi
   fi
 
