@@ -158,6 +158,10 @@ cwrapd_LDADD   = -l$(NAME) $(AM_LDFLAGS)
 # Helper
 # ---------------------------------------------------------------------------
 
+# make check: need a clean cache
+check-local::
+	rm -f nimcache/* || :
+
 include ../tools/am/Makefile.nimhelper
 
 # ---------------------------------------------------------------------------
