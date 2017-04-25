@@ -49,14 +49,22 @@ AC_DEFUN([_AC_CHECK_OS_NIM],[
   dnl NIMLIB
   if test -z "$NIMLIB"; then
     AC_MSG_CHECKING([for NIM library with "nimbase.h"])
-    NIMLIB=`$NIM dump 2>&1|grep '@<:@/\\\\@:>@lib$'|sort|sed q`
-    dnl Check whether Windows/MinGW mapping is needed
-    case "$NIMLIB" in @<:@A-Za-z@:>@:\\*)
-      NIMLIB=`echo $NIMLIB|sed -e 's!\\\\!/!g' -e 's/^.://'`
-    esac
+    list=`$NIM dump 2>&1|grep '@<:@/\\\\@:>@lib$'`
+    for dir in $list
+    do
+      dnl Check whether Windows/MinGW mapping is needed
+      case "$dir" in @<:@A-Za-z@:>@:\\*)
+        dir=`echo $dir|sed -e 's!\\\\!/!g' -e 's/^.://'`
+      esac
+      if test -f "$dir/nimbase.h"; then
+        NIMLIB="$dir"
+	break
+      fi
+    done
     if test -n "$NIMLIB" -a -s "$NIMLIB/nimbase.h"; then
       AC_MSG_RESULT([$NIMLIB])
     else
+      unset NIMLIB
       AC_MSG_RESULT([no])
     fi
   fi
@@ -161,8 +169,12 @@ AC_DEFUN([AC_CHECK_LOCAL_NIM],[
   dnl need libSSL for NIMBLE on Linux (.exe => not Windows)
   if test ".exe" != "$NIMEXE" ; then
     if test "$cross_compiling" = no; then
-      AC_CHECK_LIB([ssl],[SSL_library_init],
-                         [ac_nim_cv_ssl=yes],[ac_nim_cv_ssl=no])
+      # different ssl library initalisers (all linking as -lssl)
+      for fn in SSL_library_init OPENSSL_init_ssl
+      do
+        AC_CHECK_LIB([ssl],[$fn],[ac_nim_cv_ssl=yes],[ac_nim_cv_ssl=no])
+        test "$ac_nim_cv_ssl" = yes && break
+      done
       if test "$ac_nim_cv_ssl" != yes; then
         msg="Compatible SSL lib is reqired by NIMBLE"
         inf="on Debian consider installing 'libssl-dev' or 'libssl1.0-dev'"

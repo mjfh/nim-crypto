@@ -130,7 +130,7 @@ else:
 
 {.compile: srcSrcDir & D & "ltc_sha256.c".}
 {.compile: srcExtDir & D & "ltc_crypt-const.c".}
-{.compile: srcExtDir & D & "ltc_crypt_argchk.c".}
+{.compile: srcExtDir & D & "ltc_crypt-argchk.c".}
 
 # ----------------------------------------------------------------------------
 # Interface ltc/sha256
