@@ -39,10 +39,12 @@ endif USE_MINGW
 
 if    USE_CPU64
 NIM2CFLAGS += -d:amd64
+AM_CFLAGS  += -m64
 endif USE_CPU64
 
 if    USE_CPU32
 NIM2CFLAGS += -d:i386
+AM_CFLAGS  += -m32
 endif USE_CPU32
 
 all-local::
