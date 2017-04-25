@@ -142,21 +142,21 @@ const
   isCryptHashOverflow = 25
 
 type
-  ShaFfData* = array[32, uint8]
-  ShaFfState* = tuple
+  Sha100Data* = array[32, uint8]
+  Sha100State* = tuple
     length: uint64
     state:  array[8, uint32]
     curlen: uint32
     buf:    array[64, uint8]
 
-proc ltc_sha256_init(md: ptr ShaFfState): cint {.cdecl, importc.}
+proc ltc_sha256_init(md: ptr Sha100State): cint {.cdecl, importc.}
   ## Init hash descriptor.
   ##
   ## The function will return
   ##  * isCryptInvalidArg -- illegal null pointer argument
   ## or isCryptOk, otherwise
 
-proc ltc_sha256_process(md: ptr ShaFfState;
+proc ltc_sha256_process(md: ptr Sha100State;
                         p: pointer; n: culong): cint {.cdecl, importc.}
   ## Process hash data.
   ##
@@ -165,7 +165,7 @@ proc ltc_sha256_process(md: ptr ShaFfState;
   ##  * isCryptHashOverflow -- very large or neg. n (counter size overflow)
   ## or isCryptOk, otherwise
 
-proc ltc_sha256_done(md: ptr ShaFfState; p: pointer): cint {.cdecl, importc.}
+proc ltc_sha256_done(md: ptr Sha100State; p: pointer): cint {.cdecl, importc.}
   ## Finalise hash data, p referes to a 32 byte data buffer.
   ##
   ## The function will return
@@ -177,28 +177,28 @@ proc ltc_sha256_done(md: ptr ShaFfState; p: pointer): cint {.cdecl, importc.}
 # Public interface
 # ----------------------------------------------------------------------------
 
-proc getShaFf*(md: var ShaFfState) =
+proc getSha100*(md: var Sha100State) =
   ## Init sha-256 hash descriptor.
   discard ltc_sha256_init(addr md)
 
-proc shaFfData*(md: var ShaFfState; data: pointer; size: int) {.inline.} =
+proc sha100Data*(md: var Sha100State; data: pointer; size: int) {.inline.} =
   ## Add hash data, size should be smaller than 2^30
   if ltc_sha256_process(addr md, data, size.culong) != 0:
-    quit "shaFfData: arg error"
+    quit "sha100Data: arg error"
 
-proc shaFfDone*(md: var ShaFfState; rc: ptr ShaFfData) {.inline.} =
+proc sha100Done*(md: var Sha100State; rc: ptr Sha100Data) {.inline.} =
   ## finalise hash
   if ltc_sha256_done(addr md, rc) != 0:
-    quit "shaFfDone: arg error"
+    quit "sha100Done: arg error"
   (addr md).zeroMem(md.sizeof)
 
-proc shaFfDone*(md: var ShaFfState; rc: var ShaFfData) {.inline.} =
+proc sha100Done*(md: var Sha100State; rc: var Sha100Data) {.inline.} =
   ## finalise hash
-  md.shaFfDone(addr rc)
+  md.sha100Done(addr rc)
 
-proc shaFfDone*(md: var ShaFfState): ShaFfData {.inline.} =
+proc sha100Done*(md: var Sha100State): Sha100Data {.inline.} =
   ## finalise hash
-  md.shaFfDone(result)
+  md.sha100Done(result)
 
 # ----------------------------------------------------------------------------
 # Tests
@@ -206,7 +206,7 @@ proc shaFfDone*(md: var ShaFfState): ShaFfData {.inline.} =
 
 when isMainModule:
   type
-    ShaFfConst = enum
+    Sha100Const = enum
       CRYPT_OK = 0, CRYPT_ERROR, CRYPT_NOP, CRYPT_INVALID_KEYSIZE,
       CRYPT_INVALID_ROUNDS, CRYPT_FAIL_TESTVECTOR, CRYPT_BUFFER_OVERFLOW,
       CRYPT_INVALID_PACKET, CRYPT_INVALID_PRNGSIZE, CRYPT_ERROR_READPRNG,
@@ -222,19 +222,19 @@ when isMainModule:
   doAssert isCryptHashOverflow == CRYPT_HASH_OVERFLOW.ord
 
   {.compile: srcSrcDir & D & "ltc_sha256specs.c".}
-  proc shaFfConst(n: cint): cstring {.cdecl, importc: "ltc_const".}
-  proc shaFfTest():         cint    {.cdecl, importc: "ltc_sha256_test".}
-  proc zShaFfSpecs():       pointer {.cdecl, importc: "ltc_sha256_specs".}
+  proc sha100Const(n: cint): cstring {.cdecl, importc: "ltc_const".}
+  proc sha100Test():         cint    {.cdecl, importc: "ltc_sha256_test".}
+  proc zSha100Specs():       pointer {.cdecl, importc: "ltc_sha256_specs".}
 
-  proc toSeq(a: ShaFfData): seq[int8] =
+  proc toSeq(a: Sha100Data): seq[int8] =
     result = newSeq[int8](a.len)
     for n in 0..<a.len:
       result[n] = a[n].int.toU8
 
-  proc tShaFfSpecs(): seq[int] =
+  proc tSha100Specs(): seq[int] =
     result = newSeq[int](0)
     var
-      p: ShaFfState
+      p: Sha100State
       a = cast[int](addr p)
     result.add(cast[int](addr p.length) - a)
     result.add(cast[int](addr p.state)  - a)
@@ -246,25 +246,25 @@ when isMainModule:
   if true: # check/verify internal constants
     var n = 0
     while true:
-      var s = shaFfConst(n.cint)
+      var s = sha100Const(n.cint)
       if s.isNil:
         break
-      # echo ">>> ", $s, " >> ", $(n.ShaFfConst)
-      doAssert $s == $(n.ShaFfConst)
+      # echo ">>> ", $s, " >> ", $(n.Sha100Const)
+      doAssert $s == $(n.Sha100Const)
       n.inc
-    # echo ">> ", n, " >> ", ShaFfConst.high.ord
-    doAssert n == 1 + ShaFfConst.high.ord
+    # echo ">> ", n, " >> ", Sha100Const.high.ord
+    doAssert n == 1 + Sha100Const.high.ord
 
   if true: # external self test
-    var n = shaFfTest()
+    var n = sha100Test()
     #echo ">> ", n
-    doAssert n.ShaFfConst == CRYPT_OK
+    doAssert n.Sha100Const == CRYPT_OK
 
   if true: # test state descriptor layout
     var
       a: array[6,cint]
-      v = tShaFfSpecs()
-    (addr a[0]).copyMem(zShaFfSpecs(), sizeof(a))
+      v = tSha100Specs()
+    (addr a[0]).copyMem(zSha100Specs(), sizeof(a))
     #echo ">> ", v, " >> ", a.mapIt(int, it)
     doAssert v == a.mapIt(int, it)
 
@@ -290,11 +290,11 @@ when isMainModule:
       block:
         var
           (sIn, sOut) = testVec[n]
-          h: ShaFfState
-          v: ShaFfData
-        h.getShaFf
-        h.shaFfData(addr sIn[0], sIn.len)
-        h.shaFfDone(v)
+          h: Sha100State
+          v: Sha100Data
+        h.getSha100
+        h.sha100Data(addr sIn[0], sIn.len)
+        h.sha100Done(v)
         var
           w = v.toSeq.mapIt(it.toHex(2).toLowerAscii).join
         when not defined(check_run) and false:
@@ -305,11 +305,11 @@ when isMainModule:
       block:
         var
           (sIn, sOut) = testVec[n]
-          h: ShaFfState
-        h.getShaFf()
-        h.shaFfData(addr sIn[0], sIn.len)
+          h: Sha100State
+        h.getSha100()
+        h.sha100Data(addr sIn[0], sIn.len)
         var
-          v = h.shaFfDone
+          v = h.sha100Done
           w = v.toSeq.mapIt(it.toHex(2).toLowerAscii).join
         when not defined(check_run) and false:
           echo ">>> ", n, " >> ", sIn

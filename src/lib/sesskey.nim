@@ -118,7 +118,7 @@
 ##
 #
 import
-  base64, ecckey, ltc/shaff, rnd64, strutils, uecc/uecc
+  base64, ecckey, ltc/sha100, rnd64, strutils, uecc/uecc
 
 export
   uecc
@@ -156,7 +156,7 @@ type
 assert SessKey.sizeof == EccSessKey.sizeof
 assert SessKey.sizeof == EccPubKey.sizeof
 assert SessKey.sizeof == EccPrvKey.sizeof
-assert SessKey.sizeof == ShaFfData.sizeof
+assert SessKey.sizeof == Sha100Data.sizeof
 
 # ----------------------------------------------------------------------------
 # Private helpers
@@ -171,12 +171,12 @@ proc makeNonce(p: var SessNonce) =
     p[n] = w.uint8
 
 proc mangle(p: var SessKey; key: ptr EccSessKey; nonce: ptr SessNonce) =
-  var md: ShaFfState
-  assert key[].sizeof == ShaFfData.sizeof
-  md.getShaFf
-  md.shaFfData(key, key[].sizeof)
-  md.shaFfData(nonce, nonce[].sizeof)
-  md.shaFfDone(cast[ptr ShaFfData](addr p))
+  var md: Sha100State
+  assert key[].sizeof == Sha100Data.sizeof
+  md.getSha100
+  md.sha100Data(key, key[].sizeof)
+  md.sha100Data(nonce, nonce[].sizeof)
+  md.sha100Done(cast[ptr Sha100Data](addr p))
 
 proc xorKeys(p: var SessKey; a, b: ptr SessKey) =
   for n in 0..<a[].len:
