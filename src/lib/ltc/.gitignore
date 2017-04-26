@@ -3,6 +3,7 @@
 /*.html
 /Makefile
 /Makefile.in
+/aes80
 /nim.sh
 /nimcache
-/shaff
+/sha100

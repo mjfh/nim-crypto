@@ -97,7 +97,7 @@ proc toHexSeq(s: string): seq[int8] =
   ## exception if the hex string stream is incorrect.
   result = newSeq[int8](s.len div 2)
   for n in 0..<result.len:
-    result[n] = s[2*n..2*n+1].parseHexInt.int8
+    result[n] = s[2*n..2*n+1].parseHexInt.toU8
   doAssert s == result.mapIt(it.toHex(2).toLowerAscii).join
 
 # ----------------------------------------------------------------------------
@@ -243,7 +243,7 @@ when isMainModule:
       #echo "*** Errors: ", err.len, " >> ", err
     doAssert err.len == 0
 
-  if true: # run internal test (checks interface)
+  if true: # run external test (checks interface)
     var testVect = [
           #
           # //tools.ietf.org/html/draft-agl-tls-chacha20poly1305-04#section-7

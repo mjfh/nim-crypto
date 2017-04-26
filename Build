@@ -357,7 +357,7 @@ pull:
 	   bra=$(GITBRANCH)                 ;\
 	   mod=`expr "$$m" : '\([^:]*\)'`   ;\
 	   pth=`expr "$$m" : '[^:]*:\(.*\)'`;\
-	   test -d "$$pth/.git" || ( \
+	   test -d "$$pth/.git" -o -s "$$pth/.git" || ( \
              pat="submodule.$$mod.url"                           ;\
 	     url=`$(GITMODCFG) "^$$pat"|awk '{print $$NF;exit}'` ;\
 	     (set -x; git clone -b $$bra $$url $$pth)) || exit ;\

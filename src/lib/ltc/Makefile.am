@@ -5,7 +5,7 @@
 # Blame: Jordan Hrycaj <jordan@teddy-net.com>
 
 SUBDIRS =
-CLEANFILES = *.exe shaff
+CLEANFILES = *.exe aes80 sha100
 
 NIM2CFLAGS =
 NIM2XFLAGS =
