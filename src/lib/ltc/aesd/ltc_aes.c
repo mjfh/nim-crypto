@@ -1,5 +1,3 @@
-#define zeromem      ltc_zeromem      /* patched */
-
 /* LibTomCrypt, modular cryptographic library -- Tom St Denis
  *
  * LibTomCrypt is a library that provides various cryptographic

@@ -1,5 +1,3 @@
-#define crypt_argchk ltc_crypt_argchk /* patched */
-
 /* LibTomCrypt, modular cryptographic library -- Tom St Denis
  *
  * LibTomCrypt is a library that provides various cryptographic
