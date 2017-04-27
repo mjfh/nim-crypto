@@ -4,6 +4,7 @@
 /Makefile
 /Makefile.in
 /aes80
+/frta
 /nim.sh
 /nimcache
 /sha100
