@@ -120,4 +120,4 @@ int *ltc_aes80_specs(void)
 # endif
 #endif /* __GNUC__ */
 
-/* end */
+/* End */

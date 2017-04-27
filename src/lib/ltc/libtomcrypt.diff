@@ -1,0 +1,43 @@
+*** Cmd:    /bin/sh check-sources.sh
+*** Date:   Thu 27 Apr 20:49:49 BST 2017
+*** Source: http://github.com/tomstdenis/libtomcrypt/tree/develop
+            http://www.libtom.net/LibTomCrypt
+
+*** Diff against libtomcrypt repo: heads/develop 1.17-376-g4981e2a
+
+*** diff fortuna.c:
+--- ../libtomcrypt-source/src/prngs/fortuna.c	2017-04-27 16:09:49.777630101 +0100
++++ ./fortunad/ltc_fortuna.c	2017-04-27 19:00:01.173420965 +0100
+@@ -334,7 +334,7 @@
+       return CRYPT_BUFFER_OVERFLOW;
+    }
+ 
+-   md = XMALLOC(sizeof(hash_state));
++   md = EXPORT_XMALLOC(sizeof(hash_state)); /* patched */
+    if (md == NULL) {
+       LTC_MUTEX_UNLOCK(&prng->fortuna.prng_lock);
+       return CRYPT_MEM;
+@@ -370,7 +370,7 @@
+ #ifdef LTC_CLEAN_STACK
+    zeromem(md, sizeof(*md));
+ #endif
+-   XFREE(md);
++   EXPORT_XFREE(md,sizeof(hash_state)); /* patched */
+    LTC_MUTEX_UNLOCK(&prng->fortuna.prng_lock);
+    return err;
+ }
+
+*** diff tomcrypt_custom.h:
+--- ../libtomcrypt-source/src/headers/tomcrypt_custom.h	2017-04-27 16:09:49.753630844 +0100
++++ ./headers/tomcrypt_custom.h	2017-04-27 11:18:37.513403865 +0100
+@@ -1,6 +1,8 @@
+ #ifndef TOMCRYPT_CUSTOM_H_
+ #define TOMCRYPT_CUSTOM_H_
+ 
++#include "tomcrypt_nim.h"
++
+ /* macros for various libc functions you can change for embedded targets */
+ #ifndef XMALLOC
+    #ifdef malloc
+
+*** End

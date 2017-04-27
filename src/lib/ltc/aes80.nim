@@ -50,7 +50,6 @@ else:
 {.passC: ccFlags.}
 
 {.compile: srcSrcDir & D & "ltc_aes.c".}
-{.compile: srcExtDir & D & "ltc_crypt-const.c".}
 {.compile: srcExtDir & D & "ltc_crypt-argchk.c".}
 {.compile: srcExtDir & D & "ltc_zeromem.c".}
 
@@ -60,8 +59,6 @@ else:
 
 const
   isCryptOk = 0
-  # isCryptInvalidArg   = 16
-  # isCryptHashOverflow = 25
 
 type
   RijndaelKey* = tuple
@@ -69,12 +66,14 @@ type
     dK: array[60, uint32]   # ulong32 dK[60];
     nR: cint
 
-  Aes80Key* = tuple
-    rndl: RijndaelKey       # symmetric encryption key
-    pad:  cint              # occures on 32bit machines due to union embedding
-
   Aes80Array* = array[16,uint8]
   Aes80Data*  = Aes80Array | array[16,int8]
+
+when cint.sizeof != int.sizeof:
+  # occures on 32bit machines due to struct into union embedding
+  type Aes80Key* = tuple[rndl: RijndaelKey, pad: cint]
+else:
+  type Aes80Key* = tuple[rndl: RijndaelKey] # symmetric encryption key
 
 
 proc rijndael_setup(key: pointer; kLen: cint;
@@ -198,21 +197,21 @@ when isMainModule:
     var
       p: Aes80Key
       a = cast[int](addr p)
-      m = int.sizeof - 1
-      n = cast[int](addr p.pad) - a
     result.add(cast[int](addr p.rndl.eK) - a)
     result.add(cast[int](addr p.rndl.dK) - a)
     result.add(cast[int](addr p.rndl.nR) - a)
-    result.add(n)
-    # struct into union embedding: get next alignment boundary
-    result.add((n + m) and not m)
+    result.add(p.rndl.sizeof)
+    result.add(p.sizeof)
     result.add(0xffff)
   var
     a: array[6,cint]
     v = tAes80Specs()
   (addr a[0]).copyMem(zAes80Specs(), sizeof(a))
-  # echo ">> ", v, " >> ", a.mapIt(int, it)
-  doAssert v == a.mapIt(int, it)
+  var w = a.mapIt(int, it)
+  when not defined(check_run):
+    echo ">> desc: ", v
+  #echo ">> ", v, " >> ", w
+  doAssert v == w
 
   # invoke self test in C code
   proc rijndael_test(): cint {.cdecl, importc.}

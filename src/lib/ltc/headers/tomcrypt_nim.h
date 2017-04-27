@@ -91,6 +91,8 @@
 #define zeromem        ltc_zeromem
 
 /* SHA */
+#define LTC_NO_HASHES
+#define LTC_SHA256
 #define sha256_test    ltc_sha256_test
 #define sha256_init    ltc_sha256_init
 #define sha256_process ltc_sha256_process
@@ -99,5 +101,15 @@
 /* AES */
 #define LTC_NO_CIPHERS
 #define LTC_RIJNDAEL
+
+/* FORTUNA */
+#define EXPORT_XMALLOC(size) (malloc (size))
+#define EXPORT_XFREE(p,size) {zeromem ((p),sizeof(*p));free (p);}
+
+/* Disable others */
+#define XMALLOC    _XMALLOC_is_not_allowed_here_
+#define XFREE        _XFREE_is_not_allowed_here_
+#define XREALLOC  _XREALLOC_is_not_allowed_here_
+#define XCALLOC    _XCALLOC_is_not_allowed_here_
 
 #endif /* TOMCRYPT_NIM_H_ */

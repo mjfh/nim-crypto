@@ -32,12 +32,12 @@ int *ltc_sha256_specs(void)
 {
 	static int result[20];
 	int n = 0;
-
-	result[n++] = offsetof(struct sha256_state, length);
-	result[n++] = offsetof(struct sha256_state, state);
-	result[n++] = offsetof(struct sha256_state, curlen);
-	result[n++] = offsetof(struct sha256_state, buf);
+	result[n++] = offsetof(hash_state, sha256.length);
+	result[n++] = offsetof(hash_state, sha256.state);
+	result[n++] = offsetof(hash_state, sha256.curlen);
+	result[n++] = offsetof(hash_state, sha256.buf);
 	result[n++] =   sizeof(struct sha256_state);
+	result[n++] =   sizeof(hash_state);
 	result[n++] = 0xffff ;
 
 	return result;

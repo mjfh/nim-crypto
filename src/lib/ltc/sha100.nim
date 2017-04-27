@@ -127,6 +127,9 @@ proc sha100Done*(md: var Sha100State): Sha100Data {.inline.} =
 
 when isMainModule:
   type
+    HashState = tuple
+      sha: Sha100State
+
     Sha100Const = enum
       CRYPT_OK = 0, CRYPT_ERROR, CRYPT_NOP, CRYPT_INVALID_KEYSIZE,
       CRYPT_INVALID_ROUNDS, CRYPT_FAIL_TESTVECTOR, CRYPT_BUFFER_OVERFLOW,
@@ -155,13 +158,14 @@ when isMainModule:
   proc tSha100Specs(): seq[int] =
     result = newSeq[int](0)
     var
-      p: Sha100State
+      p: HashState
       a = cast[int](addr p)
-    result.add(cast[int](addr p.length) - a)
-    result.add(cast[int](addr p.state)  - a)
-    result.add(cast[int](addr p.curlen) - a)
-    result.add(cast[int](addr p.buf)    - a)
-    result.add(sizeof(p))
+    result.add(cast[int](addr p.sha.length) - a)
+    result.add(cast[int](addr p.sha.state)  - a)
+    result.add(cast[int](addr p.sha.curlen) - a)
+    result.add(cast[int](addr p.sha.buf)    - a)
+    result.add(p.sha.sizeof)
+    result.add(p.sizeof)
     result.add(0xffff)
 
   if true: # check/verify internal constants
@@ -183,11 +187,14 @@ when isMainModule:
 
   if true: # test state descriptor layout
     var
-      a: array[6,cint]
+      a: array[7,cint]
       v = tSha100Specs()
     (addr a[0]).copyMem(zSha100Specs(), sizeof(a))
-    #echo ">> ", v, " >> ", a.mapIt(int, it)
-    doAssert v == a.mapIt(int, it)
+    var w = a.mapIt(int, it)
+    when not defined(check_run):
+      echo ">> desc: ", v
+    # echo ">> ", v, " >> ", w
+    doAssert v == w
 
   if true: # test vectors
     const

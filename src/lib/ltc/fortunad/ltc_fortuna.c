@@ -334,7 +334,7 @@ int fortuna_export(unsigned char *out, unsigned long *outlen, prng_state *prng)
       return CRYPT_BUFFER_OVERFLOW;
    }
 
-   md = XMALLOC(sizeof(hash_state));
+   md = EXPORT_XMALLOC(sizeof(hash_state)); /* patched */
    if (md == NULL) {
       LTC_MUTEX_UNLOCK(&prng->fortuna.prng_lock);
       return CRYPT_MEM;
@@ -370,7 +370,7 @@ LBL_ERR:
 #ifdef LTC_CLEAN_STACK
    zeromem(md, sizeof(*md));
 #endif
-   XFREE(md);
+   EXPORT_XFREE(md,sizeof(hash_state)); /* patched */
    LTC_MUTEX_UNLOCK(&prng->fortuna.prng_lock);
    return err;
 }
