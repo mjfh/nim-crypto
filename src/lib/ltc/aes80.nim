@@ -25,7 +25,7 @@
 #
 
 import
-  os, sequtils, strutils, macros
+  os, sequtils, strutils, macros, ltc / [ltc_const]
 
 # ----------------------------------------------------------------------------
 # AES compiler
@@ -56,9 +56,6 @@ else:
 # ----------------------------------------------------------------------------
 # Interface ltc/aes
 # ----------------------------------------------------------------------------
-
-const
-  isCryptOk = 0
 
 type
   RijndaelKey* = tuple

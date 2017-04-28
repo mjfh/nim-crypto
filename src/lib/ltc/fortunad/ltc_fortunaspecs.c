@@ -45,7 +45,6 @@ int *ltc_fortuna_specs(void)
 	result[n++] =   sizeof(struct fortuna_prng);
 	result[n++] =   sizeof(prng_state);
 	result[n++] = 0xffff ;
-	result[n++] = LTC_FORTUNA_POOLS ;
 
 	return result;
 }

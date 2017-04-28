@@ -103,13 +103,16 @@
 #define LTC_RIJNDAEL
 
 /* FORTUNA */
-#define EXPORT_XMALLOC(size) (malloc (size))
-#define EXPORT_XFREE(p,size) {zeromem ((p),sizeof(*p));free (p);}
+/* n/a */
 
 /* Disable others */
 #define XMALLOC    _XMALLOC_is_not_allowed_here_
+#define  malloc     _malloc_is_not_allowed_here_
 #define XFREE        _XFREE_is_not_allowed_here_
+#define  free         _free_is_not_allowed_here_
 #define XREALLOC  _XREALLOC_is_not_allowed_here_
+#define  realloc   _realloc_is_not_allowed_here_
 #define XCALLOC    _XCALLOC_is_not_allowed_here_
+#define  calloc     _calloc_is_not_allowed_here_
 
 #endif /* TOMCRYPT_NIM_H_ */

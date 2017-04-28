@@ -25,7 +25,7 @@
 #
 
 import
-  os, sequtils, strutils, macros
+  os, sequtils, strutils, macros, ltc / [ltc_const]
 
 # ----------------------------------------------------------------------------
 # SHA256 compiler
@@ -50,17 +50,11 @@ else:
 {.passC: ccFlags.}
 
 {.compile: srcSrcDir & D & "ltc_sha256.c".}
-{.compile: srcExtDir & D & "ltc_crypt-const.c".}
 {.compile: srcExtDir & D & "ltc_crypt-argchk.c".}
 
 # ----------------------------------------------------------------------------
 # Interface ltc/sha256
 # ----------------------------------------------------------------------------
-
-const
-  isCryptOk           =  0
-  isCryptInvalidArg   = 16
-  isCryptHashOverflow = 25
 
 type
   Sha100Data* = array[32, uint8]
@@ -93,6 +87,17 @@ proc ltc_sha256_done(md: ptr Sha100State; p: pointer): cint {.cdecl, importc.}
   ##  * isCryptInvalidArg   -- illegal (eg. null pointer) argument
   ##  * isCryptHashOverflow -- very large n (counter size overflow)
   ## or isCryptOk, otherwise
+
+# ----------------------------------------------------------------------------
+# Debugging helper
+# ----------------------------------------------------------------------------
+
+proc dumpSha100State*(md: Sha100State; sep = " "): string =
+  result = ""
+  for n in 0..<md.state.len:
+    if result.len != 0:
+      result &= sep
+    result &= md.state[n].BiggestInt.toHex(8).toLowerAscii
 
 # ----------------------------------------------------------------------------
 # Public interface
@@ -130,23 +135,7 @@ when isMainModule:
     HashState = tuple
       sha: Sha100State
 
-    Sha100Const = enum
-      CRYPT_OK = 0, CRYPT_ERROR, CRYPT_NOP, CRYPT_INVALID_KEYSIZE,
-      CRYPT_INVALID_ROUNDS, CRYPT_FAIL_TESTVECTOR, CRYPT_BUFFER_OVERFLOW,
-      CRYPT_INVALID_PACKET, CRYPT_INVALID_PRNGSIZE, CRYPT_ERROR_READPRNG,
-      CRYPT_INVALID_CIPHER, CRYPT_INVALID_HASH, CRYPT_INVALID_PRNG,
-      CRYPT_MEM, CRYPT_PK_TYPE_MISMATCH, CRYPT_PK_NOT_PRIVATE,
-      CRYPT_INVALID_ARG, CRYPT_FILE_NOTFOUND, CRYPT_PK_INVALID_TYPE,
-      CRYPT_PK_INVALID_SYSTEM, CRYPT_PK_DUP, CRYPT_PK_NOT_FOUND,
-      CRYPT_PK_INVALID_SIZE, CRYPT_INVALID_PRIME_SIZE,
-      CRYPT_PK_INVALID_PADDING, CRYPT_HASH_OVERFLOW
-
-  doAssert isCryptOk           == CRYPT_OK.ord
-  doAssert isCryptInvalidArg   == CRYPT_INVALID_ARG.ord
-  doAssert isCryptHashOverflow == CRYPT_HASH_OVERFLOW.ord
-
   {.compile: srcSrcDir & D & "ltc_sha256specs.c".}
-  proc sha100Const(n: cint): cstring {.cdecl, importc: "ltc_const".}
   proc sha100Test():         cint    {.cdecl, importc: "ltc_sha256_test".}
   proc zSha100Specs():       pointer {.cdecl, importc: "ltc_sha256_specs".}
 
@@ -168,22 +157,10 @@ when isMainModule:
     result.add(p.sizeof)
     result.add(0xffff)
 
-  if true: # check/verify internal constants
-    var n = 0
-    while true:
-      var s = sha100Const(n.cint)
-      if s.isNil:
-        break
-      # echo ">>> ", $s, " >> ", $(n.Sha100Const)
-      doAssert $s == $(n.Sha100Const)
-      n.inc
-    # echo ">> ", n, " >> ", Sha100Const.high.ord
-    doAssert n == 1 + Sha100Const.high.ord
-
   if true: # external self test
-    var n = sha100Test()
-    #echo ">> ", n
-    doAssert n.Sha100Const == CRYPT_OK
+    var rc = sha100Test()
+    #echo ">> ", rc
+    doAssert isCryptOk == rc
 
   if true: # test state descriptor layout
     var
@@ -236,6 +213,7 @@ when isMainModule:
           h: Sha100State
         h.getSha100()
         h.sha100Data(addr sIn[0], sIn.len)
+        # echo ">>> ", h.dumpSha100State
         var
           v = h.sha100Done
           w = v.toSeq.mapIt(it.toHex(2).toLowerAscii).join
