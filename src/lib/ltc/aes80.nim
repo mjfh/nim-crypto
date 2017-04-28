@@ -25,22 +25,15 @@
 #
 
 import
-  os, sequtils, strutils, macros, ltc / [ltc_const]
+  os, sequtils, strutils, macros, ltc/ltc_const, misc/msrc
 
 # ----------------------------------------------------------------------------
 # AES compiler
 # ----------------------------------------------------------------------------
 
-template getCwd: string =
-  instantiationInfo(-1, true).filename.parentDir
-
 const
-  cwd       = getCwd                               # starts with current ..
-  D         = cwd[2 * (cwd[1] == ':').ord]         # .. DirSep, may differ ..
-  srcIncDir = cwd & D & "headers"                  # .. from target DirSe
-  srcSrcDir = cwd & D & "aesd"
-  srcExtDir = cwd & D & "crypt"
-  stdCcFlgs = "-I " & srcIncDir
+  stdCcFlgs = " -I " & "headers".nimSrcDirname &
+              " -I " & "conf".nimSrcRoot
 
 when isMainModule:
   const ccFlags = stdCcFlgs
@@ -49,9 +42,9 @@ else:
 
 {.passC: ccFlags.}
 
-{.compile: srcSrcDir & D & "ltc_aes.c".}
-{.compile: srcExtDir & D & "ltc_crypt-argchk.c".}
-{.compile: srcExtDir & D & "ltc_zeromem.c".}
+{.compile: "aesd/ltc_aes.c"           .nimSrcDirname.}
+{.compile: "crypt/ltc_crypt-argchk.c" .nimSrcDirname.}
+{.compile: "crypt/ltc_zeromem.c"      .nimSrcDirname.}
 
 # ----------------------------------------------------------------------------
 # Interface ltc/aes
@@ -187,7 +180,7 @@ proc aes80Decrypt(x: var Aes80Key;
 when isMainModule:
 
   # verify Aes80Key descriptor layout in C and NIM
-  {.compile: srcSrcDir & D & "ltc_aes80specs.c".}
+  {.compile: "aesd/ltc_aes80specs.c".nimSrcDirname.}
   proc zAes80Specs(): pointer {.cdecl, importc: "ltc_aes80_specs".}
   proc tAes80Specs(): seq[int] =
     result = newSeq[int](0)

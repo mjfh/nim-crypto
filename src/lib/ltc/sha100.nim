@@ -25,22 +25,15 @@
 #
 
 import
-  os, sequtils, strutils, macros, ltc / [ltc_const]
+  os, sequtils, strutils, macros, ltc/ltc_const, misc/msrc
 
 # ----------------------------------------------------------------------------
 # SHA256 compiler
 # ----------------------------------------------------------------------------
 
-template getCwd: string =
-  instantiationInfo(-1, true).filename.parentDir
-
 const
-  cwd       = getCwd                               # starts with current ..
-  D         = cwd[2 * (cwd[1] == ':').ord]         # .. DirSep, may differ ..
-  srcIncDir = cwd & D & "headers"                  # .. from target DirSe
-  srcSrcDir = cwd & D & "sha256d"
-  srcExtDir = cwd & D & "crypt"
-  stdCcFlgs = "-I " & srcIncDir
+  stdCcFlgs = " -I " & "headers".nimSrcDirname &
+              " -I " & "conf".nimSrcRoot
 
 when isMainModule:
   const ccFlags = stdCcFlgs
@@ -49,8 +42,8 @@ else:
 
 {.passC: ccFlags.}
 
-{.compile: srcSrcDir & D & "ltc_sha256.c".}
-{.compile: srcExtDir & D & "ltc_crypt-argchk.c".}
+{.compile: "sha256d/ltc_sha256.c"     .nimSrcDirname.}
+{.compile: "crypt/ltc_crypt-argchk.c" .nimSrcDirname.}
 
 # ----------------------------------------------------------------------------
 # Interface ltc/sha256
@@ -135,7 +128,7 @@ when isMainModule:
     HashState = tuple
       sha: Sha100State
 
-  {.compile: srcSrcDir & D & "ltc_sha256specs.c".}
+  {.compile: "sha256d/ltc_sha256specs.c".nimSrcDirname.}
   proc sha100Test():         cint    {.cdecl, importc: "ltc_sha256_test".}
   proc zSha100Specs():       pointer {.cdecl, importc: "ltc_sha256_specs".}
 
