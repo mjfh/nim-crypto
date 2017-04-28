@@ -189,7 +189,7 @@ LTC_MUTEX_PROTO(ltc_prng_mutex)
  */
 unsigned long rng_get_bytes(unsigned char *out,
                             unsigned long outlen,
-                            void (*callback)(void));
+                            void (*callback)(void*), void *desc);
 
 int rng_make_prng(int bits, int wprng, prng_state *prng, void (*callback)(void));
 

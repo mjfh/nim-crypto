@@ -18,10 +18,9 @@
 
 #ifdef LTC_DEVRANDOM
 /* on *NIX read /dev/random */
-static unsigned long rng_nix(unsigned char *buf, unsigned long len,
-                             void (*callback)(void))
+static unsigned long rng_nix(unsigned char *buf, unsigned long len) /* patched */
 {
-    LTC_UNUSED_PARAM(callback);
+    /* LTC_UNUSED_PARAM(callback); */                               /* patched */
 #ifdef LTC_NO_FILE
     LTC_UNUSED_PARAM(buf);
     LTC_UNUSED_PARAM(len);
@@ -59,7 +58,7 @@ static unsigned long rng_nix(unsigned char *buf, unsigned long len,
 #define ANSI_RNG
 
 static unsigned long rng_ansic(unsigned char *buf, unsigned long len,
-                               void (*callback)(void))
+                               void (*callback)(void*),void *dsc) /* patched */
 {
    clock_t t1;
    int l, acc, bits, a, b;
@@ -72,7 +71,7 @@ static unsigned long rng_ansic(unsigned char *buf, unsigned long len,
    bits = 8;
    acc  = a = b = 0;
    while (len--) {
-       if (callback != NULL) callback();
+       if (callback != NULL) callback(dsc);
        while (bits--) {
           do {
              t1 = XCLOCK(); while (t1 == XCLOCK()) a ^= 1;
@@ -104,10 +103,9 @@ static unsigned long rng_ansic(unsigned char *buf, unsigned long len,
 #include <windows.h>
 #include <wincrypt.h>
 
-static unsigned long rng_win32(unsigned char *buf, unsigned long len,
-                               void (*callback)(void))
+static unsigned long rng_win32(unsigned char *buf, unsigned long len) /* patched */
 {
-   LTC_UNUSED_PARAM(callback);
+  /* LTC_UNUSED_PARAM(callback); */                                   /* patched */
    HCRYPTPROV hProv = 0;
    if (!CryptAcquireContext(&hProv, NULL, MS_DEF_PROV, PROV_RSA_FULL,
                             (CRYPT_VERIFYCONTEXT | CRYPT_MACHINE_KEYSET)) &&
@@ -134,20 +132,20 @@ static unsigned long rng_win32(unsigned char *buf, unsigned long len,
   @return Number of octets read
 */
 unsigned long rng_get_bytes(unsigned char *out, unsigned long outlen,
-                            void (*callback)(void))
+                            void (*callback)(void*), void *dsc)         /* patched */
 {
    unsigned long x;
 
    LTC_ARGCHK(out != NULL);
 
 #if defined(LTC_DEVRANDOM)
-   x = rng_nix(out, outlen, callback);   if (x != 0) { return x; }
+   x = rng_nix(out, outlen);                  if (x != 0) { return x; } /* patched */
 #endif
 #if defined(WIN32) || defined(_WIN32) || defined(WINCE)
-   x = rng_win32(out, outlen, callback); if (x != 0) { return x; }
+   x = rng_win32(out, outlen);                if (x != 0) { return x; } /* patched */
 #endif
 #ifdef ANSI_RNG
-   x = rng_ansic(out, outlen, callback); if (x != 0) { return x; }
+   x = rng_ansic(out, outlen, callback, dsc); if (x != 0) { return x; } /* patched */
 #endif
    return 0;
 }

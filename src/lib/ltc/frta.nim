@@ -26,21 +26,19 @@
 #
 
 import
-  os, sequtils, strutils, macros, ltc / [aes80, ltc_const, sha100]
+  os, sequtils, strutils, macros, ltc / [aes80, ltc_const, sha100], misc/msrc
 
 # ----------------------------------------------------------------------------
 # FORTUNA compiler
 # ----------------------------------------------------------------------------
 
-template getCwd: string =
-  instantiationInfo(-1, true).filename.parentDir
-
 const
-  cwd       = getCwd                               # starts with current ..
-  D         = cwd[2 * (cwd[1] == ':').ord]         # .. DirSep, may differ ..
-  srcIncDir = cwd & D & "headers"                  # .. from target DirSe
-  srcSrcDir = cwd & D & "fortunad"
-  stdCcFlgs = "-I " & srcIncDir
+  ltcFortunac      = "fortunad/ltc_fortuna.c"       .nimSrcDirname
+  ltcRngGetBytesc  = "fortunad/ltc_rng_get_bytes.c" .nimSrcDirname
+  ltcFortunaSpecsc = "fortunad/ltc_fortunaspecs.c"  .nimSrcDirname
+
+  stdCcFlgs       = " -I " & "headers".nimSrcDirname &
+                    " -I " & "conf".nimSrcRoot
 
 when isMainModule:
   const ccFlags = stdCcFlgs
@@ -49,14 +47,16 @@ else:
 
 {.passC: ccFlags.}
 
-{.compile: srcSrcDir & D & "ltc_fortuna.c".}
-{.compile: srcSrcDir & D & "ltc_rng_get_bytes.c".}
+{.compile: "fortunad/ltc_fortuna.c"       .nimSrcDirname.}
+{.compile: "fortunad/ltc_rng_get_bytes.c" .nimSrcDirname.}
 
 # ----------------------------------------------------------------------------
 # Interface ltc/fortuna
 # ----------------------------------------------------------------------------
 
 type
+  FrtaCbFn* = tuple[fn: proc()]
+
   FrtaPools = array[ltcFrtaPools,Sha100State]
   Frta* = tuple
     pool:   FrtaPools              # the pools
@@ -147,16 +147,22 @@ proc fortuna_export(outPtr: pointer; outLen: ptr culong;
 #  ##   isCryptOk if successful
 
 proc rng_get_bytes(outPtr: pointer; outLen: culong;
-                   cBck: proc()): culong {.cdecl, importc.}
+                   clBck: pointer, clCtx: pointer): culong {.cdecl, importc.}
   ## Read the system RNG
   ##
   ## Arguments:
   ##   outPtr --    [out] Destination
   ##   outLen --     [in] Length desired (octets)
-  ##   cBck  --      [in] function to call when RNG is slow (can be nil).
+  ##   clBck  --     [in] (void(*)(void*)) function pointer to be called
+  ##                      when RNG is slow (can be nil).
+  ##   clCtx  --     [in] context pointer for clBck()
   ##
   ## Returns:
   ##   number of octets read
+
+proc fwdCallBack(ctx: ptr FrtaCbFn) {.exportc.} =
+  ## (void(*)(void*)) function wrapper
+  ctx.fn()
 
 # ----------------------------------------------------------------------------
 # Debugging helper
@@ -219,10 +225,12 @@ proc frtaAddEntropy*(x: var Frta; p: pointer; pLen: int): bool {.inline.} =
 
 
 # inspired by: libtomcrypt/src/prngs/rng_make_prng.c
-proc getFrta*(x: var Frta; rndBits = 1024; callBack: proc() = nil): bool =
-  ## Initialise Fortuna random PRNG
+proc getFrta*(x: var Frta; rndBits = 1024; addEntropy: proc() = nil): bool =
+  ## Initialise Fortuna random PRNG. The optional function addEntropy() is
+  ## used to generate entropy for the ANSI_RNG.
   var
     buf: array[256,int8]
+    callBack: pointer
   let
     bPtr = cast[pointer](addr buf[0])
     ctx  = addr x
@@ -232,9 +240,16 @@ proc getFrta*(x: var Frta; rndBits = 1024; callBack: proc() = nil): bool =
   assert bLen <= buf.sizeof.culong
 
   block fail:
+    var
+      cbCtx: FrtaCbFn
+      cbCall, cbWrap: pointer
+    if not addEntropy.isNil:
+      cbCtx.fn = addEntropy
+      cbWrap   = cast[pointer](fwdCallBack)
+      cbCall   = cast[pointer](addr cbCtx)
     if isCryptOk != ctx.fortuna_start:
       break fail
-    if bLen != rng_get_bytes(bPtr, bLen, callBack):
+    if bLen != rng_get_bytes(bPtr, bLen, cbWrap, cbCall):
       break fail
     if not x.frtaAddEntropy(addr buf, bLen.int):
       break fail
@@ -283,7 +298,7 @@ when isMainModule:
       echo ">>> FrtaEntropy=", n, " expected=", FrtaEntropy.sizeof
     doAssert n.int == FrtaEntropy.sizeof
 
-  {.compile: srcSrcDir & D & "ltc_fortunaspecs.c".}
+  {.compile: ltcFortunaSpecsc.}
   block: # verify Aes80Key descriptor layout in C and NIM
     proc zFrtaSpecs(): pointer {.cdecl, importc: "ltc_fortuna_specs".}
     proc tFrtaSpecs(): seq[int] =
@@ -313,6 +328,10 @@ when isMainModule:
     # echo ">>> ", v, " >> ", w
     doAssert v == w
 
+  var helloWorldCount: int
+  proc helloWorld =
+    helloWorldCount.inc
+
   block: # invoke self test in C code
     proc fortuna_test(): cint {.cdecl, importc.}
     # echo ">>> ", fortuna_test()
@@ -322,8 +341,11 @@ when isMainModule:
     var
       prng: Frta
       exp, exq: FrtaEntropy
-    doAssert true == prng.getFrta
+    helloWorldCount = 0
+    doAssert true == prng.getFrta(addEntropy = helloWorld)
     doAssert true == prng.frtaExport(exp)
+    when not defined(check_run):
+      echo ">>> helloWorld: ", helloWorldCount
 
     doAssert true == prng.frtaAddEntropy(addr exp, exp.sizeof)
     doAssert true == prng.frtaExport(exq)
@@ -334,7 +356,10 @@ when isMainModule:
 
   block: # read random data
     var prng: Frta
-    doAssert true == prng.getFrta
+    helloWorldCount = 0
+    doAssert true == prng.getFrta(addEntropy = helloWorld)
+    when not defined(check_run):
+      echo ">>> helloWorld: ", helloWorldCount
 
     var data = newSeq[int8](20)
     doAssert data.len == prng.readFrta(addr data[0], data.len)

@@ -1,9 +1,82 @@
 *** Cmd:    /bin/sh check-sources.sh
-*** Date:   Fri 28 Apr 18:31:05 BST 2017
+*** Date:   Fri 28 Apr 22:24:02 BST 2017
 *** Source: http://github.com/tomstdenis/libtomcrypt/tree/develop
             http://www.libtom.net/LibTomCrypt
 
 *** Libtomcrypt repo: heads/develop 1.17-376-g4981e2a
+
+*** diff rng_get_bytes.c:
+--- ../libtomcrypt-source/src/prngs/rng_get_bytes.c	2017-04-27 16:09:49.777630101 +0100
++++ ./fortunad/ltc_rng_get_bytes.c	2017-04-28 22:22:30.434926988 +0100
+@@ -18,10 +18,9 @@
+ 
+ #ifdef LTC_DEVRANDOM
+ /* on *NIX read /dev/random */
+-static unsigned long rng_nix(unsigned char *buf, unsigned long len,
+-                             void (*callback)(void))
++static unsigned long rng_nix(unsigned char *buf, unsigned long len) /* patched */
+ {
+-    LTC_UNUSED_PARAM(callback);
++    /* LTC_UNUSED_PARAM(callback); */                               /* patched */
+ #ifdef LTC_NO_FILE
+     LTC_UNUSED_PARAM(buf);
+     LTC_UNUSED_PARAM(len);
+@@ -59,7 +58,7 @@
+ #define ANSI_RNG
+ 
+ static unsigned long rng_ansic(unsigned char *buf, unsigned long len,
+-                               void (*callback)(void))
++                               void (*callback)(void*),void *dsc) /* patched */
+ {
+    clock_t t1;
+    int l, acc, bits, a, b;
+@@ -72,7 +71,7 @@
+    bits = 8;
+    acc  = a = b = 0;
+    while (len--) {
+-       if (callback != NULL) callback();
++       if (callback != NULL) callback(dsc);
+        while (bits--) {
+           do {
+              t1 = XCLOCK(); while (t1 == XCLOCK()) a ^= 1;
+@@ -104,10 +103,9 @@
+ #include <windows.h>
+ #include <wincrypt.h>
+ 
+-static unsigned long rng_win32(unsigned char *buf, unsigned long len,
+-                               void (*callback)(void))
++static unsigned long rng_win32(unsigned char *buf, unsigned long len) /* patched */
+ {
+-   LTC_UNUSED_PARAM(callback);
++  /* LTC_UNUSED_PARAM(callback); */                                   /* patched */
+    HCRYPTPROV hProv = 0;
+    if (!CryptAcquireContext(&hProv, NULL, MS_DEF_PROV, PROV_RSA_FULL,
+                             (CRYPT_VERIFYCONTEXT | CRYPT_MACHINE_KEYSET)) &&
+@@ -134,20 +132,20 @@
+   @return Number of octets read
+ */
+ unsigned long rng_get_bytes(unsigned char *out, unsigned long outlen,
+-                            void (*callback)(void))
++                            void (*callback)(void*), void *dsc)         /* patched */
+ {
+    unsigned long x;
+ 
+    LTC_ARGCHK(out != NULL);
+ 
+ #if defined(LTC_DEVRANDOM)
+-   x = rng_nix(out, outlen, callback);   if (x != 0) { return x; }
++   x = rng_nix(out, outlen);                  if (x != 0) { return x; } /* patched */
+ #endif
+ #if defined(WIN32) || defined(_WIN32) || defined(WINCE)
+-   x = rng_win32(out, outlen, callback); if (x != 0) { return x; }
++   x = rng_win32(out, outlen);                if (x != 0) { return x; } /* patched */
+ #endif
+ #ifdef ANSI_RNG
+-   x = rng_ansic(out, outlen, callback); if (x != 0) { return x; }
++   x = rng_ansic(out, outlen, callback, dsc); if (x != 0) { return x; } /* patched */
+ #endif
+    return 0;
+ }
 
 *** diff fortuna.c:
 --- ../libtomcrypt-source/src/prngs/fortuna.c	2017-04-27 16:09:49.777630101 +0100
@@ -40,6 +113,19 @@
     LTC_MUTEX_UNLOCK(&prng->fortuna.prng_lock);
     return err;
  }
+
+*** diff tomcrypt_prng.h:
+--- ../libtomcrypt-source/src/headers/tomcrypt_prng.h	2017-04-27 16:09:49.753630844 +0100
++++ ./headers/tomcrypt_prng.h	2017-04-28 20:27:06.381635343 +0100
+@@ -189,7 +189,7 @@
+  */
+ unsigned long rng_get_bytes(unsigned char *out,
+                             unsigned long outlen,
+-                            void (*callback)(void));
++                            void (*callback)(void*), void *desc);
+ 
+ int rng_make_prng(int bits, int wprng, prng_state *prng, void (*callback)(void));
+ 
 
 *** diff tomcrypt_custom.h:
 --- ../libtomcrypt-source/src/headers/tomcrypt_custom.h	2017-04-27 16:09:49.753630844 +0100
