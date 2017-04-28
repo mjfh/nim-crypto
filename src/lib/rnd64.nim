@@ -24,107 +24,84 @@
 # OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #
 
-## Random generator based on XORO (similar to the NIM implementation) or
-## on ChaCha20 depending on which one is activated internally.
-##
+## Random generator based on Xoro, CacCha, and Fortuna to be activated at
+## compile time.
 
 import
   hashes, times, strutils, sequtils
 
-const
-  useChaChaRandom = true
-  useFixedInitStr = ""          # set some text for static initialisation
+# Set some text for static initialisation. This allows for random
+# generator replay for Xoro or CacCha.
+#const useFixedInitStr = "rubbish bin"
+
+# activate some random generator (defailt is Fortuna)
+type  RndGenType = enum FortunaRandom, XoroRandom, ChaChaRandom
+#const rndGenType = ChaChaRandom
+
+
+when not declared(rndGenType):
+  const rndGenType = FortunaRandom
+
+
+# check compile time dependent init string/seed
+when not declared(useFixedInitStr):
+  const ccInit = hash(CompileTime & CompileDate & hostOS & hostCPU)
+else:
+  const ccInit = hash(useFixedInitStr)
+
+  # Fortuna will allways reseed differently => no warning needed
+  when rndGenType != FortunaRandom:
+    {.warning: "Using fixed init string '"&useFixedInitStr&"' for seeding".}
+
+
+# Fortuna is considered safe by design (but check implementation)
+when rndGenType != FortunaRandom:
+  {.warning: $rndGenType & ": consider using Fortuna random generator".}
+
+else: # but Fortuna is a bad choice for replay and debugging
+  when not defined(release)  and
+       not isMainModule      and
+       declared(useFixedInitStr):
+    {.warning: "FortunaRandom cannot be used for replay debugging".}
 
 # ----------------------------------------------------------------------------
 # Private functions
 # ----------------------------------------------------------------------------
 
-when useChaChaRandom:
-  import chacha/chacha
-  ## Note:
-  ##    This is the ChaCha20 based version.
+when rndGenType == ChaChaRandom:
   ##
-else:
-  import xoro/xoro
-  ## Note:
-  ##    This is the XORO based version.
+  ## Activated random generator: ChaCha20
   ##
-
-## Unless deconfigured, this library will produce a different random
-## sequence each time it is compiled.. This is achieved by the following
-## strategy:
-##
-## Compile time setup:
-##
-##  * Create ccInit, a hashed compile time random (well sort of) string.
-##
-## Runtime initialisation:
-##
-##  * Initialise with random seed derived from ccInit
-##
-## Active re-seeding:
-##
-##  * Mangle ccInit into re-seeding value
-##
-when useFixedInitStr != "":
-  {.warning: "Using fixed init string '" & useFixedInitStr & "' for seeding".}
-  const ccInit = hash(useFixedInitStr)
-else:
-  {.warning: "rnd64: replace random generator soon".}
-  const ccInit = hash(CompileTime & CompileDate & hostOS & hostCPU)
-
-when useChaChaRandom:
-  type
-    CcMask = array[5,uint64]
-
-  proc mkCMsk(bitMap: int64): CcMask =
-    for inx in 0..3:
-      for nibble in 0..15:
-        var
-          bit = inx * 16 + nibble
-          msk = 1 shl bit
-          val = (bitMap and msk) shr bit
-        if val != 0:
-          result[1 + inx] = result[1 + inx] or (15u64 shl (4 * bit))
-
-  # Create ccMask, a 5x64 bit seed mask array derived from ccInit
-  const
-    ccMask = mkCMsk(ccInit)
-
-  proc mkCCtx(x: var ChaChaCtx; seed: uint64) {.inline.} =
-    var
-      k: ChaChaKey = (data: [seed xor ccMask[0],
-                             seed xor ccMask[1],
-                             seed xor ccMask[2],
-                             seed xor ccMask[3]])
-      n: ChaChaIV  = (data: [seed xor ccMask[4]])
-    x.getChaCha(addr k, addr n)
-
-  # initialised random generator state data area
-  var cCtx: ChaChaCtx
-  cCtx.mkCCtx(0u64)
-
-  # random method wrappers to be used in public functions
+  import rnd64d/rndcc
+  var ctx: RndCcCtx
   proc seedRandom64(seed: int64) {.inline.} =
-    cCtx.mkCCtx(seed.uint64)
-
+    ctx.initRndCcCtx(seed.uint64, ccInit)
   proc nextRandom64(): int64 {.inline.} =
-    cCtx.chachaKeyStream(addr result, 8)
+    ctx.rcdCcNext
 
-else:
-
-  # random method wrappers to be used in public functions
+when rndGenType == XoroRandom:
+  ##
+  ## Activated random generator: Xoro
+  ##
+  import rnd64d/rndxo
   proc seedRandom64(seed: int64) {.inline.} =
-    var h: Hash = 0
-    h = h !& hash(seed)
-    h = h !& hash(ccInit)
-    setX128Seed(!$h)
-
+    initRndXo(seed, ccInit)
   proc nextRandom64(): int64 {.inline.} =
-    x128Next()
+    rndXoNext()
 
-  # default random generator initialisation
-  seedRandom64(0)
+when rndGenType == FortunaRandom:
+  ##
+  ## Activated random generator: Fortuna
+  ##
+  import rnd64d/rndft
+  var ctx: RndFrta
+  proc seedRandom64(seed: int64) {.inline.} =
+    ctx.initRndFrta(seed, ccInit)
+  proc nextRandom64(): int64 {.inline.} =
+    ctx.rndFrtaNext
+
+# initialise random generator
+0.seedRandom64
 
 # ----------------------------------------------------------------------------
 # Public functions
@@ -198,13 +175,6 @@ when isMainModule:
 
   when not defined(check_run):
     echo ">>> ccInit=", ccInit.toHex
-
-  when useChaChaRandom:
-    var pfx = ">>> ccMask="
-    for n in 0..4:
-      when not defined(check_run):
-        echo pfx, ccMask[n].int64.toHex(16).toLowerAscii.replace("0","-")
-      pfx = " ".repeat(pfx.len-1) & "|"
 
   rnd64init()
 

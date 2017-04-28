@@ -58,7 +58,7 @@ else:
 
 type
   FrtaPools = array[ltcFrtaPools,Sha100State]
-  FrtaPrng* = tuple
+  Frta* = tuple
     pool:   FrtaPools              # the pools
     sKey:   Aes80Key
     K:      array[32,int8]         # the current key
@@ -70,7 +70,7 @@ type
 
   FrtaEntropy* = array[32*ltcFrtaPools,int8]
 
-proc fortuna_start(ctx: ptr FrtaPrng): cint {.cdecl, importc.}
+proc fortuna_start(ctx: ptr Frta): cint {.cdecl, importc.}
   ## Start the PRNG
   ##
   ## Arguments:
@@ -80,7 +80,7 @@ proc fortuna_start(ctx: ptr FrtaPrng): cint {.cdecl, importc.}
   ##   isCryptOk if successful
 
 proc fortuna_add_entropy(inPtr: pointer; inLen: culong;
-                         ctx: ptr FrtaPrng): cint {.cdecl, importc.}
+                         ctx: ptr Frta): cint {.cdecl, importc.}
   ## Add entropy to the PRNG state
   ##
   ## Arguments:
@@ -91,7 +91,7 @@ proc fortuna_add_entropy(inPtr: pointer; inLen: culong;
   ## Returns:
   ##   isCryptOk if successful
 
-proc fortuna_ready(ctx: ptr FrtaPrng): cint {.cdecl, importc.}
+proc fortuna_ready(ctx: ptr Frta): cint {.cdecl, importc.}
   ## Make the PRNG ready to read from
   ##
   ## Arguments:
@@ -101,7 +101,7 @@ proc fortuna_ready(ctx: ptr FrtaPrng): cint {.cdecl, importc.}
   ##   isCryptOk if successful
 
 proc fortuna_read(outPtr: pointer; outLen: culong;
-                  ctx: ptr FrtaPrng): cint {.cdecl, importc.}
+                  ctx: ptr Frta): cint {.cdecl, importc.}
   ## Read from the PRNG
   ##
   ## Arguments:
@@ -112,7 +112,7 @@ proc fortuna_read(outPtr: pointer; outLen: culong;
   ## Returns:
   ##   number of octets read
 
-#proc fortuna_done(ctx: ptr FrtaPrng): cint {.cdecl, importc.}
+#proc fortuna_done(ctx: ptr Frta): cint {.cdecl, importc.}
 #  ## Terminate the PRNG
 #  ##
 #  ## Arguments:
@@ -122,7 +122,7 @@ proc fortuna_read(outPtr: pointer; outLen: culong;
 #  ##   isCryptOk if successful
 
 proc fortuna_export(outPtr: pointer; outLen: ptr culong;
-                    ctx: ptr FrtaPrng): cint {.cdecl, importc.}
+                    ctx: ptr Frta): cint {.cdecl, importc.}
   ## Export the PRNG state
   ##
   ## Arguments:
@@ -135,7 +135,7 @@ proc fortuna_export(outPtr: pointer; outLen: ptr culong;
   ##   isCryptOk if successful
 
 #proc fortuna_import(inPtr: pointer; inLen: culong;
-#                    ctx: ptr FrtaPrng): cint {.cdecl, importc.}
+#                    ctx: ptr Frta): cint {.cdecl, importc.}
 #  ## Import a PRNG state
 #  ##
 #  ## Arguments:
@@ -195,8 +195,7 @@ proc toHexSeq(s: string): seq[int8] =
 # Public interface
 # ----------------------------------------------------------------------------
 
-proc frtaAddEntropy*(x: var FrtaPrng;
-                     p: pointer; pLen: int): bool {.inline.} =
+proc frtaAddEntropy*(x: var Frta; p: pointer; pLen: int): bool {.inline.} =
   ## Add entropy to the Fortuna PRNG
   if 0 < pLen:
     var
@@ -220,7 +219,7 @@ proc frtaAddEntropy*(x: var FrtaPrng;
 
 
 # inspired by: libtomcrypt/src/prngs/rng_make_prng.c
-proc getFrta*(x: var FrtaPrng; rndBits = 1024; callBack: proc() = nil): bool =
+proc getFrta*(x: var Frta; rndBits = 1024; callBack: proc() = nil): bool =
   ## Initialise Fortuna random PRNG
   var
     buf: array[256,int8]
@@ -246,17 +245,17 @@ proc getFrta*(x: var FrtaPrng; rndBits = 1024; callBack: proc() = nil): bool =
   ctx.zeroMem(x.sizeof)
 
 
-proc clearFrta*(x: var FrtaPrng) {.inline.} =
+proc clearFrta*(x: var Frta) {.inline.} =
   (addr x).zeroMem(x.sizeof)
 
 
-proc readFrta*(x: var FrtaPrng; buf: pointer; bufLen: int): int {.inline.} =
+proc readFrta*(x: var Frta; buf: pointer; bufLen: int): int {.inline.} =
   ## Get random bytes from Fortune random PRNG,
   ## returns bufLen or 0 (if error)
   fortuna_read(buf, bufLen.culong, addr x)
 
 
-proc frtaExport*(x: var FrtaPrng; buf: var FrtaEntropy): bool {.inline.} =
+proc frtaExport*(x: var Frta; buf: var FrtaEntropy): bool {.inline.} =
   var bLen = buf.sizeof.culong
   if isCryptOk == fortuna_export(addr buf, addr bLen, addr x) and
      bLen == buf.sizeof.culong:
@@ -271,12 +270,12 @@ proc frtaExport*(x: var FrtaPrng; buf: var FrtaEntropy): bool {.inline.} =
 when isMainModule:
   type
     PrngState = tuple
-      frta: FrtaPrng
+      frta: Frta
 
   block: # verify entropy export size
     var
       n: culong = 0
-      x: FrtaPrng
+      x: Frta
       p  = ""
       rc = isCryptBufferOverflow
     doAssert rc == fortuna_export(addr p[0], addr n, addr x)
@@ -321,7 +320,7 @@ when isMainModule:
 
   block: # check import/export
     var
-      prng: FrtaPrng
+      prng: Frta
       exp, exq: FrtaEntropy
     doAssert true == prng.getFrta
     doAssert true == prng.frtaExport(exp)
@@ -334,7 +333,7 @@ when isMainModule:
     doAssert exp != exq
 
   block: # read random data
-    var prng: FrtaPrng
+    var prng: Frta
     doAssert true == prng.getFrta
 
     var data = newSeq[int8](20)

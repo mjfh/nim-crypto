@@ -1,0 +1,10 @@
+/*.ndb
+/*.exe
+/*.html
+/Makefile
+/Makefile.in
+/nim.sh
+/nimcache
+/rndcc
+/rndft
+/rndxo

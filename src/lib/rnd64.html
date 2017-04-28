@@ -6,6 +6,8 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <!-- Favicon -->
 <link rel="shortcut icon" href="data:image/x-icon;base64,AAABAAEAEBAAAAEAIABoBAAAFgAAACgAAAAQAAAAIAAAAAEAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AAAAAAUAAAAF////AP///wD///8A////AP///wD///8A////AP///wD///8A////AAAAAAIAAABbAAAAlQAAAKIAAACbAAAAmwAAAKIAAACVAAAAWwAAAAL///8A////AP///wD///8A////AAAAABQAAADAAAAAYwAAAA3///8A////AP///wD///8AAAAADQAAAGMAAADAAAAAFP///wD///8A////AP///wAAAACdAAAAOv///wD///8A////AP///wD///8A////AP///wD///8AAAAAOgAAAJ3///8A////AP///wAAAAAnAAAAcP///wAAAAAoAAAASv///wD///8A////AP///wAAAABKAAAAKP///wAAAABwAAAAJ////wD///8AAAAAgQAAABwAAACIAAAAkAAAAJMAAACtAAAAFQAAABUAAACtAAAAkwAAAJAAAACIAAAAHAAAAIH///8A////AAAAAKQAAACrAAAAaP///wD///8AAAAARQAAANIAAADSAAAARf///wD///8AAAAAaAAAAKsAAACk////AAAAADMAAACcAAAAnQAAABj///8A////AP///wAAAAAYAAAAGP///wD///8A////AAAAABgAAACdAAAAnAAAADMAAAB1AAAAwwAAAP8AAADpAAAAsQAAAE4AAAAb////AP///wAAAAAbAAAATgAAALEAAADpAAAA/wAAAMMAAAB1AAAAtwAAAOkAAAD/AAAA/wAAAP8AAADvAAAA3gAAAN4AAADeAAAA3gAAAO8AAAD/AAAA/wAAAP8AAADpAAAAtwAAAGUAAAA/AAAA3wAAAP8AAAD/AAAA/wAAAP8AAAD/AAAA/wAAAP8AAAD/AAAA/wAAAP8AAADfAAAAPwAAAGX///8A////AAAAAEgAAADtAAAAvwAAAL0AAADGAAAA7wAAAO8AAADGAAAAvQAAAL8AAADtAAAASP///wD///8A////AP///wD///8AAAAAO////wD///8A////AAAAAIcAAACH////AP///wD///8AAAAAO////wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A//8AAP//AAD4HwAA7/cAAN/7AAD//wAAoYUAAJ55AACf+QAAh+EAAAAAAADAAwAA4AcAAP5/AAD//wAA//8AAA=="/>
 
@@ -1240,27 +1242,12 @@ function main() {
   </div>
   <div class="nine columns" id="content">
   <div id="tocRoot"></div>
-  <p class="module-desc">Random generator based on XORO (similar to the NIM implementation) or on ChaCha20 depending on which one is activated internally. <dl class="docutils"><dt>Note:</dt>
-<dd>This is the ChaCha20 based version.</dd>
-</dl>
-<p>Unless deconfigured, this library will produce a different random sequence each time it is compiled.. This is achieved by the following strategy:</p>
-<p>Compile time setup:</p>
-<blockquote><p><ul class="simple"><li>Create ccInit, a hashed compile time random (well sort of) string.</li>
-</ul>
-</p></blockquote>
-<p>Runtime initialisation:</p>
-<blockquote><p><ul class="simple"><li>Initialise with random seed derived from ccInit</li>
-</ul>
-</p></blockquote>
-<p>Active re-seeding:</p>
-<blockquote><p><ul class="simple"><li>Mangle ccInit into re-seeding value</li>
-</ul>
-</p></blockquote>
+  <p class="module-desc">Random generator based on Xoro, CacCha, and Fortuna to be activated at compile time.<blockquote><p>Activated random generator: Fortuna</p></blockquote>
 </p>
   <div class="section" id="6">
 <h1><a class="toc-backref" href="#6">Imports</a></h1>
 <dl class="item">
-<a class="reference external" href="hashes.html">hashes</a>, <a class="reference external" href="times.html">times</a>, <a class="reference external" href="strutils.html">strutils</a>, <a class="reference external" href="sequtils.html">sequtils</a>, <a class="reference external" href="chacha/chacha.html">chacha/chacha</a>
+<a class="reference external" href="hashes.html">hashes</a>, <a class="reference external" href="times.html">times</a>, <a class="reference external" href="strutils.html">strutils</a>, <a class="reference external" href="sequtils.html">sequtils</a>, <a class="reference external" href="rnd64d/rndft.html">rnd64d/rndft</a>
 </dl></div>
 <div class="section" id="12">
 <h1><a class="toc-backref" href="#12">Procs</a></h1>
@@ -1269,18 +1256,18 @@ function main() {
 <dd>
 seed random generator
 &nbsp;&nbsp;<a
-href="/tree/master/rnd64.nim#L133"
+href="/tree/master/rnd64.nim#L110"
 class="link-seesrc" target="_blank">Source</a>
-<a href="/edit/devel/rnd64.nim#L133" class="link-seesrc" target="_blank" >Edit</a>
+<a href="/edit/devel/rnd64.nim#L110" class="link-seesrc" target="_blank" >Edit</a>
 
 </dd>
 <dt id="rnd64Next"><a name="rnd64Next,"></a><pre><span class="Keyword">proc</span> <span class="Identifier">rnd64Next</span><span class="Other">(</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">int64</span> <span class="Other pragmabegin">{.</span><div class="pragma"><span class="Identifier">inline</span><span class="Other">,</span> <span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span></div><span class="Other pragmaend">.}</span></pre></dt>
 <dd>
 get next 64 bit random integer
 &nbsp;&nbsp;<a
-href="/tree/master/rnd64.nim#L143"
+href="/tree/master/rnd64.nim#L120"
 class="link-seesrc" target="_blank">Source</a>
-<a href="/edit/devel/rnd64.nim#L143" class="link-seesrc" target="_blank" >Edit</a>
+<a href="/edit/devel/rnd64.nim#L120" class="link-seesrc" target="_blank" >Edit</a>
 
 </dd>
 
@@ -1292,18 +1279,18 @@ class="link-seesrc" target="_blank">Source</a>
 <dd>
 walk over n random bytes
 &nbsp;&nbsp;<a
-href="/tree/master/rnd64.nim#L156"
+href="/tree/master/rnd64.nim#L133"
 class="link-seesrc" target="_blank">Source</a>
-<a href="/edit/devel/rnd64.nim#L156" class="link-seesrc" target="_blank" >Edit</a>
+<a href="/edit/devel/rnd64.nim#L133" class="link-seesrc" target="_blank" >Edit</a>
 
 </dd>
 <dt id="rnd16items"><a name="rnd16items.i,int"></a><pre><span class="Keyword">iterator</span> <span class="Identifier">rnd16items</span><span class="Other">(</span><span class="Identifier">num</span><span class="Other">:</span> <span class="Identifier">int</span><span class="Other">)</span><span class="Other">:</span> <span class="Other">(</span><span class="Identifier">int</span><span class="Other">,</span> <span class="Identifier">int16</span><span class="Other">)</span> <span class="Other pragmabegin">{.</span><div class="pragma"><span class="Identifier">inline</span><span class="Other">,</span> <span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span></div><span class="Other pragmaend">.}</span></pre></dt>
 <dd>
 walk over n random bytes
 &nbsp;&nbsp;<a
-href="/tree/master/rnd64.nim#L172"
+href="/tree/master/rnd64.nim#L149"
 class="link-seesrc" target="_blank">Source</a>
-<a href="/edit/devel/rnd64.nim#L172" class="link-seesrc" target="_blank" >Edit</a>
+<a href="/edit/devel/rnd64.nim#L149" class="link-seesrc" target="_blank" >Edit</a>
 
 </dd>
 
@@ -1316,7 +1303,7 @@ class="link-seesrc" target="_blank">Source</a>
       <div class="twelve-columns footer">
         <span class="nim-sprite"></span>
         <br/>
-        <small>Made with Nim. Generated: 2017-04-25 13:40:15 UTC</small>
+        <small>Made with Nim. Generated: 2017-04-28 18:38:36 UTC</small>
       </div>
     </div>
   </div>

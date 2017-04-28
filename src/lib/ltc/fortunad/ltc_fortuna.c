@@ -372,7 +372,7 @@ LBL_ERR:
 /* #ifdef LTC_CLEAN_STACK */                 /* patched */
    zeromem(md, sizeof(*md));
 /* #endif */                                 /* patched */
-/* XFREE(md,sizeof(hash_state)); */          /* patched */
+/* XFREE(md); */                             /* patched */
    LTC_MUTEX_UNLOCK(&prng->fortuna.prng_lock);
    return err;
 }
