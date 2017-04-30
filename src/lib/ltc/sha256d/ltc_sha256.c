@@ -1,9 +1,3 @@
-#define crypt_argchk   ltc_crypt_argchk   /* patched */
-#define sha256_test    ltc_sha256_test    /* patched */
-#define sha256_init    ltc_sha256_init    /* patched */
-#define sha256_process ltc_sha256_process /* patched */
-#define sha256_done    ltc_sha256_done    /* patched */
-
 /* LibTomCrypt, modular cryptographic library -- Tom St Denis
  *
  * LibTomCrypt is a library that provides various cryptographic

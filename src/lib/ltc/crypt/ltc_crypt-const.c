@@ -30,9 +30,12 @@
 
 const char *ltc_const(int n)
 {
-#	define X(sym) case sym: return #sym
+#	define X(sym) case              sym: return #sym
+#	define Y(sym) case 0x40000000 | sym: return #sym
 
 	switch(n) {
+
+	/* From enum */
 	X(CRYPT_OK);
 	X(CRYPT_ERROR);
 	X(CRYPT_NOP);
@@ -69,6 +72,9 @@ const char *ltc_const(int n)
 	X(CRYPT_PK_INVALID_PADDING);
 
 	X(CRYPT_HASH_OVERFLOW);
+
+	/* Stand alone constants */
+	Y(LTC_FORTUNA_POOLS);
 	}
 
 	return 0;

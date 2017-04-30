@@ -320,6 +320,7 @@ int fortuna_export(unsigned char *out, unsigned long *outlen, prng_state *prng)
 {
    int         x, err;
    hash_state *md;
+   hash_state smd;                           /* patched */
 
    LTC_ARGCHK(out    != NULL);
    LTC_ARGCHK(outlen != NULL);
@@ -334,7 +335,8 @@ int fortuna_export(unsigned char *out, unsigned long *outlen, prng_state *prng)
       return CRYPT_BUFFER_OVERFLOW;
    }
 
-   md = XMALLOC(sizeof(hash_state));
+   /* md = XMALLOC(sizeof(hash_state)); */   /* patched */
+   md = &smd ;                               /* patched */
    if (md == NULL) {
       LTC_MUTEX_UNLOCK(&prng->fortuna.prng_lock);
       return CRYPT_MEM;
@@ -367,10 +369,10 @@ int fortuna_export(unsigned char *out, unsigned long *outlen, prng_state *prng)
    err = CRYPT_OK;
 
 LBL_ERR:
-#ifdef LTC_CLEAN_STACK
+/* #ifdef LTC_CLEAN_STACK */                 /* patched */
    zeromem(md, sizeof(*md));
-#endif
-   XFREE(md);
+/* #endif */                                 /* patched */
+/* XFREE(md); */                             /* patched */
    LTC_MUTEX_UNLOCK(&prng->fortuna.prng_lock);
    return err;
 }

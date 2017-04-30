@@ -28,19 +28,25 @@
 
 #include "tomcrypt.h"
 
-int *ltc_sha256_specs(void)
+int *ltc_fortuna_specs(void)
 {
 	static int result[20];
 	int n = 0;
-	result[n++] = offsetof(hash_state, sha256.length);
-	result[n++] = offsetof(hash_state, sha256.state);
-	result[n++] = offsetof(hash_state, sha256.curlen);
-	result[n++] = offsetof(hash_state, sha256.buf);
-	result[n++] =   sizeof(struct sha256_state);
-	result[n++] =   sizeof(hash_state);
+
+	result[n++] = offsetof(prng_state, fortuna.pool);
+	result[n++] = offsetof(prng_state, fortuna.pool[1]);
+	result[n++] = offsetof(prng_state, fortuna.skey);
+	result[n++] = offsetof(prng_state, fortuna.K);
+	result[n++] = offsetof(prng_state, fortuna.IV);
+	result[n++] = offsetof(prng_state, fortuna.pool_idx);
+	result[n++] = offsetof(prng_state, fortuna.pool0_len);
+	result[n++] = offsetof(prng_state, fortuna.wd);
+	result[n++] = offsetof(prng_state, fortuna.reset_cnt);
+	result[n++] =   sizeof(struct fortuna_prng);
+	result[n++] =   sizeof(prng_state);
 	result[n++] = 0xffff ;
 
 	return result;
 }
 
-/* end */
+/* End */

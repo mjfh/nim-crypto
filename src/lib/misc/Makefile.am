@@ -5,7 +5,7 @@
 # Blame: Jordan Hrycaj <jordan@teddy-net.com>
 
 SUBDIRS =
-CLEANFILES = *.exe aes80 frta ltc_const sha100
+CLEANFILES = *.exe msrc
 
 NIM2CFLAGS =
 NIM2XFLAGS =

@@ -25,121 +25,29 @@
 #
 
 import
-  os, sequtils, strutils, macros
+  os, sequtils, strutils, macros, ltc/ltc_const, misc/msrc
 
 # ----------------------------------------------------------------------------
 # SHA256 compiler
 # ----------------------------------------------------------------------------
 
-template getCwd: string =
-  instantiationInfo(-1, true).filename.parentDir
-
 const
-  cwd       = getCwd                               # starts with current ..
-  D         = cwd[2 * (cwd[1] == ':').ord]         # .. DirSep, may differ ..
-  srcIncDir = cwd & D & "headers"                  # .. from target DirSe
-  srcSrcDir = cwd & D & "sha256d"
-  srcExtDir = cwd & D & "crypt"
-
-# Additional CC compiler flags (see libtomcrypt/doc/crypt.pdf):
-#
-# ARGTYPE         This lets you control how the LTC_ARGCHK macro will behave.
-#                 The macro is used to check pointers inside the functions
-#                 against NULL. There are four settings for ARGTYPE. When
-#                 set to 0, it will have the default behaviour of printing
-#                 a message to stderr and raising a SIGABRT signal. This is
-#                 provided so all platforms that use LibTomCrypt can have an
-#                 error that functions similarly. When set to 1, it will
-#                 simply pass on to the assert() macro. When set to 2, the
-#                 macro will display the error to stderr then return
-#                 execution to the caller. This could lead to a segmentation
-#                 fault (e.g. when a pointer is NULL) but is useful if you
-#                 handle signals on your own. When set to 3, it will resolve
-#                 to a empty macro and no error checking will be performed.
-#                 Finally, when set to 4, it will return CRYPT_INVALID_ARG
-#                 to the caller.
-#
-# LTC_TEST        When this has been deﬁned the various self–test functions
-#                 (for ciphers, hashes, prngs, etc) are included in the
-#                 build. This is the default conﬁguration. If LTC_NO_TEST
-#                 has been deﬁned, the testing routines will be compacted
-#                 and only return CRYPT_NOP.
-#
-# LTC_NO_FAST     When this has been deﬁned the library will not use faster
-#                 word oriented operations. By default, they are only enabled
-#                 for platforms which can be auto-detected. This macro
-#                 ensures that they are never enabled.
-#
-# LTC_FAST        This mode (auto-detected with x86 32,x86 64 platforms with
-#                 GCC or MSVC) conﬁgures various routines such as ctr
-#                 encrypt() or cbc encrypt() that it can safely XOR multiple
-#                 octets in one step by using a larger data type. This has
-#                 the beneﬁt of cutting down the overhead of the respective
-#                 functions.
-#
-#                 This mode does have one downside. It can cause unaligned
-#                 reads from memory if you are not careful with the
-#                 functions. This is why it has been enabled by default only
-#                 for the x86 class of processors where unaligned accesses
-#                 are allowed. Technically LTC_FAST is not portable since
-#                 unaligned accesses are not covered by the ISO C
-#                 speciﬁcations. In practice however, you can use it on
-#                 pretty much any platform (even MIPS) with care.
-#
-#                 By design the fast mode functions won’t get unaligned on
-#                 their own. For instance, if you call ctr encrypt() right
-#                 after calling ctr start() and all the inputs you gave are
-#                 aligned than ctr encrypt() will perform aligned memory
-#                 operations only. However, if you call ctr encrypt() with
-#                 an odd amount of plaintext then call it again the CTR pad
-#                 (the IV) will be partially used. This will cause the ctr
-#                 routine to ﬁrst use up the remaining pad bytes. Then if
-#                 there are enough plaintext bytes left it will use whole
-#                 word XOR operations. These operations will be unaligned.
-#                 The simplest precaution is to make sure you process all
-#                 data in power of two blocks and handle remainder at the
-#                 end. e.g. If you are CTR’ing a long stream process it in
-#                 blocks of (say) four kilobytes and handle any remaining
-#                 incomplete blocks at the end of the stream.
-#
-#                 If you do plan on using the LTC_FAST mode you have to also
-#                 deﬁne a LTC_FAST_TYPE macro which resolves to an optimal
-#                 sized data type you can perform integer operations with.
-#                 Ideally it should be four or eight bytes since it must
-#                 properly divide the size of your block cipher (e.g. 16
-#                 bytes for AES). This means sadly if you’re on a platform
-#                 with 57–bit words (or something) you can’t use this mode.
-#                 So sad.
-#
-# LTC_NO_ASM      When this has been deﬁned the library will not use any
-#                 inline assembler. Only a few platforms support assembler
-#                 inlines but various versions of ICC and GCC cannot handle
-#                 all of the assembler functions.
-#
-# LTC_SMALL_CODE  When this is defined some of the code such as the Rijndael
-#                 and SAFER+ ciphers are replaced with smaller code variants.
-#                 These variants are slower but can save quite a bit of code
-#                 space.
+  stdCcFlgs = " -I " & "headers".nimSrcDirname &
+              " -I " & "conf".nimSrcRoot
 
 when isMainModule:
-  const ccFlags = " -DARGTYPE=4"
+  const ccFlags = stdCcFlgs
 else:
-  const ccFlags = " -DARGTYPE=4 -DNO_LTC_TEST"
+  const ccFlags = stdCcFlgs & " -DNO_LTC_TEST"
 
-{.passC: "-I " & srcIncDir & ccFlags.}
+{.passC: ccFlags.}
 
-{.compile: srcSrcDir & D & "ltc_sha256.c".}
-{.compile: srcExtDir & D & "ltc_crypt-const.c".}
-{.compile: srcExtDir & D & "ltc_crypt-argchk.c".}
+{.compile: "sha256d/ltc_sha256.c"     .nimSrcDirname.}
+{.compile: "crypt/ltc_crypt-argchk.c" .nimSrcDirname.}
 
 # ----------------------------------------------------------------------------
 # Interface ltc/sha256
 # ----------------------------------------------------------------------------
-
-const
-  isCryptOk           =  0
-  isCryptInvalidArg   = 16
-  isCryptHashOverflow = 25
 
 type
   Sha100Data* = array[32, uint8]
@@ -174,6 +82,17 @@ proc ltc_sha256_done(md: ptr Sha100State; p: pointer): cint {.cdecl, importc.}
   ## or isCryptOk, otherwise
 
 # ----------------------------------------------------------------------------
+# Debugging helper
+# ----------------------------------------------------------------------------
+
+proc dumpSha100State*(md: Sha100State; sep = " "): string =
+  result = ""
+  for n in 0..<md.state.len:
+    if result.len != 0:
+      result &= sep
+    result &= md.state[n].BiggestInt.toHex(8).toLowerAscii
+
+# ----------------------------------------------------------------------------
 # Public interface
 # ----------------------------------------------------------------------------
 
@@ -206,23 +125,10 @@ proc sha100Done*(md: var Sha100State): Sha100Data {.inline.} =
 
 when isMainModule:
   type
-    Sha100Const = enum
-      CRYPT_OK = 0, CRYPT_ERROR, CRYPT_NOP, CRYPT_INVALID_KEYSIZE,
-      CRYPT_INVALID_ROUNDS, CRYPT_FAIL_TESTVECTOR, CRYPT_BUFFER_OVERFLOW,
-      CRYPT_INVALID_PACKET, CRYPT_INVALID_PRNGSIZE, CRYPT_ERROR_READPRNG,
-      CRYPT_INVALID_CIPHER, CRYPT_INVALID_HASH, CRYPT_INVALID_PRNG,
-      CRYPT_MEM, CRYPT_PK_TYPE_MISMATCH, CRYPT_PK_NOT_PRIVATE,
-      CRYPT_INVALID_ARG, CRYPT_FILE_NOTFOUND, CRYPT_PK_INVALID_TYPE,
-      CRYPT_PK_INVALID_SYSTEM, CRYPT_PK_DUP, CRYPT_PK_NOT_FOUND,
-      CRYPT_PK_INVALID_SIZE, CRYPT_INVALID_PRIME_SIZE,
-      CRYPT_PK_INVALID_PADDING, CRYPT_HASH_OVERFLOW
+    HashState = tuple
+      sha: Sha100State
 
-  doAssert isCryptOk           == CRYPT_OK.ord
-  doAssert isCryptInvalidArg   == CRYPT_INVALID_ARG.ord
-  doAssert isCryptHashOverflow == CRYPT_HASH_OVERFLOW.ord
-
-  {.compile: srcSrcDir & D & "ltc_sha256specs.c".}
-  proc sha100Const(n: cint): cstring {.cdecl, importc: "ltc_const".}
+  {.compile: "sha256d/ltc_sha256specs.c".nimSrcDirname.}
   proc sha100Test():         cint    {.cdecl, importc: "ltc_sha256_test".}
   proc zSha100Specs():       pointer {.cdecl, importc: "ltc_sha256_specs".}
 
@@ -234,39 +140,31 @@ when isMainModule:
   proc tSha100Specs(): seq[int] =
     result = newSeq[int](0)
     var
-      p: Sha100State
+      p: HashState
       a = cast[int](addr p)
-    result.add(cast[int](addr p.length) - a)
-    result.add(cast[int](addr p.state)  - a)
-    result.add(cast[int](addr p.curlen) - a)
-    result.add(cast[int](addr p.buf)    - a)
-    result.add(sizeof(p))
+    result.add(cast[int](addr p.sha.length) - a)
+    result.add(cast[int](addr p.sha.state)  - a)
+    result.add(cast[int](addr p.sha.curlen) - a)
+    result.add(cast[int](addr p.sha.buf)    - a)
+    result.add(p.sha.sizeof)
+    result.add(p.sizeof)
     result.add(0xffff)
 
-  if true: # check/verify internal constants
-    var n = 0
-    while true:
-      var s = sha100Const(n.cint)
-      if s.isNil:
-        break
-      # echo ">>> ", $s, " >> ", $(n.Sha100Const)
-      doAssert $s == $(n.Sha100Const)
-      n.inc
-    # echo ">> ", n, " >> ", Sha100Const.high.ord
-    doAssert n == 1 + Sha100Const.high.ord
-
   if true: # external self test
-    var n = sha100Test()
-    #echo ">> ", n
-    doAssert n.Sha100Const == CRYPT_OK
+    var rc = sha100Test()
+    #echo ">> ", rc
+    doAssert isCryptOk == rc
 
   if true: # test state descriptor layout
     var
-      a: array[6,cint]
+      a: array[7,cint]
       v = tSha100Specs()
     (addr a[0]).copyMem(zSha100Specs(), sizeof(a))
-    #echo ">> ", v, " >> ", a.mapIt(int, it)
-    doAssert v == a.mapIt(int, it)
+    var w = a.mapIt(int, it)
+    when not defined(check_run):
+      echo ">> desc: ", v
+    # echo ">> ", v, " >> ", w
+    doAssert v == w
 
   if true: # test vectors
     const
@@ -308,6 +206,7 @@ when isMainModule:
           h: Sha100State
         h.getSha100()
         h.sha100Data(addr sIn[0], sIn.len)
+        # echo ">>> ", h.dumpSha100State
         var
           v = h.sha100Done
           w = v.toSeq.mapIt(it.toHex(2).toLowerAscii).join

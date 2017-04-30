@@ -101,6 +101,8 @@ AC_CONFIG_FILES([Makefile
 		 src/lib/uecc/Makefile
 		 src/lib/chacha/Makefile
 		 src/lib/ltc/Makefile
+		 src/lib/misc/Makefile
+		 src/lib/rnd64d/Makefile
 		 src/lib/salsa/Makefile
 		 src/lib/spmx/Makefile
 		 src/lib/xoro/Makefile

@@ -3,9 +3,8 @@
 /*.html
 /Makefile
 /Makefile.in
-/aes80
-/frta
-/ltc_const
 /nim.sh
 /nimcache
-/sha100
+/rndcc
+/rndft
+/rndxo
