@@ -89,8 +89,8 @@ AUTOADD  = NEWS README AUTHORS ChangeLog
 
 # Extra delete with clobber target
 CLOBBER  = NEWS README INSTALL VERSION ChangeLog
-CLOBBER += compile depcomp install-sh missing ltmain.sh autoscan.log
-CLOBBER += libtool amcompat.m4 ar-lib configure aclocal.m4 config.*
+CLOBBER += compile depcomp install-sh missing ltmain.sh libtool
+CLOBBER += ar-lib configure config.* *.log *.m4
 
 # manage list of sub-modules and paths
 GITBRANCH = `git status|awk '{print $$NF;exit}'`
@@ -284,15 +284,25 @@ $(AUTOADD):
 	@echo "# $$""Id""$$"       >> $@
 
 amcompat.m4:
+	@echo Generating/updating $@
 	@f="tools/am/compat-$(AMKVERS)"; rm -f $@; \
 		if test -f "$$f"; then \
 			echo "Automake $(AMKVERS) compatibility mode" >&2; \
 			echo "m4_include([$$f])";\
 		else echo "# $$f"; fi >> $@
 
+acinclude.m4: amcompat.m4
+	@echo Generating/updating $@
+	@rm -f $@
+	@echo "# date: `date`"                           >> $@
+	@echo "m4_include([VERSION])"                    >> $@
+	@echo "m4_include([amcompat.m4])"                >> $@
+	@ls tools/ac/ac_*.m4|sed 's!.*!m4_include([&])!' >> $@
+	@echo "# End"                                    >> $@
+
 .PHONY: configure
 configure conf/config.h.in: $(AUTOADD) \
-		configure.ac VERSION amcompat.m4
+		configure.ac VERSION acinclude.m4 amcompat.m4
 	@$(USEROK)
 	$(MKDIR_P) conf m4lib
 	aclocal
