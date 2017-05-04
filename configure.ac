@@ -33,6 +33,7 @@ AC_ENABLE_CPU
 AC_ENABLE_DEBUG
 # AC_DISABLE_UNIT_TESTS
 AC_WITHOUT_LOCAL_NIM
+AC_WITH_WINE
 # AC_WITH_MSWIN_STDIO
 
 # Libtool
@@ -60,6 +61,7 @@ AC_PROG_MKDIR_P
 AC_CHECK_LIB([m],[main])
 AC_CHECK_CPU
 AC_CHECK_LOCAL_NIM
+AC_CHECK_WINE
 
 # Standard/posix and windows support
 # AC_HEADERS_POSIX
@@ -117,6 +119,7 @@ if test "$cross_compiling" = yes
 then
    AC_MSG_NOTICE([Cross compiling for target: $TARGET_CONFIG_ID])
    AC_MSG_NOTICE([Build system: $BUILD_CONFIG_ID])
+   AC_MSG_WINE
 else
    AC_MSG_CPU
 fi
