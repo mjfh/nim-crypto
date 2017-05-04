@@ -87,9 +87,6 @@ AC_DEFUN([_AC_CHECK_OS_NIM],[
   AC_SUBST([NIM])
   AC_SUBST([NIMLIB])
   AC_SUBST([NIMBLE])
-  AC_SUBST([NIM2C])
-  AC_SUBST([NIM2A])
-  AC_SUBST([NIM2L])
 ])
 
 # ---------------------------------------------------------------------------
@@ -131,15 +128,12 @@ AC_DEFUN([AC_CHECK_LOCAL_NIM],[
      AC_MSG_ERROR([Cannot find NIM library])
   fi
 
-  dnl NIM2A, NIM2L, NIM2C
-  NIM2A="$NIM cc --noMain --app:staticLib --header"
-  NIM2L="$NIM cc --noMain --app:lib --header"
-  NIM2C="$NIM cc -c --noMain --noLinking --header"
+  nim2c="$NIM cc -c --noMain --noLinking --header"
   AC_MSG_CHECKING([for NIM options to generate C code])
   f=conftest
   rm -f $f.err $f.nim nimcache/*
   echo "# empty NIM source" > $f.nim
-  $NIM2C $f.nim > $f.err 2>&1
+  $nim2c $f.nim > $f.err 2>&1
   if test $? = 0 -a -s nimcache/$f.h -a -s nimcache/$f.c ; then
     AC_MSG_RESULT([ok])
     rm -f $f.err $f.nim nimcache/*
@@ -147,7 +141,7 @@ AC_DEFUN([AC_CHECK_LOCAL_NIM],[
   else
     AC_MSG_RESULT([failed])
     cat $f.err
-    AC_MSG_ERROR([Command "$NIM2C ..." does not seem to work])
+    AC_MSG_ERROR([Command "$nim2c ..." does not seem to work])
   fi
 
   dnl MINGW native needs realpath for MIMBLE to work

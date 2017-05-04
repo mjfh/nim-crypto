@@ -6,14 +6,10 @@
 #
 # Blame: Jordan Hrycaj <jordan@teddy-net.com>
 
+# make sure that they are defined bofore this file is included
 NIMNOCHECK +=
-
-# Note: d;release is effective only on the command line (as of NIM 0.15.3)
-if !USE_DEBUG
-NIM2CFLAGS += -d:release
-else
-NIM2XFLAGS += --verbosity:0
-endif
+NIM2DFLAGS +=
+NIMDOCHTML +=
 
 all-local:: prepare
 
@@ -30,8 +26,8 @@ CLEANFILES += nim.sh *.nim~ *.ndb
 nim.sh:: Makefile.am
 	@rm -f $@
 	@echo Generating $@ ...
-	@echo '#! /bin/sh'                                      >> $@
-	@g="$(NIM2CFLAGS)";echo "set -x;$(NIM) cc $$g \"\$$@\"" >> $@
+	@echo '#! /bin/sh'                               >> $@
+	@echo '$(SHELL) $(SRC_DIR)/nim-compile.sh "$$@"' >> $@
 	@chmod +x $@
 
 .PHONY: try
@@ -50,9 +46,7 @@ check-local::
 	    echo "*** Igoring module: $$f"; \
 	    continue; \
           esac; \
-	  g="$(NIM2CFLAGS)"; (set -x; \
-	      $(NIM) cc -r  $$g $(NIM2XFLAGS) -d:checkRun "$$f" \
-	  ) || exit ; \
+	  $(SHELL) $(SRC_DIR)/nim-check.sh "$$f" || exit ; \
 	done
 
 .PHONY: docs
@@ -60,7 +54,7 @@ docs::
 	@for t in $(SUBDIRS); do (set -x; $(MAKE) -C $$t $@); done
 	@for f in *.nim; do \
 	  test -f "$$f" || continue ; \
-	  g="$(NIM2CFLAGS)"; (set -x; $(NIM) doc2 $$g "$$f") || exit; \
+	  g="$(NIM2DFLAGS)"; (set -x; $(NIM) doc2 $$g "$$f") || exit; \
 	done
 
 # ---------------------------------------------------------------------------

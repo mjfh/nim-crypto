@@ -15,37 +15,25 @@ bin_PROGRAMS = cwraps
 
 if !USE_MINGW
 bin_PROGRAMS += cwrapd
+AM_LDFLAGS    = -ldl
 endif
 
-SUBDIRS      = lib
-CLEANFILES   = *.exe cwrap $(NIMLIBWRAP)
+SUBDIRS    = lib
+CLEANFILES = *.exe cwrap $(NIMLIBWRAP)
 
-if USE_DEBUG # Settings for GDB debugging session
-NIMDBG    = --debuginfo --lineDir:on --embedsrc --debugger=native
+if USE_DEBUG
 AM_CFLAGS = -g
-else         # Settings for optimising code
-NIMDBG    = -d:release --gc:none
+else
 AM_CFLAGS = -s
 endif
 
-NIMDOCHTML = session
-NIM2CFLAGS =
-NIM2XFLAGS =
-NIMNOCHECK =
-
-if    USE_MINGW
-NIM2CFLAGS += -d:windows --os:windows
-endif USE_MINGW
-
-if    USE_CPU64
-NIM2CFLAGS += -d:amd64
+if USE_CPU64
 AM_CFLAGS  += -m64
-endif USE_CPU64
+endif
 
-if    USE_CPU32
-NIM2CFLAGS += -d:i386
+if USE_CPU32
 AM_CFLAGS  += -m32
-endif USE_CPU32
+endif
 
 all-local::
 
@@ -67,9 +55,10 @@ help:
 # Collect non-pic/static objects in nimcache/dynlib/ sub-directory
 #
 CLEANFILES += $(LIBNAME).a $(NAME).lib
-nimcache/static/$(NAME).h: $(NAME).nim
+nimcache/static/$(NAME).h: $(NAME).nim nim.sh
+	@mkdir -p nimcache/static/
 	@rm -f $@ nimcache/*.* nimcache/static/*
-	$(NIM2A) $(NIM2CFLAGS) $(NAME).nim
+	@$(SHELL) nim.sh --noMain --app:staticLib --header $(NAME).nim
 	@mkdir -p               nimcache/static
 	mv nimcache/*.$(OBJEXT) nimcache/static
 	mv nimcache/$(NAME).h   nimcache/static
@@ -80,7 +69,7 @@ nimcache/static/$(NAME).h: $(NAME).nim
 CLEANFILES += $(LIBNAME).so $(NAME).dll
 nimcache/dynlib/$(NAME).h: $(NAME).nim
 	@rm -f $@ nimcache/*.* nimcache/dynlib/*
-	$(NIM2L) $(NIM2CFLAGS) $(NAME).nim
+	@$(SHELL) nim.sh --noMain --app:lib --header $(NAME).nim
 	@mkdir -p               nimcache/dynlib
 	mv nimcache/*.$(OBJEXT) nimcache/dynlib
 	mv nimcache/$(NAME).h   nimcache/dynlib
@@ -105,13 +94,13 @@ stub.lo: stub.c
 CLEANFILES += $(LIBNAME).la
 $(LIBNAME).la: nimcache/static/$(NAME).h nimcache/dynlib/$(NAME).h stub.lo
 	@rm -f $@ nimcache/*.lo
-	@for obj in nimcache/static/*.$(OBJEXT) ; do \
-	  t=`basename $$obj .$(OBJEXT)` ;\
-	  o=`basename $$obj` ;\
-	  l=nimcache/$$t.lo  ;\
-	  awk 'NR<6{print $0}' stub.lo|sed 's/stub/$$t/' >> $$l ;\
-	  echo "pic_object='dynlib/$$o'"                 >> $$l ;\
-	  echo "non_pic_object='static/$$o'"             >> $$l ;\
+	@for obj in `ls nimcache/*/*.$(OBJEXT) 2>/dev/null|sed 's!.*/!!'|sort|uniq`; do \
+	  l=nimcache/`expr "$$obj" : '\(.*\)\.'`.lo                    ;\
+	  p=`ls nimcache/dynlib/$$obj 2>/dev/null|sed 's!nimcache/!!'` ;\
+	  n=`ls nimcache/static/$$obj 2>/dev/null|sed 's!nimcache/!!'` ;\
+	  awk 'NR<6{print $0}' stub.lo|sed 's/stub/$$obj/' >> $$l ;\
+	  echo "pic_object='$$p'"                          >> $$l ;\
+	  echo "non_pic_object='$$p'"                      >> $$l ;\
 	done
 	$(LINK) -no-undefined -rpath $(libdir) nimcache/*.lo -lm
 
@@ -141,10 +130,6 @@ main.c: $(NAME)-static.h $(NAME)-dynlib.h $(LIBNAME).a
 
 AM_CFLAGS += -I$(NIMLIB) -Inimcache
 
-if    !USE_MINGW
-AM_LDFLAGS = -ldl
-endif !USE_MINGW
-
 
 cwraps_SOURCES = main.c
 cwraps_CFLAGS  = $(AM_CFLAGS) -DSESSION_STATIC
@@ -159,6 +144,10 @@ cwrapd_LDADD   = -l$(NAME) $(AM_LDFLAGS)
 # ---------------------------------------------------------------------------
 # Helper
 # ---------------------------------------------------------------------------
+
+NIMDOCHTML = session
+NIMNOCHECK =
+NIM2DFLAGS =
 
 # make check: need a clean cache
 check-local::

@@ -7,9 +7,9 @@
 SUBDIRS =
 CLEANFILES = *.exe chacha
 
-NIM2CFLAGS =
-NIM2XFLAGS =
+NIMDOCHTML =
 NIMNOCHECK =
+NIM2DFLAGS =
 
 include ../../../tools/am/Makefile.nimhelper
 

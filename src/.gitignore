@@ -17,6 +17,8 @@
 /main.o
 /nim.cfg
 /nim.sh
+/nim-check.sh
+/nim-compile.sh
 /nimcache
 /session
 /session.dll
