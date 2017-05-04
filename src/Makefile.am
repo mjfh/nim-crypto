@@ -35,7 +35,7 @@ if USE_CPU32
 AM_CFLAGS  += -m32
 endif
 
-all-local::
+all-local:: nim.sh nim.cfg
 
 .PHONY: help
 help:
@@ -55,7 +55,7 @@ help:
 # Collect non-pic/static objects in nimcache/dynlib/ sub-directory
 #
 CLEANFILES += $(LIBNAME).a $(NAME).lib
-nimcache/static/$(NAME).h: $(NAME).nim nim.sh
+nimcache/static/$(NAME).h: $(NAME).nim nim.sh nim.cfg
 	@mkdir -p nimcache/static/
 	@rm -f $@ nimcache/*.* nimcache/static/*
 	@$(SHELL) nim.sh --noMain --app:staticLib --header $(NAME).nim
@@ -67,7 +67,7 @@ nimcache/static/$(NAME).h: $(NAME).nim nim.sh
 # Collect pic objects in nimcache/dynlib/ sub-directory
 #
 CLEANFILES += $(LIBNAME).so $(NAME).dll
-nimcache/dynlib/$(NAME).h: $(NAME).nim
+nimcache/dynlib/$(NAME).h: $(NAME).nim nim.sh nim.cfg
 	@rm -f $@ nimcache/*.* nimcache/dynlib/*
 	@$(SHELL) nim.sh --noMain --app:lib --header $(NAME).nim
 	@mkdir -p               nimcache/dynlib
@@ -148,6 +148,13 @@ cwrapd_LDADD   = -l$(NAME) $(AM_LDFLAGS)
 NIMDOCHTML = session
 NIMNOCHECK =
 NIM2DFLAGS =
+
+# global cfg file
+CLEANFILES += nim.cfg
+nim.cfg: nimcfg.sh
+	@echo Creating $@
+	@rm -f $@
+	@$(SHELL) nimcfg.sh >> $@
 
 # make check: need a clean cache
 check-local::

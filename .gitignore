@@ -20,7 +20,6 @@
 /conf/config.h
 /conf/config.h.in
 /conf/nim-imports.stamp
-/conf/nim.cfg
 /conf/nimbledata.json
 /conf/packages_*.json
 /conf/pkgs/

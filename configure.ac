@@ -98,9 +98,10 @@ AC_SUBST_BASEDIR(src/lib)
 AC_CONFIG_FILES([Makefile
 		 import/Makefile
 
+		 src/Makefile
 		 src/nim-compile.sh
 		 src/nim-check.sh
-		 src/Makefile
+		 src/nimcfg.sh
 
 		 src/lib/Makefile
 		 src/lib/uecc/Makefile
