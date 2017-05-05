@@ -1,0 +1,15 @@
+#! /bin/sh
+#
+# $Id$
+#
+# Blame: Jordan Hrycaj <jordan@teddy-net.com>
+
+echo "# date: `date`"
+echo
+echo 'const'
+echo '  prjRootDir   = "@BASE_DIR@"'
+echo '  prjConfFileH = "@CONF_DIR@/config.h"'
+echo
+echo "# end"
+
+# end

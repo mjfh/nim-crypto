@@ -10,13 +10,16 @@ import
 export
   algorithm, os, sequtils, strutils
 
-const
-  # source root subdirectoy containing NIM sources, this must be a
-  # directory parent/ancestor of this NIM source
-  sourceDir     = "src"
+when defined(ignNimPaths):
+  const
+    # source root subdirectoy containing NIM sources, this must be a
+    # directory parent/ancestor of this NIM source
+    sourceDir = "src"
 
-  # autoconfig header file relative to source root
-  autoConfFileH = "conf" / "config.h"
+    # autoconfig header file relative to source root
+    autoConfFileH = "conf" / "config.h"
+else:
+  include misc/nim_paths_inc
 
 # ----------------------------------------------------------------------------
 # Public methods for openArray/sequences
@@ -82,14 +85,18 @@ template nimSrcDirname*(relPosixPath: string): string =
 
 proc nimSrcRoot*(): string {.compileTime.} =
   ## installation base/root directory
-  const
-    d     = nimSrcDirSep()
-    base  = sourceDir.split(d).head[0]
-    dirs  = nimSrcDirname().split(d)
-  for n in 0 .. <dirs.len:
-    if dirs[n] == base:
-      result = dirs[0 .. <n].join($d)
-      break
+  const d = nimSrcDirSep()
+  when defined(ignNimPaths):
+    # walk backwards until sourceDir is found
+    const
+      base  = sourceDir.split(d).head[0]
+      dirs  = nimSrcDirname().split(d)
+    for n in 0 .. <dirs.len:
+      if dirs[n] == base:
+        result = dirs[0 .. <n].join($d)
+        break
+  else:
+    result = prjRootDir.replace("/", $d)
 
 proc nimSrcRoot*(relPosixPath: string): string {.compileTime.} =
   ## prepend relaive posix path by source root
@@ -101,7 +108,11 @@ proc cnfTable*(): seq[(string,string)] {.compileTime.} =
   var
     p = nimSrcRoot()
     d = p[2 * (p[1] == ':').ord]
+    s: string
+  when defined(ignNimPaths):
     s = slurp p & $d & autoConfFileH.replace(DirSep,d)
+  else:
+    s = slurp prjConfFileH.replace(DirSep,d)
   return s.split({'\c','\l'})
     .filter(proc(s: string): bool = s.len > 9 and s[0..7] == "#define ")
     .mapIt(seq[string], it.split(maxsplit = 3)[1..2])
@@ -123,7 +134,12 @@ when isMainModule:
 
   when not defined(check_run):
     echo "*** ", pkgName, "=", cnfValue(pkgName)
-    echo "** full table:\n", cfgTable, "\n."
+    echo "** full table:\n", cfgTable, "\n"
+    when defined(ignNimPaths):
+      echo "*** sourceDir=", sourceDir, " autoConfFileH=", autoConfFileH
+    else:
+      echo "*** prjRootDir=", prjRootDir
+      echo "    prjConfFileH=", prjConfFileH
 
   doAssert cnfValue(pkgName).len > 0
   doAssert cnfValue("*") == ""
@@ -136,7 +152,7 @@ when isMainModule:
     testTail  = [1, 2, 3, 4, 5].tail
     tes2Tail  = toSeq(1..5).tail
 
-  doAssert basename  == "nimsrc"
+  doAssert basename  == "msrc"
   doAssert emptyHead == @[]
   doAssert emptyTail == @[]
   doAssert testHead  == @[1]
@@ -159,9 +175,6 @@ when isMainModule:
 
   doAssert out1.mapIt(Y01234,Y01234(it)).toOrdSet == y02
   doAssert out2.mapIt( X0123, X0123(it)).toOrdSet == x02
-
-#  when not defined(check_run):
-#    echo "*** ", tes2Tail
 
 # ----------------------------------------------------------------------------
 # End

@@ -15,13 +15,12 @@ CLEANFILES      = $(NIMIMPORT_STAMP)
 all-local:: prepare
 check-local:: prepare
 
-# Kludge - first subsystem to be called
-prepare:: nim-cfg.sh nim-check.sh nim-compile.sh
-	$(MAKE) -C $(SRC_DIR) nim.cfg
+prepare:: nim-cfg.sh nim-check.sh nim-compile.sh nim-paths.sh
 
-nim-cfg.sh: nim-cfg.sh.in
-nim-check.sh: nim-check.sh.in
-nim-compile.sh: nim-compile.sh.in
+# Kludge - first subsystem to be called
+prepare::
+	$(MAKE) -C $(SRC_DIR)         $@
+	$(MAKE) -C $(SRCLIB_DIR)/misc $@
 
 # ---------------------------------------------------------------------------
 # External library imports

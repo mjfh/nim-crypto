@@ -6,3 +6,4 @@
 /msrc
 /nim.sh
 /nimcache
+/nim_paths_inc.nim

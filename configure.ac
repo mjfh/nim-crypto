@@ -101,6 +101,7 @@ AC_CONFIG_FILES([Makefile
 		 boot/nim-compile.sh
 		 boot/nim-check.sh
 		 boot/nim-cfg.sh
+		 boot/nim-paths.sh
 
 		 src/Makefile
 		 src/lib/Makefile

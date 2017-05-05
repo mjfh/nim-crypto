@@ -40,6 +40,7 @@ endif
 # ---------------------------------------------------------------------------
 
 all-local:: nim.sh nim.cfg
+prepare:: nim.cfg
 
 .PHONY: help
 help:
