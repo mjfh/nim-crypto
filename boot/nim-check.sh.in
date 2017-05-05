@@ -9,7 +9,7 @@ test -n "$runcmd" || {
 }
 
 set -e
-/bin/sh @SRC_DIR@/nim-compile.sh $args "$@"
+@SHELL@ @BOOT_DIR@/nim-compile.sh $args "$@"
 
 test -z "$runcmd" || (
     while test $# -gt 1; do shift; done

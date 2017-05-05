@@ -90,19 +90,19 @@ AC_CHECK_DEBUG
 # AC_CHECK_FUNCS([gettimeofday memset strstr])
 
 # Makefile path support
+AC_SUBST_BASEDIR(boot)
 AC_SUBST_BASEDIR(conf)
 AC_SUBST_BASEDIR(tools)
 AC_SUBST_BASEDIR(src)
 AC_SUBST_BASEDIR(src/lib)
 
 AC_CONFIG_FILES([Makefile
-		 import/Makefile
+		 boot/Makefile
+		 boot/nim-compile.sh
+		 boot/nim-check.sh
+		 boot/nim-cfg.sh
 
 		 src/Makefile
-		 src/nim-compile.sh
-		 src/nim-check.sh
-		 src/nimcfg.sh
-
 		 src/lib/Makefile
 		 src/lib/uecc/Makefile
 		 src/lib/chacha/Makefile

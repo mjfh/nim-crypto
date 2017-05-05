@@ -27,7 +27,7 @@ nim.sh:: Makefile.am
 	@rm -f $@
 	@echo Generating $@ ...
 	@echo '#! /bin/sh'                               >> $@
-	@echo '$(SHELL) $(SRC_DIR)/nim-compile.sh "$$@"' >> $@
+	@echo '$(SHELL) $(BOOT_DIR)/nim-compile.sh "$$@"' >> $@
 	@chmod +x $@
 
 .PHONY: try
@@ -46,7 +46,7 @@ check-local::
 	    echo "*** Igoring module: $$f"; \
 	    continue; \
           esac; \
-	  $(SHELL) $(SRC_DIR)/nim-check.sh "$$f" || exit ; \
+	  $(SHELL) $(BOOT_DIR)/nim-check.sh "$$f" || exit ; \
 	done
 
 .PHONY: docs

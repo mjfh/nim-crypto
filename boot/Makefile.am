@@ -16,8 +16,12 @@ all-local:: prepare
 check-local:: prepare
 
 # Kludge - first subsystem to be called
-prepare::
+prepare:: nim-cfg.sh nim-check.sh nim-compile.sh
 	$(MAKE) -C $(SRC_DIR) nim.cfg
+
+nim-cfg.sh: nim-cfg.sh.in
+nim-check.sh: nim-check.sh.in
+nim-compile.sh: nim-compile.sh.in
 
 # ---------------------------------------------------------------------------
 # External library imports

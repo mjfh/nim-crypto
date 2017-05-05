@@ -28,12 +28,16 @@ AM_CFLAGS = -s
 endif
 
 if USE_CPU64
-AM_CFLAGS  += -m64
+AM_CFLAGS += -m64
 endif
 
 if USE_CPU32
-AM_CFLAGS  += -m32
+AM_CFLAGS += -m32
 endif
+
+# ---------------------------------------------------------------------------
+# Main
+# ---------------------------------------------------------------------------
 
 all-local:: nim.sh nim.cfg
 
@@ -151,10 +155,10 @@ NIM2DFLAGS =
 
 # global cfg file
 CLEANFILES += nim.cfg
-nim.cfg: nimcfg.sh
+nim.cfg: $(BOOT_DIR)/nim-cfg.sh
 	@echo Creating $@
 	@rm -f $@
-	@$(SHELL) nimcfg.sh >> $@
+	@$(SHELL) $(BOOT_DIR)/nim-cfg.sh >> $@
 
 # make check: need a clean cache
 check-local::
