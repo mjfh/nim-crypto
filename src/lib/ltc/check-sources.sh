@@ -4,7 +4,7 @@
 #
 
 # Location of libtomcrypt as pulled from GitHub
-source=../libtomcrypt-source
+source=../libtomcrypt
 
 # ----------------------------------------------------------------------------
 # Main

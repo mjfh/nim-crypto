@@ -1,86 +1,362 @@
 *** Cmd:    /bin/sh check-sources.sh
-*** Date:   Fri 28 Apr 22:24:02 BST 2017
+*** Date:   Fri  5 May 21:10:02 BST 2017
 *** Source: http://github.com/tomstdenis/libtomcrypt/tree/develop
             http://www.libtom.net/LibTomCrypt
 
 *** Libtomcrypt repo: heads/develop 1.17-376-g4981e2a
 
 *** diff rng_get_bytes.c:
---- ../libtomcrypt-source/src/prngs/rng_get_bytes.c	2017-04-27 16:09:49.777630101 +0100
-+++ ./fortunad/ltc_rng_get_bytes.c	2017-04-28 22:22:30.434926988 +0100
-@@ -18,10 +18,9 @@
+--- ../libtomcrypt/src/prngs/rng_get_bytes.c	2017-05-05 21:08:45.565297598 +0100
++++ ./fortunad/ltc_rng_get_bytes.c	2017-05-05 21:06:34.821350913 +0100
+@@ -1,4 +1,6 @@
+-/* LibTomCrypt, modular cryptographic library -- Tom St Denis
++/* -*- linux-c -*-
++ *
++ * LibTomCrypt, modular cryptographic library -- Tom St Denis
+  *
+  * LibTomCrypt is a library that provides various cryptographic
+  * algorithms in a highly modular and flexible manner.
+@@ -10,121 +12,192 @@
+  */
+ #include "tomcrypt.h"
  
- #ifdef LTC_DEVRANDOM
- /* on *NIX read /dev/random */
++/*
++ * Re-factored version, mostly fiddling about with configuration parameters
++ *
++ * Blame: jordan@teddy-net.com
++ */
++
+ #ifdef LTC_RNG_GET_BYTES
++
++/* ----------------------------------------------------------------------- *
++ * Entropy from random devices
++ * ----------------------------------------------------------------------- */
++
++#ifdef LTC_DEVRANDOM
+ /**
+    @file rng_get_bytes.c
+    portable way to get secure random bits to feed a PRNG (Tom St Denis)
+ */
+ 
+-#ifdef LTC_DEVRANDOM
+-/* on *NIX read /dev/random */
 -static unsigned long rng_nix(unsigned char *buf, unsigned long len,
 -                             void (*callback)(void))
-+static unsigned long rng_nix(unsigned char *buf, unsigned long len) /* patched */
- {
+-{
 -    LTC_UNUSED_PARAM(callback);
-+    /* LTC_UNUSED_PARAM(callback); */                               /* patched */
- #ifdef LTC_NO_FILE
-     LTC_UNUSED_PARAM(buf);
-     LTC_UNUSED_PARAM(len);
-@@ -59,7 +58,7 @@
+-#ifdef LTC_NO_FILE
+-    LTC_UNUSED_PARAM(buf);
+-    LTC_UNUSED_PARAM(len);
+-    return 0;
+-#else
+-    FILE *f;
+-    unsigned long x;
+-#ifdef LTC_TRY_URANDOM_FIRST
+-    f = fopen("/dev/urandom", "rb");
+-    if (f == NULL)
+-#endif /* LTC_TRY_URANDOM_FIRST */
+-       f = fopen("/dev/random", "rb");
+-
+-    if (f == NULL) {
+-       return 0;
+-    }
+-
+-    /* disable buffering */
+-    if (setvbuf(f, NULL, _IONBF, 0) != 0) {
+-       fclose(f);
+-       return 0;
+-    }
+-
+-    x = (unsigned long)fread(buf, 1, (size_t)len, f);
+-    fclose(f);
+-    return x;
+-#endif /* LTC_NO_FILE */
++#ifndef DEV_URANDOM
++# define DEV_URANDOM "/dev/urandom"
++#endif
++#ifndef DEV_RANDOM
++# define DEV_RANDOM "/dev/random"
++#endif
++
++static inline
++FILE *open_random (void)
++{
++	FILE *f ;
++
++#	ifdef LTC_TRY_URANDOM_FIRST
++	f = fopen (DEV_URANDOM, "rb");
++	if (f == NULL)
++		f = fopen (DEV_RANDOM, "rb");
++#	else
++	f = fopen (DEV_RANDOM, "rb");
++#	endif /* LTC_TRY_URANDOM_FIRST */
++
++	return f;
+ }
+ 
++static inline
++unsigned long rng_nix(unsigned char *buf, unsigned long len)
++{
++	unsigned long x = 0 ;
++
++#	ifdef LTC_NO_FILE
++	LTC_UNUSED_PARAM (buf);
++	LTC_UNUSED_PARAM (len);
++#	else /* LTC_NO_FILE */
++
++	FILE *f = open_random ();
++	if (f != NULL) {
++		/* disable buffering */
++		if (setvbuf(f, NULL, _IONBF, 0) == 0) {
++			x = (unsigned long)
++				fread (buf, 1, (size_t)len, f);
++		}
++
++		fclose(f);
++	}
++#	endif /* LTC_NO_FILE */
++
++	return x;
++}
+ #endif /* LTC_DEVRANDOM */
+ 
++/* ----------------------------------------------------------------------- *
++ * Entropy from clock() service (ANSI)
++ * ----------------------------------------------------------------------- */
++
+ /* on ANSI C platforms with 100 < CLOCKS_PER_SEC < 10000 */
+-#if defined(CLOCKS_PER_SEC) && !defined(WINCE)
++#if defined (CLOCKS_PER_SEC) && !defined (WINCE)
+ 
  #define ANSI_RNG
  
- static unsigned long rng_ansic(unsigned char *buf, unsigned long len,
+-static unsigned long rng_ansic(unsigned char *buf, unsigned long len,
 -                               void (*callback)(void))
-+                               void (*callback)(void*),void *dsc) /* patched */
++#ifdef CLOCKS_PER_SEC
++#ifdef _POSIX_CLOCKRES_MIN
++#if 10000 < _POSIX_CLOCKRES_MIN /* 1000000 on a POSIX system */
++# define YCLOCKS_PER_SEC   (10000)
++# define YCLOCK_SCALE_DOWN ((CLOCKS_PER_SEC * 100) / 1000000)
++// # undef  XCLOCK
++# define XCLOCK()          (clock () / YCLOCK_SCALE_DOWN)
++#endif /* 10000 */
++#endif /* _POSIX_CLOCKRES_MIN */
++#endif /* CLOCKS_PER_SEC */
++
++static inline
++unsigned long rng_ansic(unsigned char *buf,
++			unsigned long len,
++			void (*callback) (void*), void *dsc)
  {
-    clock_t t1;
-    int l, acc, bits, a, b;
-@@ -72,7 +71,7 @@
-    bits = 8;
-    acc  = a = b = 0;
-    while (len--) {
+-   clock_t t1;
+-   int l, acc, bits, a, b;
++	int cur_len, acc, a, b;
++
++#	ifndef YCLOCK_SCALE_DOWN
++	/* macro XCLOCKS_PER_SEC looks like: (clock_t)<some-number> */
++	if (XCLOCKS_PER_SEC < 100 || XCLOCKS_PER_SEC > 10000) {return 0;}
++#	endif
++
++	cur_len = acc = a = b = 0;
++
++	while (cur_len < len) {
++		int bits = 8;
++		
++		if (callback != NULL)
++			callback (dsc);
++
++		while (bits --) {
++
++			do {
++				clock_t t1 = XCLOCK ();
++				while (t1 == XCLOCK ()) {
++					a ^= 1;
++				}
++				t1 = XCLOCK();
++				while (t1 == XCLOCK ()) {
++					b ^= 1;
++				}
++			}
++			while (a == b);
++
++			acc = (acc << 1) | a;
++		}
++
++		* buf ++ = acc;
++		acc      =   0;
++		cur_len ++ ;
++	}
+ 
+-   if (XCLOCKS_PER_SEC < 100 || XCLOCKS_PER_SEC > 10000) {
+-      return 0;
+-   }
+-
+-   l = len;
+-   bits = 8;
+-   acc  = a = b = 0;
+-   while (len--) {
 -       if (callback != NULL) callback();
-+       if (callback != NULL) callback(dsc);
-        while (bits--) {
-           do {
-              t1 = XCLOCK(); while (t1 == XCLOCK()) a ^= 1;
-@@ -104,10 +103,9 @@
+-       while (bits--) {
+-          do {
+-             t1 = XCLOCK(); while (t1 == XCLOCK()) a ^= 1;
+-             t1 = XCLOCK(); while (t1 == XCLOCK()) b ^= 1;
+-          } while (a == b);
+-          acc = (acc << 1) | a;
+-       }
+-       *buf++ = acc;
+-       acc  = 0;
+-       bits = 8;
+-   }
+-   acc = bits = a = b = 0;
+-   return l;
++	acc = a = b = 0;
++	return cur_len;
+ }
++#endif /* CLOCKS_PER_SEC && not WINCE */
+ 
+-#endif
++/* ----------------------------------------------------------------------- *
++ * Entropy on Windows platform
++ * ----------------------------------------------------------------------- */
+ 
+ /* Try the Microsoft CSP */
+-#if defined(WIN32) || defined(_WIN32) || defined(WINCE)
++#if defined (WIN32) || defined (_WIN32) || defined (WINCE)
++
++#define WINDOWS_RNG
++
+ #ifndef _WIN32_WINNT
+-  #define _WIN32_WINNT 0x0400
++# define _WIN32_WINNT 0x0400
+ #endif
+ #ifdef WINCE
+-   #define UNDER_CE
+-   #define ARM
++# define UNDER_CE
++# define ARM
+ #endif
+ 
+ #define WIN32_LEAN_AND_MEAN
  #include <windows.h>
  #include <wincrypt.h>
  
 -static unsigned long rng_win32(unsigned char *buf, unsigned long len,
 -                               void (*callback)(void))
-+static unsigned long rng_win32(unsigned char *buf, unsigned long len) /* patched */
++static inline
++int /* bool */ ackq_context (HCRYPTPROV *Prov, DWORD ctx)
  {
 -   LTC_UNUSED_PARAM(callback);
-+  /* LTC_UNUSED_PARAM(callback); */                                   /* patched */
-    HCRYPTPROV hProv = 0;
-    if (!CryptAcquireContext(&hProv, NULL, MS_DEF_PROV, PROV_RSA_FULL,
-                             (CRYPT_VERIFYCONTEXT | CRYPT_MACHINE_KEYSET)) &&
-@@ -134,20 +132,20 @@
+-   HCRYPTPROV hProv = 0;
+-   if (!CryptAcquireContext(&hProv, NULL, MS_DEF_PROV, PROV_RSA_FULL,
+-                            (CRYPT_VERIFYCONTEXT | CRYPT_MACHINE_KEYSET)) &&
+-       !CryptAcquireContext (&hProv, NULL, MS_DEF_PROV, PROV_RSA_FULL,
+-                            CRYPT_VERIFYCONTEXT | CRYPT_MACHINE_KEYSET | CRYPT_NEWKEYSET))
+-      return 0;
+-
+-   if (CryptGenRandom(hProv, len, buf) == TRUE) {
+-      CryptReleaseContext(hProv, 0);
+-      return len;
+-   } else {
+-      CryptReleaseContext(hProv, 0);
+-      return 0;
+-   }
++	return CryptAcquireContext
++		(Prov, NULL, MS_DEF_PROV, PROV_RSA_FULL, ctx) == 0;
+ }
+ 
+-#endif /* WIN32 */
++static inline
++unsigned long rng_win32 (unsigned char *buf, unsigned long len)
++{
++	HCRYPTPROV hProv = 0;
++	if (ackq_context (&hProv, (CRYPT_VERIFYCONTEXT  |
++				   CRYPT_MACHINE_KEYSET )) == 0 &&
++
++	    ackq_context (&hProv, (CRYPT_VERIFYCONTEXT  |
++				   CRYPT_MACHINE_KEYSET |
++				   CRYPT_NEWKEYSET      )) == 0)
++		return 0;
++
++	if (CryptGenRandom (hProv, len, buf) != TRUE) {
++		len = 0;
++	}
++
++	CryptReleaseContext (hProv, 0);
++	return len;
++}
++#endif /* WIN32 || _WIN32 || WINCE */
++
++/* ----------------------------------------------------------------------- *
++ * Public interface (if enabled)
++ * ----------------------------------------------------------------------- */
+ 
+ /**
+   Read the system RNG
+@@ -133,26 +206,45 @@
+   @param callback  Pointer to void function to act as "callback" when RNG is slow.  This can be NULL
    @return Number of octets read
  */
- unsigned long rng_get_bytes(unsigned char *out, unsigned long outlen,
+-unsigned long rng_get_bytes(unsigned char *out, unsigned long outlen,
 -                            void (*callback)(void))
-+                            void (*callback)(void*), void *dsc)         /* patched */
++unsigned long rng_get_bytes(unsigned char *out,
++			    unsigned long outlen,
++                            void (*callback) (void*), void *dsc)
  {
-    unsigned long x;
+-   unsigned long x;
++	unsigned long x ;
++	LTC_ARGCHK(out != NULL);
  
-    LTC_ARGCHK(out != NULL);
+-   LTC_ARGCHK(out != NULL);
++#	ifdef LTC_DEVRANDOM
++	x = rng_nix (out, outlen);
++	if (x != 0) {
++		return x;
++	}
++#	endif
++
++#	ifdef WINDOWS_RNG
++	x = rng_win32 (out, outlen);
++	if (x != 0) {
++		return x;
++	}
++#	endif
++
++#	ifdef ANSI_RNG
++	x = rng_ansic (out, outlen, callback, dsc);
++	if (x != 0) {
++		return x;
++	}
++#	else
++	LTC_UNUSED_PARAM (callback);
++	LTC_UNUSED_PARAM (dsc);
++#	endif
  
- #if defined(LTC_DEVRANDOM)
+-#if defined(LTC_DEVRANDOM)
 -   x = rng_nix(out, outlen, callback);   if (x != 0) { return x; }
-+   x = rng_nix(out, outlen);                  if (x != 0) { return x; } /* patched */
- #endif
- #if defined(WIN32) || defined(_WIN32) || defined(WINCE)
+-#endif
+-#if defined(WIN32) || defined(_WIN32) || defined(WINCE)
 -   x = rng_win32(out, outlen, callback); if (x != 0) { return x; }
-+   x = rng_win32(out, outlen);                if (x != 0) { return x; } /* patched */
- #endif
- #ifdef ANSI_RNG
+-#endif
+-#ifdef ANSI_RNG
 -   x = rng_ansic(out, outlen, callback); if (x != 0) { return x; }
-+   x = rng_ansic(out, outlen, callback, dsc); if (x != 0) { return x; } /* patched */
- #endif
-    return 0;
+-#endif
+-   return 0;
++	return 0;
  }
+-#endif /* #ifdef LTC_RNG_GET_BYTES */
++#endif /* LTC_RNG_GET_BYTES */
+ 
+ /* $Source$ */
+ /* $Revision$ */
+ /* $Date$ */
++
++/* ----------------------------------------------------------------------- *
++ * End
++ * ----------------------------------------------------------------------- */
 
 *** diff fortuna.c:
---- ../libtomcrypt-source/src/prngs/fortuna.c	2017-04-27 16:09:49.777630101 +0100
-+++ ./fortunad/ltc_fortuna.c	2017-04-28 18:30:56.885708899 +0100
+--- ../libtomcrypt/src/prngs/fortuna.c	2017-05-05 21:08:45.565297598 +0100
++++ ./fortunad/ltc_fortuna.c	2017-04-30 14:59:17.966913318 +0100
 @@ -320,6 +320,7 @@
  {
     int         x, err;
@@ -115,8 +391,8 @@
  }
 
 *** diff tomcrypt_prng.h:
---- ../libtomcrypt-source/src/headers/tomcrypt_prng.h	2017-04-27 16:09:49.753630844 +0100
-+++ ./headers/tomcrypt_prng.h	2017-04-28 20:27:06.381635343 +0100
+--- ../libtomcrypt/src/headers/tomcrypt_prng.h	2017-05-05 21:08:45.541298342 +0100
++++ ./headers/tomcrypt_prng.h	2017-04-30 14:59:17.862916513 +0100
 @@ -189,7 +189,7 @@
   */
  unsigned long rng_get_bytes(unsigned char *out,
@@ -128,8 +404,8 @@
  
 
 *** diff tomcrypt_custom.h:
---- ../libtomcrypt-source/src/headers/tomcrypt_custom.h	2017-04-27 16:09:49.753630844 +0100
-+++ ./headers/tomcrypt_custom.h	2017-04-27 11:18:37.513403865 +0100
+--- ../libtomcrypt/src/headers/tomcrypt_custom.h	2017-05-05 21:08:45.541298342 +0100
++++ ./headers/tomcrypt_custom.h	2017-04-30 14:59:17.862916513 +0100
 @@ -1,6 +1,8 @@
  #ifndef TOMCRYPT_CUSTOM_H_
  #define TOMCRYPT_CUSTOM_H_

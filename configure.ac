@@ -35,6 +35,7 @@ AC_ENABLE_DEBUG
 AC_WITHOUT_LOCAL_NIM
 AC_WITH_WINE
 # AC_WITH_MSWIN_STDIO
+AC_WITHOUT_DEV_RANDOM
 
 # Libtool
 LT_PREREQ([2.4])
@@ -62,10 +63,12 @@ AC_CHECK_LIB([m],[main])
 AC_CHECK_CPU
 AC_CHECK_LOCAL_NIM
 AC_CHECK_WINE
+AC_CHECK_DEV_RANDOM
 
 # Standard/posix and windows support
 # AC_HEADERS_POSIX
 # AC_HEADERS_WINDOWS
+AC_CHECK_INLINE
 
 # Verify configuration options
 AC_CHECK_DEBUG
@@ -132,6 +135,7 @@ fi
 AC_MSG_DEBUG
 # AC_MSG_UNIT_TESTS
 AC_MSG_LOCAL_NIM
+AC_MSG_DEV_RANDOM
 AC_MSG_NOTICE([=============================================================])
 
 # End

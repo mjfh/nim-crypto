@@ -8,7 +8,7 @@ debug_args="--debuginfo --lineDir:on --embedsrc --debugger=native"
 # release: -d:release is effective only on the command line (as of NIM 0.15.3)
 release_args="-d:release --verbosity:0"
 case "$args_digest" in
-*-d:checkrun*|--nomain*);;
+*-d:checkrun*|--nomain*|*-d:testonly*);;
 *) release_args="$release_args --gc:none"
 esac
 

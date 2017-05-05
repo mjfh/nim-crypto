@@ -42,10 +42,15 @@ const
   stdCcFlgs       = " -I " & "headers".nimSrcDirname &
                     " -I " & "conf".nimSrcRoot
 
-when isMainModule:
-  const ccFlags = stdCcFlgs
+when not defined(ignNimPaths):
+  const haveConfigH = " -DHAVE_CONFIG_H"
 else:
-  const ccFlags = stdCcFlgs & " -DNO_LTC_TEST"
+  const haveConfigH = ""
+
+when isMainModule:
+  const ccFlags = stdCcFlgs & haveConfigH
+else:
+  const ccFlags = stdCcFlgs & haveConfigH & " -DNO_LTC_TEST"
 
 {.passC: ccFlags.}
 
@@ -251,7 +256,10 @@ proc getFrta*(x: var Frta; rndBits = 1024; addEntropy: proc() = nil): bool =
       cbCall   = cast[pointer](addr cbCtx)
     if isCryptOk != ctx.fortuna_start:
       break fail
-    if bLen != rng_get_bytes(bPtr, bLen, cbWrap, cbCall):
+    var nBts = rng_get_bytes(bPtr, bLen, cbWrap, cbCall)
+    if bLen != nBts:
+      when isMainModule and not defined(check_run):
+        echo "*** getFrta::rng_get_bytes failed, exp=", bLen, " got=", nBts
       break fail
     if not x.frtaAddEntropy(addr buf, bLen.int):
       break fail
