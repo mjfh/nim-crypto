@@ -26,7 +26,9 @@
 #
 
 import
-  os, sequtils, strutils, macros, ltc / [aes80, ltc_const, sha100], misc/msrc
+  os, sequtils, strutils, macros,
+  ltc / [aes80, ltc_const, sha100],
+  misc / prjcfg
 
 # ----------------------------------------------------------------------------
 # FORTUNA compiler

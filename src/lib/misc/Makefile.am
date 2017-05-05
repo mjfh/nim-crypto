@@ -5,7 +5,8 @@
 # Blame: Jordan Hrycaj <jordan@teddy-net.com>
 
 SUBDIRS =
-CLEANFILES = *.exe msrc
+CLEANFILES = *.exe prjcfg seqext
+CLEANFILES += nim_paths_inc nim_paths_inc.nim
 
 NIMDOCHTML =
 NIMNOCHECK =

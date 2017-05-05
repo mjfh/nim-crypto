@@ -400,6 +400,7 @@ clobber:
 	rm -rf m4lib autom4te.cache cache $(IMPORT) conf/pkgs
 	rm -f conf/* $(CLOBBER) VERSION test-driver */nim.cfg
 	rmdir conf 2>/dev/null || :
+	(find . -type d -name nimcache -print | xargs rm -rf) || :
 
 # ---------------------------------------------------------------------------
 # End

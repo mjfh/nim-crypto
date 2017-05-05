@@ -25,7 +25,7 @@
 #
 
 import
-  os, sequtils, strutils, macros, ltc/ltc_const, misc/msrc
+  os, sequtils, strutils, macros, ltc/ltc_const, misc/prjcfg
 
 # ----------------------------------------------------------------------------
 # SHA256 compiler
