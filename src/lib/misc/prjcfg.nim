@@ -90,6 +90,11 @@ proc cnfValue*(s: string): string {.compileTime.} =
   ## particular value lookup from autoconfig header file
   (cnfTable().concat(@[(s,"")]).filterIt(it[0] == s).head)[0][1]
 
+proc cnfValue*(s: string; default: string): string {.compileTime.} =
+  result = s.cnfValue
+  if result == "":
+    result = default
+
 # ----------------------------------------------------------------------------
 # Tests
 # ----------------------------------------------------------------------------

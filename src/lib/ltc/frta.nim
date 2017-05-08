@@ -2,7 +2,6 @@
 #
 # $Id$
 #
-#
 # Copyright (c) 2017 Jordan Hrycaj <jordan@teddy-net.com>
 # All rights reserved.
 #
@@ -27,17 +26,19 @@
 
 import
   os, sequtils, strutils, macros,
-  ltc / [aes80, ltc_const, sha100],
+  ltc / [aes80, getbytes, ltc_const, sha100],
   misc / prjcfg
+
+export
+  getbytes
 
 # ----------------------------------------------------------------------------
 # FORTUNA compiler
 # ----------------------------------------------------------------------------
 
 const
-  ltcFortunac      = "fortunad/ltc_fortuna.c"       .nimSrcDirname
-  ltcRngGetBytesc  = "fortunad/ltc_rng_get_bytes.c" .nimSrcDirname
-  ltcFortunaSpecsc = "fortunad/ltc_fortunaspecs.c"  .nimSrcDirname
+  ltcFortunac      = "fortunad/ltc_fortuna.c"     .nimSrcDirname
+  ltcFortunaSpecsc = "fortunad/ltc_fortunaspecs.c".nimSrcDirname
 
   stdCcFlgs       = " -I " & "headers".nimSrcDirname &
                     " -I " & "conf".nimSrcRoot
@@ -53,17 +54,13 @@ else:
   const ccFlags = stdCcFlgs & haveConfigH & " -DNO_LTC_TEST"
 
 {.passC: ccFlags.}
-
-{.compile: "fortunad/ltc_fortuna.c"       .nimSrcDirname.}
-{.compile: "fortunad/ltc_rng_get_bytes.c" .nimSrcDirname.}
+{.compile: ltcFortunac.}
 
 # ----------------------------------------------------------------------------
 # Interface ltc/fortuna
 # ----------------------------------------------------------------------------
 
 type
-  FrtaCbFn* = tuple[fn: proc()]
-
   FrtaPools = array[ltcFrtaPools,Sha100State]
   Frta* = tuple
     pool:   FrtaPools              # the pools
@@ -153,24 +150,6 @@ proc fortuna_export(outPtr: pointer; outLen: ptr culong;
 #  ## Returns:
 #  ##   isCryptOk if successful
 
-proc rng_get_bytes(outPtr: pointer; outLen: culong;
-                   clBck: pointer, clCtx: pointer): culong {.cdecl, importc.}
-  ## Read the system RNG
-  ##
-  ## Arguments:
-  ##   outPtr --    [out] Destination
-  ##   outLen --     [in] Length desired (octets)
-  ##   clBck  --     [in] (void(*)(void*)) function pointer to be called
-  ##                      when RNG is slow (can be nil).
-  ##   clCtx  --     [in] context pointer for clBck()
-  ##
-  ## Returns:
-  ##   number of octets read
-
-proc fwdCallBack(ctx: ptr FrtaCbFn) {.exportc.} =
-  ## (void(*)(void*)) function wrapper
-  ctx.fn()
-
 # ----------------------------------------------------------------------------
 # Debugging helper
 # ----------------------------------------------------------------------------
@@ -232,34 +211,25 @@ proc frtaAddEntropy*(x: var Frta; p: pointer; pLen: int): bool {.inline.} =
 
 
 # inspired by: libtomcrypt/src/prngs/rng_make_prng.c
-proc getFrta*(x: var Frta; rndBits = 1024; addEntropy: proc() = nil): bool =
+proc getFrta*(x: var Frta; rndBits = 1024;
+              addEntropy: EntropyCallBack = nil): bool =
   ## Initialise Fortuna random PRNG. The optional function addEntropy() is
-  ## used to generate entropy for the ANSI_RNG.
+  ## used to generate entropy for the AnsiC entropy collector.
   var
     buf: array[256,int8]
     callBack: pointer
   let
     bPtr = cast[pointer](addr buf[0])
     ctx  = addr x
-    bLen = (2 * ((rndBits.clamp(64,1024) + 7) div 8)).culong
+    bLen = (2 * ((rndBits.clamp(64,1024) + 7) div 8))
 
   assert 64 <= rndBits and rndBits <= 1024
-  assert bLen <= buf.sizeof.culong
+  assert bLen <= buf.sizeof
 
   block fail:
-    var
-      cbCtx: FrtaCbFn
-      cbCall, cbWrap: pointer
-    if not addEntropy.isNil:
-      cbCtx.fn = addEntropy
-      cbWrap   = cast[pointer](fwdCallBack)
-      cbCall   = cast[pointer](addr cbCtx)
     if isCryptOk != ctx.fortuna_start:
       break fail
-    var nBts = rng_get_bytes(bPtr, bLen, cbWrap, cbCall)
-    if bLen != nBts:
-      when isMainModule and not defined(check_run):
-        echo "*** getFrta::rng_get_bytes failed, exp=", bLen, " got=", nBts
+    if bLen != getBytes(bPtr, bLen, addEntropy):
       break fail
     if not x.frtaAddEntropy(addr buf, bLen.int):
       break fail
