@@ -25,16 +25,16 @@ xmgw32_echo () {
     :; @CROSS_COMPILING_TRUE@@USE_MINGW32_TRUE@echo "$@"
 }
 mgw64x64_echo () {
-    :; @CROSS_COMPILING_FALSE@@USE_MINGW64_TRUE@@USE_CPU64@echo "$@"
+    :; @CROSS_COMPILING_FALSE@@USE_MINGW64_TRUE@@USE_CPU64_TRUE@echo "$@"
 }
 mgw64x32_echo () {
-    :; @CROSS_COMPILING_FALSE@@USE_MINGW64_TRUE@@USE_CPU32@echo "$@"
+    :; @CROSS_COMPILING_FALSE@@USE_MINGW64_TRUE@@USE_CPU32_TRUE@echo "$@"
 }
 amd64_echo () {
-    :; @CROSS_COMPILING_FALSE@@USE_MINGW_FALSE@@USE_CPU64@echo "$@"
+    :; @CROSS_COMPILING_FALSE@@USE_MINGW_FALSE@@USE_CPU64_TRUE@echo "$@"
 }
 i386_echo () {
-    :; @CROSS_COMPILING_FALSE@@USE_MINGW_FALSE@@USE_CPU32@echo "$@"
+    :; @CROSS_COMPILING_FALSE@@USE_MINGW_FALSE@@USE_CPU32_TRUE@echo "$@"
 }
 
 # ---------------------------------------------------------------------------
@@ -153,8 +153,8 @@ echo "# architecture"
 
 xmgw64_echo   "$xmgw64_opts"
 xmgw32_echo   "$xmgw32_opts"
-mgw64x64_echo "$xmgw64x64_opts"
-mgw64x32_echo "$xmgw64x32_opts"
+mgw64x64_echo "$mgw64x64_opts"
+mgw64x32_echo "$mgw64x32_opts"
 
 amd64_echo    "$amd64_opts"
 i386_echo     "$i386_opts"
