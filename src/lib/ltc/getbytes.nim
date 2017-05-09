@@ -107,6 +107,9 @@ when declared(EnableRngAnsi):
           const scaleDown = (CLOCKS_PER_SEC * 100) div 1000000
           result = result div scaleDown
 
+  #when defined(testonly) and not defined(check_run):
+  #  echo ">>> CLOCKS_PER_SEC=", CLOCKS_PER_SEC
+
   proc rngAnsiC(buf: pointer; size: int;
                 cb: EntropyCallBack): int {.inline.} =
     var
@@ -167,15 +170,28 @@ proc getBytes*(buf: pointer; size: int; cb: EntropyCallBack): int {.inline.} =
   ## not NIL it is applied to the AnsiC clock() entropy collector.
   block:
     when declared(EnableRngNix):
+      when defined(testonly) and not defined(check_run):
+        echo "*** getBytes: trying rngNix"
       result = buf.rngNix(size)
       if 0 < result:
         break
-    when declared(EnableRngAnsi):
+    when declared(EnableRngAnsi) and not defined(windows):
+      when defined(testonly) and not defined(check_run):
+        echo "*** getBytes: trying rngAnsiC (non-windows)"
       result = buf.rngAnsiC(size, cb)
       if 0 < result:
         break
     when declared(EnableRngWin):
+      when defined(testonly) and not defined(check_run):
+        echo "*** getBytes: trying rngWin"
       result = buf.rngWin(size)
+      if 0 < result:
+        break
+    # poor performance on Windows/MinGW, so take this last
+    when declared(EnableRngAnsi) and defined(windows):
+      when defined(testonly) and not defined(check_run):
+        echo "*** getBytes: trying rngAnsiC (windows)"
+      result = buf.rngAnsiC(size, cb)
       if 0 < result:
         break
 
@@ -215,7 +231,7 @@ when isMainModule:
         cnt = (addr buf[0]).rngAnsiC(buf.len, helloWorld)
       when not defined(check_run):
         echo "*** rngAnsi enabled"
-        echo ">>> ", helloWorldCount, " >> ", buf.fromHexSeq
+        echo ">>> ", helloWorldCount, " >> ", cnt, " >> ", buf.fromHexSeq
       doAssert helloWorldCount == buf.len and cnt == buf.len
 
   when declared(EnableRngWin):
@@ -227,6 +243,18 @@ when isMainModule:
         echo "*** rngWin enabled"
         echo ">>> ", cnt, " >> ", buf.fromHexSeq
       doAssert cnt == buf.len
+
+  block:
+    var helloWorldCount: int
+    proc helloWorld =
+      helloWorldCount.inc
+    var
+      buf = newString(20)
+      cnt = (addr buf[0]).getBytes(buf.len, helloWorld)
+    when not defined(check_run):
+      echo ">>> ", helloWorldCount, " >> ", cnt, " >> ", buf.fromHexSeq
+    doAssert cnt == buf.len
+    doAssert helloWorldCount == cnt or helloWorldCount == 0
 
 # ----------------------------------------------------------------------------
 # End
