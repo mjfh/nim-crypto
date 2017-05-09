@@ -1,15 +1,17 @@
 #! /bin/sh
 
 args_digest=`echo "$*"|tr '[A-Z]' '[a-z]'|sed 's/_//g'`
+args_rextra="--gc:none"
 
 # debugging
 debug_args="--debuginfo --lineDir:on --embedsrc --debugger=native"
 
 # release: -d:release is effective only on the command line (as of NIM 0.15.3)
 release_args="-d:release --verbosity:0"
+gc_args="$args_rextra"
 case "$args_digest" in
 *-d:checkrun*|--nomain*|*-d:testonly*);;
-*) release_args="$release_args --gc:none"
+*) release_args="$release_args $gc_args"
 esac
 
 # platform/os

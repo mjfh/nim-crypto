@@ -56,6 +56,8 @@ else:
 {.passC: ccFlags.}
 {.compile: ltcFortunac.}
 
+discard ltcFortunaSpecsc # shut up compiler - for debugging only
+
 # ----------------------------------------------------------------------------
 # Interface ltc/fortuna
 # ----------------------------------------------------------------------------
@@ -154,34 +156,35 @@ proc fortuna_export(outPtr: pointer; outLen: ptr culong;
 # Debugging helper
 # ----------------------------------------------------------------------------
 
-proc fromHexSeq(buf: seq[int8]; sep = " "): string =
-  ## dump an array or a data sequence as hex string
-  buf.mapIt(it.toHex(2).toLowerAscii).join(sep)
+when isMainModule:
+  proc fromHexSeq(buf: seq[int8]; sep = " "): string =
+    ## dump an array or a data sequence as hex string
+    buf.mapIt(it.toHex(2).toLowerAscii).join(sep)
 
-proc fromHexSeq(buf: FrtaEntropy; sep1 = "\n", sep2 = " "): string =
-  var q = newSeq[int8](ltcFrtaPools)
-  result = ""
-  for n in 0..<32:
-    for m in 0..<ltcFrtaPools:
-      q[m] = buf[n*32 + m].int.toU8
-    if result.len != 0:
-      result &= sep1
-    result &= q.fromHexSeq(sep2)
+  proc fromHexSeq(buf: FrtaEntropy; sep1 = "\n", sep2 = " "): string =
+    var q = newSeq[int8](ltcFrtaPools)
+    result = ""
+    for n in 0..<32:
+      for m in 0..<ltcFrtaPools:
+        q[m] = buf[n*32 + m].int.toU8
+        if result.len != 0:
+          result &= sep1
+      result &= q.fromHexSeq(sep2)
 
-proc fromHexSeq(buf: FrtaPools; sep1 = "\n", sep2 = " "): string =
-  result = ""
-  for n in 0..<buf.len:
-    if result.len != 0:
-      result &= sep1
-    result &= buf[n].dumpSha100State(sep2)
+  proc fromHexSeq(buf: FrtaPools; sep1 = "\n", sep2 = " "): string =
+    result = ""
+    for n in 0..<buf.len:
+      if result.len != 0:
+        result &= sep1
+      result &= buf[n].dumpSha100State(sep2)
 
-proc toHexSeq(s: string): seq[int8] =
-  ## Converts a hex string stream to a byte sequence, it raises an
-  ## exception if the hex string stream is incorrect.
-  result = newSeq[int8](s.len div 2)
-  for n in 0..<result.len:
-    result[n] = s[2*n..2*n+1].parseHexInt.toU8
-  doAssert s == result.mapIt(it.toHex(2).toLowerAscii).join
+  proc toHexSeq(s: string): seq[int8] =
+    ## Converts a hex string stream to a byte sequence, it raises an
+    ## exception if the hex string stream is incorrect.
+    result = newSeq[int8](s.len div 2)
+    for n in 0..<result.len:
+      result[n] = s[2*n..2*n+1].parseHexInt.toU8
+    doAssert s == result.mapIt(it.toHex(2).toLowerAscii).join
 
 # ----------------------------------------------------------------------------
 # Public interface
@@ -217,7 +220,6 @@ proc getFrta*(x: var Frta; rndBits = 1024;
   ## used to generate entropy for the AnsiC entropy collector.
   var
     buf: array[256,int8]
-    callBack: pointer
   let
     bPtr = cast[pointer](addr buf[0])
     ctx  = addr x

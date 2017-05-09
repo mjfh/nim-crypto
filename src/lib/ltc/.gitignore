@@ -5,6 +5,7 @@
 /Makefile.in
 /aes80
 /frta
+/getbytes
 /ltc_const
 /nim.sh
 /nimcache
