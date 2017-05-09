@@ -33,7 +33,7 @@ import
 type # for ANSI/clock() generator
   EntropyCallBack* = proc()
 
-when defined(ignNimPaths):
+when defined(ignNimPaths) or defined(nim4Build):
   # just try them all
   const EnableRngNix  = true
   const EnableRngAnsi = true
