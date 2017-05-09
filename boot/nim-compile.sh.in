@@ -1,0 +1,30 @@
+#! /bin/sh
+
+args_digest=`echo "$*"|tr '[A-Z]' '[a-z]'|sed 's/_//g'`
+
+# debugging
+debug_args="--debuginfo --lineDir:on --embedsrc --debugger=native"
+
+# release: -d:release is effective only on the command line (as of NIM 0.15.3)
+release_args="-d:release --verbosity:0"
+case "$args_digest" in
+*-d:checkrun*|--nomain*|*-d:testonly*);;
+*) release_args="$release_args --gc:none"
+esac
+
+# platform/os
+mingw_args="-d:windows --os:windows"
+cpu64_args="-d:amd64"
+cpu32_args="-d:i386"
+
+args=
+@USE_DEBUG_TRUE@args=" $args $debug_args"
+@USE_DEBUG_FALSE@args="$args $release_args"
+@USE_MINGW_TRUE@args=" $args $mingw_args"
+@USE_CPU64_TRUE@args=" $args $cpu64_args"
+@USE_CPU32_TRUE@args=" $args $cpu32_args"
+
+set -x;
+@NIM@ cc $args "$@"
+
+# End

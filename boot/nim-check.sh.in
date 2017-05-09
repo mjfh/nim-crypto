@@ -1,0 +1,21 @@
+#! /bin/sh
+
+args="-d:checkRun"
+
+@CROSS_COMPILING_TRUE@@USE_MINGW_TRUE@runcmd=@CMDPATH_WINE@
+
+test -n "$runcmd" || {
+    args="$args -r"
+}
+
+set -e
+@SHELL@ @BOOT_DIR@/nim-compile.sh $args "$@"
+
+test -z "$runcmd" || (
+    while test $# -gt 1; do shift; done
+    exe=`expr "$1" : '\(.*\)\.nim$'`@EXEEXT@
+    @USE_DEBUG_TRUE@set -x
+    $runcmd "$exe"
+)
+
+# End

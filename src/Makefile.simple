@@ -10,10 +10,11 @@ ROOTDIR  = lib
 TARGET   = cwrap
 LIBS     = -ldl -lm
 
-NIMLIB   = `nim dump 2>&1 >/dev/null|sed '$$!d'`
-INCLUDES = -Inimcache -I$(NIMLIB)
-CFLAGS   = $(INCLUDES) $(CDEBUG)
-NIMFLAGS = -p:$(ROOTDIR) --app:staticLib --noMain --header $(NIMDBG)
+NIMLIB    = `nim dump 2>&1 >/dev/null|sed '$$!d'`
+INCLUDES  = -Inimcache -I$(NIMLIB)
+CFLAGS    = $(INCLUDES) $(CDEBUG)
+NIMFLAGS  = -p:$(ROOTDIR) --app:staticLib --noMain --header
+NIMFLAGS += -d:ignNimPaths $(NIMDBG)
 
 # Settings for optimised code
 REL_CDEBUG = -O2 -s

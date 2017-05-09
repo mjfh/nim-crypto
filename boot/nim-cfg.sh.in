@@ -1,0 +1,167 @@
+#! /bin/sh
+#
+# $Id$
+#
+# Blame: Jordan Hrycaj <jordan@teddy-net.com>
+
+# ---------------------------------------------------------------------------
+# helpers
+# ---------------------------------------------------------------------------
+
+nimble_path () {
+    @NIMBLE@ --nimbleDir:@CONF_DIR@ path "$@"|sed 's!\\!/!g'
+}
+
+debug_echo () {
+    :; @USE_DEBUG_TRUE@echo "$@"
+}
+release_echo () {
+    :; @USE_DEBUG_FALSE@echo "$@"
+}
+xmgw64_echo () {
+    :; @CROSS_COMPILING_TRUE@@USE_MINGW64_TRUE@echo "$@"
+}
+xmgw32_echo () {
+    :; @CROSS_COMPILING_TRUE@@USE_MINGW32_TRUE@echo "$@"
+}
+mgw64x64_echo () {
+    :; @CROSS_COMPILING_FALSE@@USE_MINGW64_TRUE@@USE_CPU64_TRUE@echo "$@"
+}
+mgw64x32_echo () {
+    :; @CROSS_COMPILING_FALSE@@USE_MINGW64_TRUE@@USE_CPU32_TRUE@echo "$@"
+}
+amd64_echo () {
+    :; @CROSS_COMPILING_FALSE@@USE_MINGW_FALSE@@USE_CPU64_TRUE@echo "$@"
+}
+i386_echo () {
+    :; @CROSS_COMPILING_FALSE@@USE_MINGW_FALSE@@USE_CPU32_TRUE@echo "$@"
+}
+
+# ---------------------------------------------------------------------------
+# global options
+# ---------------------------------------------------------------------------
+
+global_opts='
+# Global options
+path = "@SRC_DIR@"
+path = "@SRC_DIR@/lib"
+hints = off
+app = console'
+
+import_opts='
+# list of NIM modules to import'
+for m in @NIMIMPORT@
+do
+    submod_opts="${import_opts}
+path=\"`nimble_path $m`\""
+done
+
+submod_opts='
+# list of direct sub-modules in src/lib'
+for m in @NIMSRC_SUBMOD@
+do
+    submod_opts="${submod_opts}
+path=\"@SRCLIB_DIR@/$m\""
+done
+
+debug_opts='
+# Note: debug mode
+debugger = native
+debuginfo
+lineDir = on
+embedsrc
+'
+release_opts='
+# Note: d:release @NIM_INFO@
+deadCodeElim = on
+opt = speed
+assertions = off
+'
+
+# ---------------------------------------------------------------------------
+# list of architectures
+# ---------------------------------------------------------------------------
+
+xmgw64_opts='
+@if windows:
+  # Note: os:windows @NIM_INFO@
+  cpu = amd64
+  amd64.windows.gcc.path = "/usr/bin"
+  amd64.windows.gcc.exe = "@CC@"
+  amd64.windows.gcc.linkerexe = "@CC@"
+  define = windows
+@end'
+
+xmgw32_opts='
+@if windows:
+  # Note: os:windows @NIM_INFO@
+  cpu = i386
+  i386.windows.gcc.path = "/usr/bin"
+  i386.windows.gcc.exe = "@CC@"
+  i386.windows.gcc.linkerexe = "@CC@"
+@end'
+
+mgw64x64_opts='
+@if windows:
+  # Note: os:windows on MinGW64
+  cpu = amd64
+  amd64.windows.gcc.exe = "@CC@"
+  amd64.windows.gcc.linkerexe = "@CC@"
+  passC = "@CFLAGS_CC_M64@"
+  passL = "@CFLAGS_CC_M64@"
+  define = windows
+@end'
+
+mgw64x32_opts='
+@if windows:
+  # Note: os:windows on MinGW64 => 32bit
+  cpu = i386
+  passC = "@CFLAGS_CC_M32@"
+  passL = "@CFLAGS_CC_M32@"
+@end'
+
+amd64_opts='
+@if amd64:
+  # Note: Posix/amd64
+  cpu = amd64
+  passC = "@CFLAGS_CC_M64@"
+  passL = "@CFLAGS_CC_M64@"
+@end'
+
+i386_opts='
+@if i386:
+  # Note: Posix/i386
+  cpu = amd64
+  passC = "@CFLAGS_CC_M32@"
+  passL = "@CFLAGS_CC_M32@"
+@end'
+
+# ---------------------------------------------------------------------------
+# output
+# ---------------------------------------------------------------------------
+
+echo "# date: `date`"
+
+echo "$global_opts"
+echo "$submod_opts"
+echo "$import_opts"
+
+debug_echo   "$debug_opts"
+release_echo "$release_opts"
+
+echo "# architecture"
+
+xmgw64_echo   "$xmgw64_opts"
+xmgw32_echo   "$xmgw32_opts"
+mgw64x64_echo "$mgw64x64_opts"
+mgw64x32_echo "$mgw64x32_opts"
+
+amd64_echo    "$amd64_opts"
+i386_echo     "$i386_opts"
+
+echo
+echo "# end"
+
+# ---------------------------------------------------------------------------
+# end
+# ---------------------------------------------------------------------------

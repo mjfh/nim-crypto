@@ -9,7 +9,7 @@
 # recommended by libtoolize
 ACLOCAL_AMFLAGS = -I m4lib
 
-SUBDIRS    = import src
+SUBDIRS    = boot src
 CLEANFILES =
 
 # ---------------------------------------------------------------------------

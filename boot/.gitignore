@@ -1,0 +1,6 @@
+/Makefile
+/Makefile.in
+/nim-cfg.sh
+/nim-check.sh
+/nim-compile.sh
+/nim-paths.sh

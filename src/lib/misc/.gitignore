@@ -3,6 +3,9 @@
 /*.html
 /Makefile
 /Makefile.in
-/msrc
 /nim.sh
 /nimcache
+/nim_paths_inc
+/nim_paths_inc.nim
+/prjcfg
+/seqext
