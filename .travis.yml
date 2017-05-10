@@ -30,3 +30,4 @@ install:
 
 script:
   - test \! -f :travis-ok || ( ./Build debug && make check && make )
+  - test \! -f :travis-ok || ( ./Build native && make check && make )
