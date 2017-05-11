@@ -131,7 +131,7 @@ const
   HdrBlkLen   = 2 * InLinelen   # header: 2 blocks with 2 lines each
   HdrTotalLen = 2 * HdrBlkLen
 
-  SessKeyLen* = UEccScalarLen
+  SessKeyLen* = eccGfOrder.len  # length of (a typical) UEccScalar
   NonceLen*   = HdrTotalLen - 6 * SessKeyLen
   NonceLenH   = NonceLen div 2
 

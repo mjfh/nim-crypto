@@ -5,7 +5,7 @@
 # Blame: Jordan Hrycaj <jordan@teddy-net.com>
 
 SUBDIRS =
-CLEANFILES = *.exe uecc
+CLEANFILES = *.exe uecc ueccdesc
 
 NIMDOCHTML =
 NIMNOCHECK =
