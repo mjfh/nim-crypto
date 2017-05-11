@@ -27,33 +27,25 @@
 #
 
 import
-  os, sequtils, strutils, macros
-
-const
-  ueccVer = "v7"
+  misc / [prjcfg]
 
 # ----------------------------------------------------------------------------
 # Uecc compiler
 # ----------------------------------------------------------------------------
 
-template getCwd: string =
-  instantiationInfo(-1, true).filename.parentDir
+proc ueccPath(s: string = nil): string {.compileTime.} =
+  var w =  if s.isNil: "" else: "/" & s
+  result = ("private/uecc-v7" & w).nimSrcDirname
 
 const
-  cwd        = getCwd                               # starts with current ..
-  D          = cwd[2 * (cwd[1] == ':').ord]         # .. DirSep, may differ ..
-  ueccRelDir = "private" & D & "uecc-" & ueccVer    # .. from target DirSep
-  ueccDir    = cwd & D & ueccRelDir
-  ueccIncDir = ueccDir & D & "include"
-  ueccHeader = ueccIncDir & D & "libuecc" & D & "ecc.h"
-  ueccSrcPfx = ueccDir & D & "src" & D
+  ueccHeader = "include/libuecc/ecc.h".ueccPath
 
-{.passC: "-I " & ueccIncDir.}
-{.compile:  ueccSrcPfx & "ec25519.c".}
-{.compile:  ueccSrcPfx & "ec25519_gf.c".}
+{.passC: "-I " & "include".ueccPath.}
+{.compile: "src/ec25519.c"    .ueccPath.}
+{.compile: "src/ec25519_gf.c" .ueccPath.}
 
 # Extra interface for uecc constants
-{.compile: "uecc-const.c".}
+{.compile: "uecc-const.c".nimSrcDirname.}
 
 # ----------------------------------------------------------------------------
 # Uecc library interface
@@ -500,7 +492,7 @@ when isMainModule:
   import base64
 
   # Verify structures
-  {.compile: "ueccspecs.c".}
+  {.compile: "ueccspecs.c".nimSrcDirname.}
   proc xUeccSpecs(): pointer {.cdecl, importc: "uecc_specs".}
 
   proc tUeccSpecs(): seq[int] =

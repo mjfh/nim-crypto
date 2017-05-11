@@ -27,7 +27,8 @@
 ## Random generator based Fortuna
 
 import
-  ltc/frta, hashes, times, strutils, sequtils
+  hashes, times, strutils, sequtils,
+  ltc / [frta]
 
 type
   RndFrta* = Frta

@@ -5,10 +5,10 @@
 # -- Jordan Hrycaj <jordan@mjh-it.com>
 
 import
-  algorithm, os, strutils, misc/seqext
+  algorithm, os, sequtils, strutils, misc / [seqext]
 
 export
-  algorithm, os, strutils, seqext
+  algorithm, os, sequtils, strutils, seqext
 
 when defined(ignNimPaths):
   const
@@ -20,6 +20,12 @@ when defined(ignNimPaths):
     autoConfFileH = "conf" / "config.h"
 else:
   include misc/nim_paths_inc
+
+type # handy defs
+  SiUnit* = enum
+    KiB= 1024,
+    MiB = KiB.ord * KiB.ord,
+    GiB = KiB.ord * MiB.ord,
 
 # ----------------------------------------------------------------------------
 # Public compile-time methods

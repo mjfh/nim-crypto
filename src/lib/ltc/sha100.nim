@@ -25,15 +25,15 @@
 #
 
 import
-  os, sequtils, strutils, macros, ltc/ltc_const, misc/prjcfg
+  ltc  / [ltc_const],
+  misc / [prjcfg]
 
 # ----------------------------------------------------------------------------
 # SHA256 compiler
 # ----------------------------------------------------------------------------
 
 const
-  stdCcFlgs = " -I " & "headers".nimSrcDirname &
-              " -I " & "conf".nimSrcRoot
+  stdCcFlgs = " -I " & "headers".nimSrcDirname
 
 when isMainModule:
   const ccFlags = stdCcFlgs

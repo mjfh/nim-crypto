@@ -25,9 +25,8 @@
 #
 
 import
-  os, sequtils, strutils, macros,
   ltc / [aes80, getbytes, ltc_const, sha100],
-  misc / prjcfg
+  misc / [prjcfg]
 
 export
   getbytes
@@ -40,8 +39,7 @@ const
   ltcFortunac      = "fortunad/ltc_fortuna.c"     .nimSrcDirname
   ltcFortunaSpecsc = "fortunad/ltc_fortunaspecs.c".nimSrcDirname
 
-  stdCcFlgs       = " -I " & "headers".nimSrcDirname &
-                    " -I " & "conf".nimSrcRoot
+  stdCcFlgs       = " -I " & "headers".nimSrcDirname
 
 when not defined(ignNimPaths):
   const haveConfigH = " -DHAVE_CONFIG_H"

@@ -118,7 +118,9 @@
 ##
 #
 import
-  base64, ecckey, ltc/sha100, rnd64, strutils, uecc/uecc
+  base64, ecckey, rnd64, strutils,
+  ltc  / [sha100],
+  uecc / [uecc]
 
 export
   uecc

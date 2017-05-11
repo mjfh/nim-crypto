@@ -38,19 +38,19 @@
 ##   and correctness. Test vectors with a battery of unit tests are included.
 
 import
-  os, sequtils, strutils, endians
+  endians,
+  misc / [prjcfg]
 
-template getCwd: string =
-  instantiationInfo(-1, true).filename.parentDir
+# ----------------------------------------------------------------------------
+# ChaCha compiler
+# ----------------------------------------------------------------------------
 
 const
-  cwd       = getCwd                            # starts with current ..
-  D         = cwd[2 * (cwd[1] == ':').ord]      # .. DirSep, may differ ..
-  chaSrcDir = cwd & D & "private"               # .. from target DirSep
-  chaHeader = chaSrcDir & D & "chacha20_simple.h"
+  chaHeader = "private/chacha20_simple.h".nimSrcDirname
+  chaCflags = "-I " & "private".nimSrcDirname
 
-{.passC: "-I " & chaSrcDir.}
-{.compile: chaSrcDir & D & "chacha20_simple.c".}
+{.passC: chaCflags.}
+{.compile: "private/chacha20_simple.c".nimSrcDirname.}
 
 type
   ChaChaIV*   = tuple[data: array[ 1,uint64]] ## nonce, initialisation vector
@@ -209,7 +209,7 @@ proc chachaKeyStream*(x: var ChaChaCtx; p: pointer; size: int) {.inline.} =
 when isMainModule:
 
   if true: # Verify structures
-    {.compile: "chacha20specs.c".}
+    {.compile: "chacha20specs.c".nimSrcDirname.}
     proc xChaChaSpecs(): pointer {.cdecl, importc: "chacha20_specs".}
     proc tChaChaSpecs(): seq[int] =
       result = newSeq[int](0)
@@ -231,8 +231,8 @@ when isMainModule:
     doAssert v == a.mapIt(int, it)
 
   if true: # Run external test
-    {.passC: "-I " & chaSrcDir & " -DNIMSRC_LOCAL".}
-    {.compile: chaSrcDir & D & "chacha20_test.c".}
+    {.passC: chaCflags & " -DNIMSRC_LOCAL".}
+    {.compile: "private/chacha20_test.c".nimSrcDirname.}
     proc chacha20test(): cstring {.cdecl, importc: "chacha20_test".}
     var
       s   = $chacha20test()

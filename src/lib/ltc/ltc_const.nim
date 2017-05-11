@@ -24,35 +24,8 @@
 # OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #
 
-import
-  os, sequtils, strutils, macros
-
 # ----------------------------------------------------------------------------
-# Compiler
-# ----------------------------------------------------------------------------
-
-template getCwd: string =
-  instantiationInfo(-1, true).filename.parentDir
-
-const
-  cwd       = getCwd                               # starts with current ..
-  D         = cwd[2 * (cwd[1] == ':').ord]         # .. DirSep, may differ ..
-  srcIncDir = cwd & D & "headers"                  # .. from target DirSe
-  srcExtDir = cwd & D & "crypt"
-  stdCcFlgs = "-I " & srcIncDir
-
-when isMainModule:
-  const ccFlags = stdCcFlgs
-else:
-  const ccFlags = stdCcFlgs & " -DNO_LTC_TEST"
-
-{.passC: ccFlags.}
-
-{.compile: srcExtDir & D & "ltc_crypt-const.c".}
-
-
-# ----------------------------------------------------------------------------
-# Interface
+# Public
 # ----------------------------------------------------------------------------
 
 const
@@ -68,48 +41,28 @@ const
 
 when isMainModule:
 
-  type
-    LtcConst = enum # copied from <tomcrypt.h>
-      CRYPT_OK = 0,
-      CRYPT_ERROR, CRYPT_NOP, CRYPT_INVALID_KEYSIZE,
-      CRYPT_INVALID_ROUNDS, CRYPT_FAIL_TESTVECTOR, CRYPT_BUFFER_OVERFLOW,
-      CRYPT_INVALID_PACKET, CRYPT_INVALID_PRNGSIZE, CRYPT_ERROR_READPRNG,
-      CRYPT_INVALID_CIPHER, CRYPT_INVALID_HASH, CRYPT_INVALID_PRNG,
-      CRYPT_MEM, CRYPT_PK_TYPE_MISMATCH, CRYPT_PK_NOT_PRIVATE,
-      CRYPT_INVALID_ARG, CRYPT_FILE_NOTFOUND, CRYPT_PK_INVALID_TYPE,
-      CRYPT_PK_INVALID_SYSTEM, CRYPT_PK_DUP, CRYPT_PK_NOT_FOUND,
-      CRYPT_PK_INVALID_SIZE, CRYPT_INVALID_PRIME_SIZE,
-      CRYPT_PK_INVALID_PADDING, CRYPT_HASH_OVERFLOW
+  import
+    misc / [prjcfg]
 
-    LtcExtraConst = enum
-      LTC_FORTUNA_POOLS = 32
+  {.passC: " -I " & "headers".nimSrcDirname.}
 
-  doAssert isCryptOk             == CRYPT_OK.ord
-  doAssert isCryptInvalidArg     == CRYPT_INVALID_ARG.ord
-  doAssert isCryptHashOverflow   == CRYPT_HASH_OVERFLOW.ord
-  doAssert isCryptBufferOverflow == CRYPT_BUFFER_OVERFLOW.ord
-  doAssert ltcFrtaPools          == LTC_FORTUNA_POOLS.ord
+  var
+    varCryptOk {.
+      importc: "CRYPT_OK",              header: "tomcrypt.h".}: int
+    varCryptBufferOverflow {.
+      importc: "CRYPT_BUFFER_OVERFLOW", header: "tomcrypt.h".}: int
+    varCryptInvalidArg {.
+      importc: "CRYPT_INVALID_ARG",     header: "tomcrypt.h".}: int
+    varCryptHashOverflow {.
+      importc: "CRYPT_HASH_OVERFLOW",   header: "tomcrypt.h".}: int
+    varFrtaPools {.
+      importc: "LTC_FORTUNA_POOLS",     header: "tomcrypt.h".}: int
 
-  proc ltcConst(n: cint): cstring {.cdecl, importc: "ltc_const".}
-
-  block: # check/verify internal constants
-    for sym in LtcConst.items:
-      var s = sym.ord.cint.ltcConst
-      when not defined(check_run):
-        echo ">>> ", $sym, "=", sym.ord
-        #echo ">>> ", $sym, " >>> ", s
-      doAssert s == $sym
-
-  block: # check/verify extra constants
-    echo ""
-    for sym in LtcExtraConst.items:
-      if ($sym)[0].isDigit: # e.g. "33 (invalid data!)"
-        continue
-      var s = (sym.ord or 0x40000000).cint.ltcConst
-      when not defined(check_run):
-        echo ">>> ", $sym, "=", sym.ord
-        #echo ">>> ", $sym, " >>> ", s
-      doAssert s == $sym
+  doAssert isCryptOk             == varCryptOk
+  doAssert isCryptInvalidArg     == varCryptInvalidArg
+  doAssert isCryptHashOverflow   == varCryptHashOverflow
+  doAssert isCryptBufferOverflow == varCryptBufferOverflow
+  doAssert ltcFrtaPools          == varFrtaPools
 
 #  when not defined(check_run):
 #    echo "*** not yet"

@@ -169,7 +169,8 @@
 ##
 
 import
-  base64, chacha/chacha, ecckey, rnd64, sesskey, strutils
+  base64, ecckey, rnd64, sesskey, strutils,
+  chacha / [chacha]
 
 export
   ecckey

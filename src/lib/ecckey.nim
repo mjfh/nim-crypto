@@ -25,7 +25,8 @@
 #
 
 import
-  base64, rnd64, sequtils, strutils, uecc/uecc
+  base64, rnd64, sequtils, strutils,
+  uecc / [uecc]
 
 const
   InLinelen  = 57

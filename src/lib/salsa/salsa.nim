@@ -25,19 +25,14 @@
 #
 
 import
-  os, sequtils, endians
-
-template getCwd: string =
-  instantiationInfo(-1, true).filename.parentDir
+  endians,
+  misc / [prjcfg]
 
 const
-  cwd       = getCwd                            # starts with current ..
-  D         = cwd[2 * (cwd[1] == ':').ord]      # .. DirSep, may differ ..
-  slsSrcDir = cwd & D & "private"               # .. from target DirSep
-  slsHeader = slsSrcDir & D & "ecrypt-sync.h"
+  slsHeader = "private/ecrypt-sync.h".nimSrcDirname
 
-{.passC: "-I " & slsSrcDir.}
-{.compile: slsSrcDir & D & "salsa20.c".}
+{.passC: "-I " & "private".nimSrcDirname.}
+{.compile: "private/salsa20.c".nimSrcDirname.}
 
 # ----------------------------------------------------------------------------
 # Interface salsa20
@@ -125,7 +120,7 @@ when isMainModule:
       echo "*** <= 32 bit architecture"
 
   block: # Verify structures
-    {.compile: "salsa20specs.c".}
+    {.compile: "salsa20specs.c".nimSrcDirname.}
     proc xSalsaSpecs(): cstring {.cdecl, importc: "salsa20_specs".}
     proc tSalsaSpecs(): seq[int] =
       result = newSeq[int](0)
