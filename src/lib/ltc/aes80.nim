@@ -25,8 +25,11 @@
 #
 
 import
-  ltc  / [ltc_const],
+  ltc  / [aes80desc, ltc_const],
   misc / [prjcfg]
+
+export
+  aes80desc
 
 # ----------------------------------------------------------------------------
 # AES compiler
@@ -49,22 +52,6 @@ else:
 # ----------------------------------------------------------------------------
 # Interface ltc/aes
 # ----------------------------------------------------------------------------
-
-type
-  RijndaelKey* = tuple
-    eK: array[60, uint32]   # ulong32 eK[60]
-    dK: array[60, uint32]   # ulong32 dK[60];
-    nR: cint
-
-  Aes80Array* = array[16,uint8]
-  Aes80Data*  = Aes80Array | array[16,int8]
-
-when cint.sizeof != int.sizeof:
-  # occures on 32bit machines due to struct into union embedding
-  type Aes80Key* = tuple[rndl: RijndaelKey, pad: cint]
-else:
-  type Aes80Key* = tuple[rndl: RijndaelKey] # symmetric encryption key
-
 
 proc rijndael_setup(key: pointer; kLen: cint;
                     nRnds: cint; sKey: ptr Aes80Key): cint {.cdecl, importc.}
@@ -180,30 +167,6 @@ proc aes80Decrypt*(x: var Aes80Key;
 # ----------------------------------------------------------------------------
 
 when isMainModule:
-
-  # verify Aes80Key descriptor layout in C and NIM
-  {.compile: "aesd/ltc_aes80specs.c".nimSrcDirname.}
-  proc zAes80Specs(): pointer {.cdecl, importc: "ltc_aes80_specs".}
-  proc tAes80Specs(): seq[int] =
-    result = newSeq[int](0)
-    var
-      p: Aes80Key
-      a = cast[int](addr p)
-    result.add(cast[int](addr p.rndl.eK) - a)
-    result.add(cast[int](addr p.rndl.dK) - a)
-    result.add(cast[int](addr p.rndl.nR) - a)
-    result.add(p.rndl.sizeof)
-    result.add(p.sizeof)
-    result.add(0xffff)
-  var
-    a: array[6,cint]
-    v = tAes80Specs()
-  (addr a[0]).copyMem(zAes80Specs(), sizeof(a))
-  var w = a.mapIt(int, it)
-  when not defined(check_run):
-    echo ">> desc: ", v
-  #echo ">> ", v, " >> ", w
-  doAssert v == w
 
   # invoke self test in C code
   proc rijndael_test(): cint {.cdecl, importc.}
