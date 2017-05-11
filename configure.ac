@@ -21,6 +21,7 @@ AC_CONFIG_HEADERS([conf/config.h])
 AC_CONFIG_SRCDIR([acinclude.m4])
 AC_CONFIG_INIT([2017-@YEAR@ Mjh-IT Ltd, Cambridge, UK])
 AC_CONFIG_MACRO_DIR([m4lib])
+AC_CONFIG_4BUILD
 
 AC_LANG(C)
 dnl # Enable ISO features if possible. On Linux, setting _XOPEN_SOURCE
