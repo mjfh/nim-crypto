@@ -25,11 +25,11 @@
 #
 
 import
-  ltc / [aes80, getbytes, ltc_const, sha100],
+  ltc / [aes80, frtadesc, getbytes, ltc_const, sha100],
   misc / [prjcfg]
 
 export
-  getbytes
+  getbytes, frtadesc
 
 # ----------------------------------------------------------------------------
 # FORTUNA compiler
@@ -59,20 +59,6 @@ discard ltcFortunaSpecsc # shut up compiler - for debugging only
 # ----------------------------------------------------------------------------
 # Interface ltc/fortuna
 # ----------------------------------------------------------------------------
-
-type
-  FrtaPools = array[ltcFrtaPools,Sha100State]
-  Frta* = tuple
-    pool:   FrtaPools              # the pools
-    sKey:   Aes80Key
-    K:      array[32,int8]         # the current key
-    IV:     array[16,int8]         # IV for CTR mode
-    pIdx:   culong                 # current pool we will add to
-    p0Len:  culong                 # length of 0'th pool
-    wd:     culong
-    resCnt: uint64                 # number of times we have reset
-
-  FrtaEntropy* = array[32*ltcFrtaPools,int8]
 
 proc fortuna_start(ctx: ptr Frta): cint {.cdecl, importc.}
   ## Start the PRNG
@@ -263,9 +249,6 @@ proc frtaExport*(x: var Frta; buf: var FrtaEntropy): bool {.inline.} =
 # ----------------------------------------------------------------------------
 
 when isMainModule:
-  type
-    PrngState = tuple
-      frta: Frta
 
   block: # verify entropy export size
     var
@@ -277,36 +260,6 @@ when isMainModule:
     when not defined(check_run):
       echo ">>> FrtaEntropy=", n, " expected=", FrtaEntropy.sizeof
     doAssert n.int == FrtaEntropy.sizeof
-
-  {.compile: ltcFortunaSpecsc.}
-  block: # verify Aes80Key descriptor layout in C and NIM
-    proc zFrtaSpecs(): pointer {.cdecl, importc: "ltc_fortuna_specs".}
-    proc tFrtaSpecs(): seq[int] =
-      result = newSeq[int](0)
-      var
-        p: PrngState
-        a = cast[int](addr p)
-      result.add(cast[int](addr p.frta.pool)    - a)
-      result.add(cast[int](addr p.frta.pool[1]) - a)
-      result.add(cast[int](addr p.frta.sKey)    - a)
-      result.add(cast[int](addr p.frta.K)       - a)
-      result.add(cast[int](addr p.frta.IV)      - a)
-      result.add(cast[int](addr p.frta.pIdx)    - a)
-      result.add(cast[int](addr p.frta.p0Len)   - a)
-      result.add(cast[int](addr p.frta.wd)      - a)
-      result.add(cast[int](addr p.frta.resCnt)  - a)
-      result.add(p.frta.sizeof)
-      result.add(p.sizeof)
-      result.add(0xffff)
-    var
-      a: array[12,cint]
-      v = tFrtaSpecs()
-    (addr a[0]).copyMem(zFrtaSpecs(), sizeof(a))
-    var w = a.mapIt(int, it)
-    when not defined(check_run):
-      echo ">>> desc: ", v
-    # echo ">>> ", v, " >> ", w
-    doAssert v == w
 
   var helloWorldCount: int
   proc helloWorld =

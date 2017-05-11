@@ -24,6 +24,10 @@
 # OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #
 
+# ----------------------------------------------------------------------------
+# Public
+# ----------------------------------------------------------------------------
+
 type
   RijndaelKey* = tuple
     eK: array[60, uint32]   # ulong32 eK[60]
