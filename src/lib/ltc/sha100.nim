@@ -25,8 +25,11 @@
 #
 
 import
-  ltc  / [ltc_const],
+  ltc  / [ltc_const, sha100desc],
   misc / [prjcfg]
+
+export
+  sha100desc
 
 # ----------------------------------------------------------------------------
 # SHA256 compiler
@@ -48,14 +51,6 @@ else:
 # ----------------------------------------------------------------------------
 # Interface ltc/sha256
 # ----------------------------------------------------------------------------
-
-type
-  Sha100Data* = array[32, uint8]
-  Sha100State* = tuple
-    length: uint64
-    state:  array[8, uint32]
-    curlen: uint32
-    buf:    array[64, uint8]
 
 proc ltc_sha256_init(md: ptr Sha100State): cint {.cdecl, importc.}
   ## Init hash descriptor.
@@ -124,47 +119,18 @@ proc sha100Done*(md: var Sha100State): Sha100Data {.inline.} =
 # ----------------------------------------------------------------------------
 
 when isMainModule:
-  type
-    HashState = tuple
-      sha: Sha100State
 
-  {.compile: "sha256d/ltc_sha256specs.c".nimSrcDirname.}
-  proc sha100Test():         cint    {.cdecl, importc: "ltc_sha256_test".}
-  proc zSha100Specs():       pointer {.cdecl, importc: "ltc_sha256_specs".}
+  proc sha100Test(): cint {.cdecl, importc: "ltc_sha256_test".}
 
   proc toSeq(a: Sha100Data): seq[int8] =
     result = newSeq[int8](a.len)
     for n in 0..<a.len:
       result[n] = a[n].int.toU8
 
-  proc tSha100Specs(): seq[int] =
-    result = newSeq[int](0)
-    var
-      p: HashState
-      a = cast[int](addr p)
-    result.add(cast[int](addr p.sha.length) - a)
-    result.add(cast[int](addr p.sha.state)  - a)
-    result.add(cast[int](addr p.sha.curlen) - a)
-    result.add(cast[int](addr p.sha.buf)    - a)
-    result.add(p.sha.sizeof)
-    result.add(p.sizeof)
-    result.add(0xffff)
-
   if true: # external self test
     var rc = sha100Test()
     #echo ">> ", rc
     doAssert isCryptOk == rc
-
-  if true: # test state descriptor layout
-    var
-      a: array[7,cint]
-      v = tSha100Specs()
-    (addr a[0]).copyMem(zSha100Specs(), sizeof(a))
-    var w = a.mapIt(int, it)
-    when not defined(check_run):
-      echo ">> desc: ", v
-    # echo ">> ", v, " >> ", w
-    doAssert v == w
 
   if true: # test vectors
     const

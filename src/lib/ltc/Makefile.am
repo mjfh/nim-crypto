@@ -5,7 +5,7 @@
 # Blame: Jordan Hrycaj <jordan@teddy-net.com>
 
 SUBDIRS =
-CLEANFILES = *.exe aes80 frta getbytes ltc_const sha100
+CLEANFILES = *.exe aes80 frta getbytes ltc_const sha100 sha100desc
 
 NIMDOCHTML =
 NIMNOCHECK =
