@@ -39,7 +39,11 @@
 
 import
   endians,
-  misc / [prjcfg]
+  chacha / [chachadesc],
+  misc   / [prjcfg]
+
+export
+  chachadesc
 
 # ----------------------------------------------------------------------------
 # ChaCha compiler
@@ -53,17 +57,6 @@ const
 {.compile: "private/chacha20_simple.c".nimSrcDirname.}
 
 type
-  ChaChaIV*   = tuple[data: array[ 1,uint64]] ## nonce, initialisation vector
-  ChaChaHKey* = tuple[data: array[ 2,uint64]] ## small key
-  ChaChaKey*  = tuple[data: array[ 4,uint64]] ## recommended key
-  ChaChaBlk*  = tuple[data: array[64, uint8]] ## 64 byte data block
-  ChaChaXBlk* = tuple[data: array[16,uint32]] ## data block (other format)
-  ChaChaData* = ChaChaIV|ChaChaHKey|ChaChaKey|ChaChaBlk|ChaChaXBlk
-  ChaChaCtx* = tuple                          ## descriptor, holds context
-    schedule:  ChaChaBlk
-    keystream: ChaChaBlk
-    available: csize
-
   CCKeyBuf[K: ChaChaHKey|ChaChaKey] = tuple
     buf: K
     nnn: ChaChaIV
@@ -207,28 +200,6 @@ proc chachaKeyStream*(x: var ChaChaCtx; p: pointer; size: int) {.inline.} =
 # ----------------------------------------------------------------------------
 
 when isMainModule:
-
-  if true: # Verify structures
-    {.compile: "chacha20specs.c".nimSrcDirname.}
-    proc xChaChaSpecs(): pointer {.cdecl, importc: "chacha20_specs".}
-    proc tChaChaSpecs(): seq[int] =
-      result = newSeq[int](0)
-      var
-        p: ChaChaCtx
-        a = cast[int](addr p)
-      result.add(cast[int](addr p.schedule)  - a)
-      result.add(cast[int](addr p.keystream) - a)
-      result.add(cast[int](addr p.available) - a)
-      result.add(sizeof(p))
-      result.add(0xffff)
-    var
-      a: array[5,cint]
-      v = tChaChaSpecs()
-    (addr a[0]).copyMem(xChaChaSpecs(), sizeof(a))
-    when not defined(check_run):
-      discard
-      #echo "*** Ctx layout: ", $a.mapIt(int, it), " >> ", $v
-    doAssert v == a.mapIt(int, it)
 
   if true: # Run external test
     {.passC: chaCflags & " -DNIMSRC_LOCAL".}

@@ -28,12 +28,17 @@
 # Public
 # ----------------------------------------------------------------------------
 
-const
-  isCryptOk*             =  0
-  isCryptBufferOverflow* =  6
-  isCryptInvalidArg*     = 16
-  isCryptHashOverflow*   = 25
-  ltcFrtaPools*          = 32
+type
+  ChaChaIV*   = tuple[data: array[ 1,uint64]] ## nonce, initialisation vector
+  ChaChaHKey* = tuple[data: array[ 2,uint64]] ## small key
+  ChaChaKey*  = tuple[data: array[ 4,uint64]] ## recommended key
+  ChaChaBlk*  = tuple[data: array[64, uint8]] ## 64 byte data block
+  ChaChaXBlk* = tuple[data: array[16,uint32]] ## data block (other format)
+  ChaChaData* = ChaChaIV|ChaChaHKey|ChaChaKey|ChaChaBlk|ChaChaXBlk
+  ChaChaCtx* = tuple                          ## descriptor, holds context
+    schedule:  ChaChaBlk
+    keystream: ChaChaBlk
+    available: csize
 
 # ----------------------------------------------------------------------------
 # Tests
@@ -44,25 +49,27 @@ when isMainModule:
   import
     misc / [prjcfg]
 
-  {.passC: " -I " & "headers".nimSrcDirname.}
+  {.passC: " -I " & "private".nimSrcDirname.}
 
   var
-    varCryptOk {.
-      importc: "CRYPT_OK",              header: "tomcrypt.h".}: int
-    varCryptBufferOverflow {.
-      importc: "CRYPT_BUFFER_OVERFLOW", header: "tomcrypt.h".}: int
-    varCryptInvalidArg {.
-      importc: "CRYPT_INVALID_ARG",     header: "tomcrypt.h".}: int
-    varCryptHashOverflow {.
-      importc: "CRYPT_HASH_OVERFLOW",   header: "tomcrypt.h".}: int
-    varFrtaPools {.
-      importc: "LTC_FORTUNA_POOLS",     header: "tomcrypt.h".}: int
-
-  doAssert isCryptOk             == varCryptOk
-  doAssert isCryptInvalidArg     == varCryptInvalidArg
-  doAssert isCryptHashOverflow   == varCryptHashOverflow
-  doAssert isCryptBufferOverflow == varCryptBufferOverflow
-  doAssert ltcFrtaPools          == varFrtaPools
+    p: ChaChaCtx
+    a = cast[int](addr p)
+    varChaChaSchedule {.
+      importc: "offsetof(chacha20_ctx, schedule)",
+      header: "chacha20_simple.h".}: int
+    varChaChaKeyStream {.
+      importc: "offsetof(chacha20_ctx, keystream)",
+      header: "chacha20_simple.h".}: int
+    varChaChaAvailable {.
+      importc: "offsetof(chacha20_ctx, available)",
+      header: "chacha20_simple.h".}: int
+    varChaChaCtxSizeof {.
+      importc: "sizeof(chacha20_ctx)",
+      header: "chacha20_simple.h".}: int
+  doAssert varChaChaSchedule  == (cast[int](addr p.schedule)  - a)
+  doAssert varChaChaKeyStream == (cast[int](addr p.keystream) - a)
+  doAssert varChaChaAvailable == (cast[int](addr p.available) - a)
+  doAssert varChaChaCtxSizeof == (sizeof(p))
 
 # ----------------------------------------------------------------------------
 # End

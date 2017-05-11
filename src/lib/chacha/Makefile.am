@@ -5,7 +5,7 @@
 # Blame: Jordan Hrycaj <jordan@teddy-net.com>
 
 SUBDIRS =
-CLEANFILES = *.exe chacha
+CLEANFILES = *.exe chacha chachadesc
 
 NIMDOCHTML =
 NIMNOCHECK =
