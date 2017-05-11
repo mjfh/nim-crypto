@@ -15,9 +15,6 @@ when defined(ignNimPaths):
     # source root subdirectoy containing NIM sources, this must be a
     # directory parent/ancestor of this NIM source
     sourceDir = "src"
-
-    # autoconfig header file relative to source root
-    autoConfFileH = "conf" / "config.h"
 else:
   include misc/nim_paths_inc
 
@@ -79,18 +76,17 @@ proc nimSrcRoot*(relPosixPath: string): string {.compileTime.} =
 
 proc cnfTable*(): seq[(string,string)] {.compileTime.} =
   ## assignment-value pair table generated from autoconfig header file
-  var
-    p = nimSrcRoot()
-    d = p[2 * (p[1] == ':').ord]
-    s: string
   when defined(ignNimPaths):
-    s = slurp p & $d & autoConfFileH.replace(DirSep,d)
+    result = @[]
   else:
-    s = slurp prjConfFileH.replace(DirSep,d)
-  return s.split({'\c','\l'})
-    .filter(proc(s: string): bool = s.len > 9 and s[0..7] == "#define ")
-    .mapIt(seq[string], it.split(maxsplit = 3)[1..2])
-    .mapIt((string,string), (it[0], it[1].strip(chars = {'"','\''})))
+    var
+      p = nimSrcRoot()
+      d = p[2 * (p[1] == ':').ord]
+      s = slurp prjConfFileH.replace(DirSep,d)
+    return s.split({'\c','\l'})
+      .filter(proc(s: string): bool = s.len > 9 and s[0..7] == "#define ")
+      .mapIt(seq[string], it.split(maxsplit = 3)[1..2])
+      .mapIt((string,string), (it[0], it[1].strip(chars = {'"','\''})))
 
 proc cnfValue*(s: string): string {.compileTime.} =
   ## particular value lookup from autoconfig header file

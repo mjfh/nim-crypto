@@ -127,7 +127,6 @@ export
 
 const
   InLinelen   = 57
-  OutLineLen  = 76
   HdrBlkLen   = 2 * InLinelen   # header: 2 blocks with 2 lines each
   HdrTotalLen = 2 * HdrBlkLen
 
@@ -135,7 +134,7 @@ const
   NonceLen*   = HdrTotalLen - 6 * SessKeyLen
   NonceLenH   = NonceLen div 2
 
-assert 57 * 4 == 76 * 3       # verify full base64 line width
+assert InLinelen * 4 == 76 * 3  # verify full base64 line width
 assert 20 < NonceLen
 assert 2 * NonceLenH == NonceLen
 assert SessKeyLen == EccSessKey.sizeof

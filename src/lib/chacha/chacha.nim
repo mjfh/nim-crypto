@@ -65,33 +65,36 @@ type
 # Debugging helper
 # ----------------------------------------------------------------------------
 
-proc rawPp(p: pointer; n: int; sep: string): string =
-  var buf = newString(n)
-  (addr buf[0]).copyMem(p, n)
-  buf.mapIt(it.ord.toHex(2).toLowerAscii).join(sep)
+# debugging helpers
+when isMainModule:
 
-proc pp(w: ChaChaData; sep=" "): string =
-  ## Pretty print ChaCha block, key etc.
-  var u = w
-  (addr u).rawPp(u.sizeof, sep)
+  proc rawPp(p: pointer; n: int; sep: string): string =
+    var buf = newString(n)
+    (addr buf[0]).copyMem(p, n)
+    buf.mapIt(it.ord.toHex(2).toLowerAscii).join(sep)
 
-proc pp(w: ChaChaCtx; delim = ""; sep = ""): string =
-  ## Pretty print ChaCha state object
-  ("{schedule  = {" &  w.schedule.pp( sep) & "}" & delim &
-   " keystream = {" &  w.keystream.pp(sep) & "}" & delim &
-   " available = "  & $w.available         & "}")
+  proc pp(w: ChaChaData; sep=" "): string =
+    ## Pretty print ChaCha block, key etc.
+    var u = w
+    (addr u).rawPp(u.sizeof, sep)
 
-proc fromHexSeq(buf: seq[int8]; sep = " "): string =
-  ## dump an array or a data sequence as hex string
-  buf.mapIt(it.toHex(2).toLowerAscii).join(sep)
+  proc pp(w: ChaChaCtx; delim = ""; sep = ""): string =
+    ## Pretty print ChaCha state object
+    ("{schedule  = {" &  w.schedule.pp( sep) & "}" & delim &
+     " keystream = {" &  w.keystream.pp(sep) & "}" & delim &
+     " available = "  & $w.available         & "}")
 
-proc toHexSeq(s: string): seq[int8] =
-  ## Converts a hex string stream to a byte sequence, it raises an
-  ## exception if the hex string stream is incorrect.
-  result = newSeq[int8](s.len div 2)
-  for n in 0..<result.len:
-    result[n] = s[2*n..2*n+1].parseHexInt.toU8
-  doAssert s == result.mapIt(it.toHex(2).toLowerAscii).join
+  proc fromHexSeq(buf: seq[int8]; sep = " "): string =
+    ## dump an array or a data sequence as hex string
+    buf.mapIt(it.toHex(2).toLowerAscii).join(sep)
+
+  proc toHexSeq(s: string): seq[int8] =
+    ## Converts a hex string stream to a byte sequence, it raises an
+    ## exception if the hex string stream is incorrect.
+    result = newSeq[int8](s.len div 2)
+    for n in 0..<result.len:
+      result[n] = s[2*n..2*n+1].parseHexInt.toU8
+    doAssert s == result.mapIt(it.toHex(2).toLowerAscii).join
 
 # ----------------------------------------------------------------------------
 # Interface chacha20
