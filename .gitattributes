@@ -8,6 +8,7 @@
 *.m4		ident eol=lf
 *.mak		ident eol=crlf
 *.nim		ident eol=lf
+*.yml		ident eol=lf
 *.sh		ident eol=lf
 Build		ident eol=lf
 Makefile.*	ident eol=lf

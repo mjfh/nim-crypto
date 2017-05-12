@@ -1,3 +1,7 @@
+#
+# $Id$
+#
+
 #matrix:
 #  include:
 #    - os: linux       # add another OS to the default OS
@@ -31,3 +35,5 @@ install:
 script:
   - test \! -f :travis-ok || ( ./Build debug && make check && make )
   - test \! -f :travis-ok || ( ./Build native && make check && make )
+
+# End
