@@ -1,6 +1,6 @@
 #!/usr/bin/make -f
 
-default help debug release clean distclean:
+default help debug release clean distclean mingw mingw-release mingw-debug:
 	$(MAKE) -C src -f Makefile.simple $@
 
 # End

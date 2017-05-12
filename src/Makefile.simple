@@ -5,24 +5,26 @@
 # Simple Makefile example, works on Linux
 #
 
-MAKEFILE = Makefile.simple
-ROOTDIR  = lib
-TARGET   = cwrap
-LIBS     = -ldl -lm
+MAKEFILE    = Makefile.simple
+ROOTDIR     = lib
+TARGET      = cwrap
+LIBS        = -ldl
 
-NIMLIB    = `nim dump 2>&1 >/dev/null|sed '$$!d'`
-INCLUDES  = -Inimcache -I$(NIMLIB)
-CFLAGS    = $(INCLUDES) $(CDEBUG)
-NIMFLAGS  = -p:$(ROOTDIR) --app:staticLib --noMain --header
-NIMFLAGS += -d:ignNimPaths $(NIMDBG)
+NIMLIB      = `nim dump 2>&1 >/dev/null|sed '$$!d'`
+INCLUDES    = -Inimcache -I$(NIMLIB)
+NIMFLAGS    = -p:$(ROOTDIR) --app:staticLib --noMain --header
+NIMFLAGS   += -d:ignNimPaths $(NIMDBG)
+
+MAIN_CFLAGS = $(CFLAGS) $(INCLUDES) $(CDEBUG)
+MAIN_LIBS   = -L. -lsession $(LIBS) -lm
 
 # Settings for optimised code
-REL_CDEBUG = -O2 -s
-REL_NIMDBG = -d:release --gc:none
+REL_CDEBUG  = -O2 -s
+REL_NIMDBG  = -d:release --gc:none
 
 # Settings for GDB debugging session
-DBG_CDEBUG = -g
-DBG_NIMDBG = --debuginfo --lineDir:on --embedsrc --debugger=native
+DBG_CDEBUG  = -g
+DBG_NIMDBG  = --debuginfo --lineDir:on --embedsrc --debugger=native
 
 # ---------------------------------------------------------------------------
 # Convenience targets
@@ -32,18 +34,32 @@ DBG_NIMDBG = --debuginfo --lineDir:on --embedsrc --debugger=native
 CDEBUG = $(REL_CDEBUG)
 NIMDBG = $(REL_NIMDBG)
 
-.PHONY: default debug release help
+
+.PHONY: default help
 default: $(TARGET)
 
 help:
 	@echo
 	@echo '$(MAKE) -f $(MAKEFILE) [target]'
 	@echo
-	@echo 'target: default       -- release (unless done already)'
-	@echo '      | debug         -- force rebuild'
-	@echo '      | release       -- force rebuild'
+	@echo 'target: default    -- release (unless done already)'
+	@echo "      | mingw      -- like 'default' on Windiws/MinGW"
+	@echo '      | debug      -- force rebuild'
+	@echo '      | release    -- force rebuild'
 	@echo '      | [dist]clean'
 	@echo
+	@echo "Note: The debug/release targets might be prefixed by 'mingw-'."
+	@echo
+
+.PHONY: mingw mingw-release mingw-debug debug release
+mingw:
+	$(MAKE) -f $(MAKEFILE) CC=gcc LIBS= default
+
+mingw-release:
+	$(MAKE) -f $(MAKEFILE) CC=gcc LIBS= release
+
+mingw-debug:
+	$(MAKE) -f $(MAKEFILE) CC=gcc LIBS= debug
 
 debug:
 	@rm -f $(TARGET)
@@ -57,12 +73,13 @@ release:
 # BUILD recipe
 # ---------------------------------------------------------------------------
 
-$(TARGET): main.o libsession.a
-	$(CC) -o $@ $(CFLAGS) main.c libsession.a $(LIBS)
+$(TARGET): main.o
+	$(CC) -o $@ $(MAIN_CFLAGS) main.o $(MAIN_LIBS)
 
 main.o: main.c nimcache/session.h
+	$(CC) -c -o $@ $(MAIN_CFLAGS) main.c
 
-libsession.a nimcache/session.h: session.nim
+nimcache/session.h: session.nim
 	nim cc $(NIMFLAGS) session.nim
 
 # ---------------------------------------------------------------------------
