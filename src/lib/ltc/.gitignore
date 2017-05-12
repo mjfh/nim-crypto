@@ -4,8 +4,12 @@
 /Makefile
 /Makefile.in
 /aes80
+/aes80desc
 /frta
+/frtadesc
+/getbytes
 /ltc_const
 /nim.sh
 /nimcache
 /sha100
+/sha100desc

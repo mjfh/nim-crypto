@@ -33,7 +33,7 @@ import
 type # for ANSI/clock() generator
   EntropyCallBack* = proc()
 
-when defined(ignNimPaths):
+when defined(ignNimPaths) or defined(nim4Build):
   # just try them all
   const EnableRngNix  = true
   const EnableRngAnsi = true
@@ -52,6 +52,7 @@ else:
 # ----------------------------------------------------------------------------
 
 when declared(EnableRngNix):
+  discard EnableRngNix
   when not declared(EntropySourceOK):
     const EntropySourceOK = true
 
@@ -80,32 +81,26 @@ when declared(EnableRngNix):
 # ----------------------------------------------------------------------------
 
 when declared(EnableRngAnsi):
+  discard EnableRngAnsi
   when not declared(EntropySourceOK):
     const EntropySourceOK = true
 
   # works on MinGW as well
   import posix
 
-  when defined(windows):
+  if isMainModule:
     # not available at compile time - trigger unit test failure
-    if isMainModule:
-      if CLOCKS_PER_SEC < 100:
-        quit "PANIC: Windows clock resolution too low"
-      if 10000 < CLOCKS_PER_SEC:
-        quit "PANIC: Windows clock resolution too high"
+    if CLOCKS_PER_SEC < 100:
+      quit "PANIC: Clock resolution is too low"
 
-    proc xclock: int =
-      clock().int
-  else:
-    when CLOCKS_PER_SEC < 100:
-      {.error: "PANIC: Clock reslolution too low".}
+  let
+    scaleDown = if 10000 < CLOCKS_PER_SEC:
+                  (CLOCKS_PER_SEC * 100) div 1000000
+                else:
+                  1
 
-    proc xclock: int =
-      result = clock().int
-      when not defined(windows):
-        when 10000 < CLOCKS_PER_SEC:
-          const scaleDown = (CLOCKS_PER_SEC * 100) div 1000000
-          result = result div scaleDown
+  proc xclock: int =
+    clock().int div scaleDown
 
   #when defined(testonly) and not defined(check_run):
   #  echo ">>> CLOCKS_PER_SEC=", CLOCKS_PER_SEC
@@ -145,6 +140,7 @@ when declared(EnableRngAnsi):
 # ----------------------------------------------------------------------------
 
 when declared(EnableRngWin):
+  discard EnableRngWin
   when not declared(EntropySourceOK):
     const EntropySourceOK = true
 
@@ -160,6 +156,8 @@ when declared(EnableRngWin):
 
 when not declared(EntropySourceOK):
   {.error: "PANIC: Entropy source missing".}
+
+discard EntropySourceOK
 
 # ----------------------------------------------------------------------------
 # Public interface

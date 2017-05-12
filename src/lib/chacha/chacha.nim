@@ -38,32 +38,25 @@
 ##   and correctness. Test vectors with a battery of unit tests are included.
 
 import
-  os, sequtils, strutils, endians
+  endians,
+  chacha / [chachadesc],
+  misc   / [prjcfg]
 
-template getCwd: string =
-  instantiationInfo(-1, true).filename.parentDir
+export
+  chachadesc
+
+# ----------------------------------------------------------------------------
+# ChaCha compiler
+# ----------------------------------------------------------------------------
 
 const
-  cwd       = getCwd                            # starts with current ..
-  D         = cwd[2 * (cwd[1] == ':').ord]      # .. DirSep, may differ ..
-  chaSrcDir = cwd & D & "private"               # .. from target DirSep
-  chaHeader = chaSrcDir & D & "chacha20_simple.h"
+  chaHeader = "private/chacha20_simple.h".nimSrcDirname
+  chaCflags = "-I " & "private".nimSrcDirname
 
-{.passC: "-I " & chaSrcDir.}
-{.compile: chaSrcDir & D & "chacha20_simple.c".}
+{.passC: chaCflags.}
+{.compile: "private/chacha20_simple.c".nimSrcDirname.}
 
 type
-  ChaChaIV*   = tuple[data: array[ 1,uint64]] ## nonce, initialisation vector
-  ChaChaHKey* = tuple[data: array[ 2,uint64]] ## small key
-  ChaChaKey*  = tuple[data: array[ 4,uint64]] ## recommended key
-  ChaChaBlk*  = tuple[data: array[64, uint8]] ## 64 byte data block
-  ChaChaXBlk* = tuple[data: array[16,uint32]] ## data block (other format)
-  ChaChaData* = ChaChaIV|ChaChaHKey|ChaChaKey|ChaChaBlk|ChaChaXBlk
-  ChaChaCtx* = tuple                          ## descriptor, holds context
-    schedule:  ChaChaBlk
-    keystream: ChaChaBlk
-    available: csize
-
   CCKeyBuf[K: ChaChaHKey|ChaChaKey] = tuple
     buf: K
     nnn: ChaChaIV
@@ -72,33 +65,36 @@ type
 # Debugging helper
 # ----------------------------------------------------------------------------
 
-proc rawPp(p: pointer; n: int; sep: string): string =
-  var buf = newString(n)
-  (addr buf[0]).copyMem(p, n)
-  buf.mapIt(it.ord.toHex(2).toLowerAscii).join(sep)
+# debugging helpers
+when isMainModule:
 
-proc pp(w: ChaChaData; sep=" "): string =
-  ## Pretty print ChaCha block, key etc.
-  var u = w
-  (addr u).rawPp(u.sizeof, sep)
+  proc rawPp(p: pointer; n: int; sep: string): string =
+    var buf = newString(n)
+    (addr buf[0]).copyMem(p, n)
+    buf.mapIt(it.ord.toHex(2).toLowerAscii).join(sep)
 
-proc pp(w: ChaChaCtx; delim = ""; sep = ""): string =
-  ## Pretty print ChaCha state object
-  ("{schedule  = {" &  w.schedule.pp( sep) & "}" & delim &
-   " keystream = {" &  w.keystream.pp(sep) & "}" & delim &
-   " available = "  & $w.available         & "}")
+  proc pp(w: ChaChaData; sep=" "): string =
+    ## Pretty print ChaCha block, key etc.
+    var u = w
+    (addr u).rawPp(u.sizeof, sep)
 
-proc fromHexSeq(buf: seq[int8]; sep = " "): string =
-  ## dump an array or a data sequence as hex string
-  buf.mapIt(it.toHex(2).toLowerAscii).join(sep)
+  proc pp(w: ChaChaCtx; delim = ""; sep = ""): string =
+    ## Pretty print ChaCha state object
+    ("{schedule  = {" &  w.schedule.pp( sep) & "}" & delim &
+     " keystream = {" &  w.keystream.pp(sep) & "}" & delim &
+     " available = "  & $w.available         & "}")
 
-proc toHexSeq(s: string): seq[int8] =
-  ## Converts a hex string stream to a byte sequence, it raises an
-  ## exception if the hex string stream is incorrect.
-  result = newSeq[int8](s.len div 2)
-  for n in 0..<result.len:
-    result[n] = s[2*n..2*n+1].parseHexInt.toU8
-  doAssert s == result.mapIt(it.toHex(2).toLowerAscii).join
+  proc fromHexSeq(buf: seq[int8]; sep = " "): string =
+    ## dump an array or a data sequence as hex string
+    buf.mapIt(it.toHex(2).toLowerAscii).join(sep)
+
+  proc toHexSeq(s: string): seq[int8] =
+    ## Converts a hex string stream to a byte sequence, it raises an
+    ## exception if the hex string stream is incorrect.
+    result = newSeq[int8](s.len div 2)
+    for n in 0..<result.len:
+      result[n] = s[2*n..2*n+1].parseHexInt.toU8
+    doAssert s == result.mapIt(it.toHex(2).toLowerAscii).join
 
 # ----------------------------------------------------------------------------
 # Interface chacha20
@@ -208,31 +204,9 @@ proc chachaKeyStream*(x: var ChaChaCtx; p: pointer; size: int) {.inline.} =
 
 when isMainModule:
 
-  if true: # Verify structures
-    {.compile: "chacha20specs.c".}
-    proc xChaChaSpecs(): pointer {.cdecl, importc: "chacha20_specs".}
-    proc tChaChaSpecs(): seq[int] =
-      result = newSeq[int](0)
-      var
-        p: ChaChaCtx
-        a = cast[int](addr p)
-      result.add(cast[int](addr p.schedule)  - a)
-      result.add(cast[int](addr p.keystream) - a)
-      result.add(cast[int](addr p.available) - a)
-      result.add(sizeof(p))
-      result.add(0xffff)
-    var
-      a: array[5,cint]
-      v = tChaChaSpecs()
-    (addr a[0]).copyMem(xChaChaSpecs(), sizeof(a))
-    when not defined(check_run):
-      discard
-      #echo "*** Ctx layout: ", $a.mapIt(int, it), " >> ", $v
-    doAssert v == a.mapIt(int, it)
-
   if true: # Run external test
-    {.passC: "-I " & chaSrcDir & " -DNIMSRC_LOCAL".}
-    {.compile: chaSrcDir & D & "chacha20_test.c".}
+    {.passC: chaCflags & " -DNIMSRC_LOCAL".}
+    {.compile: "private/chacha20_test.c".nimSrcDirname.}
     proc chacha20test(): cstring {.cdecl, importc: "chacha20_test".}
     var
       s   = $chacha20test()

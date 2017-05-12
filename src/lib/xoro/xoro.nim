@@ -25,25 +25,31 @@
 #
 
 import
-  spmx/spmx
+  misc / [prjcfg],
+  spmx / [spmx]
 
 # ----------------------------------------------------------------------------
 # Interface xoroshiro128plus
 # ----------------------------------------------------------------------------
 
-{.compile: "xoroshiro128plus.c".}
-proc xoroSet128next*(): culonglong {.cdecl, importc: "xoro128next".}
-proc xoroSet128jump*()             {.cdecl, importc: "xoro128jump".}
+{.compile: "xoroshiro128plus.c".nimSrcDirname.}
+proc xoroSet128next*(): culonglong {.
+  cdecl, importc: "xoro128next".}
 
-{.compile: "xoro128seeder.c".}
-proc xoroSet128seed(a, b: culonglong) {.cdecl, importc: "set_xoro128seed".}
-proc xoroGet128seed(): ptr array[2,culonglong] {.cdecl, importc: "get_xoro128seed".}
+proc xoroSet128jump*() {.
+  cdecl, importc: "xoro128jump".}
+
+
+{.compile: "xoro128seeder.c".nimSrcDirname.}
+proc xoroSet128seed(a, b: culonglong) {.
+  cdecl, importc: "set_xoro128seed".}
+
+proc xoroGet128seed(): ptr array[2,culonglong] {.
+  cdecl, importc: "get_xoro128seed".}
 
 # ----------------------------------------------------------------------------
 # Public functions
 # ----------------------------------------------------------------------------
-
-import strutils
 
 proc getX128Seed*(): (int64, int64) =
   ## extract state of PRNG (can be used to stash/resume)
@@ -71,8 +77,6 @@ proc x128Next*(): int64 {.inline.} =
 # ----------------------------------------------------------------------------
 
 when isMainModule:
-
-  import strutils, sequtils
 
   block: # assert seeder exchange
     var

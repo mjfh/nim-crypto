@@ -27,7 +27,8 @@
 ## Random generator based Xoro
 
 import
-  xoro/xoro, hashes, times, strutils, sequtils
+  hashes, times, strutils, sequtils,
+  xoro / [xoro]
 
 # ----------------------------------------------------------------------------
 # Public functions

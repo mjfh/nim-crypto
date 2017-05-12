@@ -25,31 +25,24 @@
 #
 
 import
-  os, sequtils, endians
+  endians,
+  misc  / [prjcfg],
+  salsa / [salsadesc]
 
-template getCwd: string =
-  instantiationInfo(-1, true).filename.parentDir
+export
+  salsadesc
 
 const
-  cwd       = getCwd                            # starts with current ..
-  D         = cwd[2 * (cwd[1] == ':').ord]      # .. DirSep, may differ ..
-  slsSrcDir = cwd & D & "private"               # .. from target DirSep
-  slsHeader = slsSrcDir & D & "ecrypt-sync.h"
+  slsHeader = "private/ecrypt-sync.h".nimSrcDirname
 
-{.passC: "-I " & slsSrcDir.}
-{.compile: slsSrcDir & D & "salsa20.c".}
+{.passC: "-I " & "private".nimSrcDirname.}
+{.compile: "private/salsa20.c".nimSrcDirname.}
 
 # ----------------------------------------------------------------------------
 # Interface salsa20
 # ----------------------------------------------------------------------------
 
 type
-  SalsaIV*   = tuple[data: array[1,uint64]]
-  SalsaHKey* = tuple[data: array[2,uint64]]        ## small key
-  SalsaKey*  = tuple[data: array[4,uint64]]        ## recommended key
-  SalsaCtx*  = tuple
-    data: array[16,uint32]
-
   SSKeyBuf[K: SalsaKey|SalsaHKey] = tuple
     buf: K
     nnn: SalsaIV
@@ -123,60 +116,6 @@ when isMainModule:
       echo "*** 64 bit architecture"
     else:
       echo "*** <= 32 bit architecture"
-
-  block: # Verify structures
-    {.compile: "salsa20specs.c".}
-    proc xSalsaSpecs(): cstring {.cdecl, importc: "salsa20_specs".}
-    proc tSalsaSpecs(): seq[int] =
-      result = newSeq[int](0)
-      var
-        p: SalsaCtx
-        a = cast[int](addr p)
-      result.add(cast[int](addr p.data) - a)
-      result.add(sizeof(p))
-    var
-      u = xSalsaSpecs().mapIt(int, it.ord and 127)
-      v = tSalsaSpecs()
-    when not defined(check_run):
-      discard
-      #echo ">>> ", u, " >> ", v
-    doAssert u == v
-
-  block:
-    # Supported key and IV sizes. A user can enumerate the supported sizes by
-    # running the following code:
-    #
-    # var n = 0
-    # while get_salsa20_keysize(n) <= get_salsa20_maxkeysize():
-    #   var keysize = get_salsa20_keysize(n)
-    #   n.inc
-    #   ...
-    #
-    # All sizes are in bits.
-    #
-    {.compile: "salsa20-const.c".}
-    proc get_salsa20_maxkeysize():     cint {.cdecl, importc.}
-    proc get_salsa20_keysize(n: cint): cint {.cdecl, importc.}
-    proc get_salsa20_maxivsize():      cint {.cdecl, importc.}
-    proc get_salsa20_ivsize(n: cint):  cint {.cdecl, importc.}
-    var
-      kySz = newSeq[int](0)
-      ivSz = newSeq[int](0)
-      n = 0
-    while get_salsa20_keysize(n.cint) <= get_salsa20_maxkeysize():
-      kySz.add(get_salsa20_keysize(n.cint).int)
-      n.inc
-    n = 0
-    while get_salsa20_ivsize(n.cint) <= get_salsa20_maxivsize():
-      ivSz.add(get_salsa20_ivsize(n.cint).int)
-      n.inc
-    when not defined(check_run):
-      discard
-      #echo ">>> ", kySz, " >> ", ivSz
-    doAssert kySz == @[8 * SalsaHKey.sizeof, 8 * SalsaKey.sizeof]
-    doAssert ivSz == @[8 * SalsaIv.sizeof]
-
-  # ----
 
   proc getKeyStmStr(ctx: var SalsaCtx; oldPos, newPos: int): (int, string) =
     var

@@ -34,14 +34,9 @@ help:
 
 all-local::
 
-.PHONY: prep prepare update
-prep:: prepare
+.PHONY: prepare update try
 prepare update::
-	$(MAKE) -C import $@
-
-.PHONY: try prepare
-prepare try::
-	$(MAKE) -C src $@
+	$(MAKE) -C boot $@
 
 # ---------------------------------------------------------------------------
 # Collect documentation
@@ -49,7 +44,7 @@ prepare try::
 
 .PHONY: docs
 docs::
-	@$(MAKE) -C import prepare
+	@$(MAKE) -C boot prepare
 	@$(MAKE) -C src $@
 	@mkdir -p doc
 	@find . -name \*.nim -print|while read f; do \

@@ -27,33 +27,26 @@
 #
 
 import
-  os, sequtils, strutils, macros
+  misc / [prjcfg],
+  uecc / [ueccdesc]
 
-const
-  ueccVer = "v7"
+export
+  ueccdesc
 
 # ----------------------------------------------------------------------------
 # Uecc compiler
 # ----------------------------------------------------------------------------
 
-template getCwd: string =
-  instantiationInfo(-1, true).filename.parentDir
+proc ueccPath(s: string = nil): string {.compileTime.} =
+  var w =  if s.isNil: "" else: "/" & s
+  result = (UeccSrcDir & w).nimSrcDirname
 
 const
-  cwd        = getCwd                               # starts with current ..
-  D          = cwd[2 * (cwd[1] == ':').ord]         # .. DirSep, may differ ..
-  ueccRelDir = "private" & D & "uecc-" & ueccVer    # .. from target DirSep
-  ueccDir    = cwd & D & ueccRelDir
-  ueccIncDir = ueccDir & D & "include"
-  ueccHeader = ueccIncDir & D & "libuecc" & D & "ecc.h"
-  ueccSrcPfx = ueccDir & D & "src" & D
+  ueccHeader = "include/libuecc/ecc.h".ueccPath
 
-{.passC: "-I " & ueccIncDir.}
-{.compile:  ueccSrcPfx & "ec25519.c".}
-{.compile:  ueccSrcPfx & "ec25519_gf.c".}
-
-# Extra interface for uecc constants
-{.compile: "uecc-const.c".}
+{.passC: "-I " & "include".ueccPath.}
+{.compile: "src/ec25519.c"    .ueccPath.}
+{.compile: "src/ec25519_gf.c" .ueccPath.}
 
 # ----------------------------------------------------------------------------
 # Uecc library interface
@@ -87,41 +80,6 @@ const
 #
 # See http://hyperelliptic.org/EFD/g1p/auto-twisted-extended.html for add and
 # double operations.
-
-const
-  UEccScalarLen* = 32
-
-type                                           # A 256 bit integer
-  UEccScalar* = array[UEccScalarLen, uint8]    # renamed from ecc_int256_t
-
-# A point on the curve unpacked for efficient calculation
-#
-# The internal representation of an unpacked point isn't unique, so for
-# serialization. It should always be packed.
-#
-type
-  UEccWorker {.final, pure.} = object         # renamed from ecc_25519_work_t
-    X: array[32, cuint]                       # coordinates
-    Y: array[32, cuint]
-    Z: array[32, cuint]
-    T: array[32, cuint]
-
-# ----------------------------------------------------
-# Curve_ops Operations on points of the Elliptic Curve
-# ----------------------------------------------------
-
-# Pseudo constant: identity element
-proc ecc_25519_work_identity*(): UEccWorker
-    {.cdecl, importc: "get_ecc_25519_work_identity".}
-
-
-# Pseudo constant: Ed25519 default generator point
-#
-# The order of the base point is
-#       2^{252} + 27742317777372353535851937790883648493.
-#
-proc ecc_25519_work_default_base*(): UEccWorker
-  {.cdecl, importc: "get_ecc_25519_work_default_base".}
 
 
 # Loads a point of the Ed25519 curve with given coordinates into its
@@ -348,14 +306,6 @@ proc ecc_25519_scalarmult_base*(u: ptr UEccWorker;
 # base point of the Elliptic Curve
 # ----------------------------------------------------
 
-# Pseudo constant: order of the prime field
-#
-# The order is 2^{252} + 27742317777372353535851937790883648493.
-#
-proc ecc_25519_gf_order*(): UEccScalar
-  {.cdecl, importc: "get_ecc_25519_gf_order".}
-
-
 # Checks if an integer is equal to zero (after reduction)
 #
 # Params:
@@ -457,7 +407,7 @@ proc ecc_25519_gf_sanitize_secret*(u: ptr UEccScalar;
 # Public interface
 # ----------------------------------------------------------------------------
 
-## For an explanation horw it works see
+## For an explanation how it works see
 ##   //en.wikipedia.org/wiki/Elliptic_curve_Diffie-Hellman
 
 proc uEccSanitise*(d: var UEccScalar) {.inline.} =
@@ -469,7 +419,7 @@ proc uEccSanitise*(d: var UEccScalar) {.inline.} =
 proc uEccPubKey*(X: var UEccScalar;
                  d: ptr UEccScalar) {.inline.} =
   ## given secret d, return public key Q = d*G, Q is in packed format
-  var wObj = UEccWorker()
+  var wObj: UEccWorker
   ecc_25519_scalarmult_base(addr wObj, d)
   ecc_25519_store_packed_ed25519(addr X, addr wObj)
   (addr wObj).zeroMem(wObj.sizeof)
@@ -481,7 +431,7 @@ proc uEccSessionKey*(X: var UEccScalar;
   ## given secret d and another public key Q (in packed format), set X
   ## as session key in packed format
   var
-    wObj = UEccWorker()
+    wObj: UEccWorker
     nOk  = ecc_25519_load_packed_ed25519(addr wObj, Q)         # expand Q
   if nOk == 1:
     result = true
@@ -499,24 +449,6 @@ when isMainModule:
 
   import base64
 
-  # Verify structures
-  {.compile: "ueccspecs.c".}
-  proc xUeccSpecs(): pointer {.cdecl, importc: "uecc_specs".}
-
-  proc tUeccSpecs(): seq[int] =
-    result = newSeq[int](0)
-    var
-      p = UEccWorker()
-      a = cast[int](addr p)
-    result.add(cast[int](addr p.X) - a)
-    result.add(cast[int](addr p.Y) - a)
-    result.add(cast[int](addr p.Z) - a)
-    result.add(cast[int](addr p.T) - a)
-    result.add(sizeof(p))
-    result.add(0)
-    result.add(UEccScalar.sizeof)
-    result.add(0xffff)
-
   proc toSeq(a: UEccScalar): seq[int8] =
     result = newSeq[int8](a.len)
     for n in 0..<a.len:
@@ -524,25 +456,6 @@ when isMainModule:
 
   proc pp(a: UEccScalar): string =
     a.toSeq.mapIt(it.toHex(2).toLowerAscii).join
-
-  block: # verify structure layout
-    var
-      a: array[8,cint]
-      v = tUeccSpecs()
-    (addr a[0]).copyMem(xUeccSpecs(), sizeof(a))
-    when not defined(check_run):
-      discard
-      #echo "*** Struct layout: ", $a.mapIt(int, it), " >> ", $v
-    doAssert v == a.mapIt(int, it)
-
-  block: # check linkage for pseudo constants
-    var
-      a = ecc_25519_work_identity()
-      b = ecc_25519_work_default_base()
-      c = ecc_25519_gf_order()
-    discard a
-    discard b
-    discard c
 
   block:
     var d0, Q0: UEccScalar

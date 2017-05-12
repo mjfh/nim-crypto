@@ -41,19 +41,6 @@
     return err;
  }
 
-*** diff tomcrypt_prng.h:
---- ../libtomcrypt/src/headers/tomcrypt_prng.h	2017-05-05 21:08:45.541298342 +0100
-+++ ./headers/tomcrypt_prng.h	2017-04-30 14:59:17.862916513 +0100
-@@ -189,7 +189,7 @@
-  */
- unsigned long rng_get_bytes(unsigned char *out,
-                             unsigned long outlen,
--                            void (*callback)(void));
-+                            void (*callback)(void*), void *desc);
- 
- int rng_make_prng(int bits, int wprng, prng_state *prng, void (*callback)(void));
- 
-
 *** diff tomcrypt_custom.h:
 --- ../libtomcrypt/src/headers/tomcrypt_custom.h	2017-05-05 21:08:45.541298342 +0100
 +++ ./headers/tomcrypt_custom.h	2017-04-30 14:59:17.862916513 +0100

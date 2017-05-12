@@ -25,14 +25,8 @@
 #
 
 import
-  base64, rnd64, sequtils, strutils, uecc/uecc
-
-const
-  InLinelen  = 57
-  OutLineLen = 76
-  KeyHdrLen  = 2 * InLinelen
-
-assert 57 * 4 == 76 * 3       # verify full base64 line width
+  base64, rnd64, sequtils, strutils,
+  uecc / [uecc]
 
 type
   EccAnyKey = tuple
@@ -51,10 +45,6 @@ type
 # Private helpers
 # ----------------------------------------------------------------------------
 
-proc getRndData(): UEccScalar {.inline.} =
-  for n, w in rnd8items(32):
-    result[n] = w.uint8
-
 proc getRndData(key: var UEccScalar) {.inline.} =
   for n, w in rnd8items(32):
     key[n] = w.uint8
@@ -65,20 +55,27 @@ proc pp(a: EccAnyKey; pfx, delim: string): string =
     st = "0x"
     dl = "u8," & st
   ("(" & pfx & "Key: [" &
-    st & a.key[ 0..7 ].mapIt(it.int.toHex(2)).join(dl) & "," & delim &
-    st & a.key[ 8..15].mapIt(it.int.toHex(2)).join(dl) & "," & delim &
-    st & a.key[16..23].mapIt(it.int.toHex(2)).join(dl) & "," & delim &
-    st & a.key[24..31].mapIt(it.int.toHex(2)).join(dl) &
+   st & a.key[ 0..7 ].mapIt(it.int.toHex(2)).join(dl) & "," & delim &
+   st & a.key[ 8..15].mapIt(it.int.toHex(2)).join(dl) & "," & delim &
+   st & a.key[16..23].mapIt(it.int.toHex(2)).join(dl) & "," & delim &
+   st & a.key[24..31].mapIt(it.int.toHex(2)).join(dl) &
    "])")
 
-proc `$`(a: EccAnyKey): string =
-  result = newString(a.key.len)
-  for n in 0..<a.key.len:
-    result[n] = a.key[n].chr
+# debugging helpers
+when isMainModule:
 
-proc `$`(prv: EccPrvKey; delim: string = ""): string {.inline.} =
-  ## convert to (binary) string format
-  $cast[EccAnyKey](prv)
+  proc getRndData(): UEccScalar {.inline.} =
+    for n, w in rnd8items(32):
+      result[n] = w.uint8
+
+  proc `$`(a: EccAnyKey): string =
+    result = newString(a.key.len)
+    for n in 0..<a.key.len:
+      result[n] = a.key[n].chr
+
+  proc `$`(prv: EccPrvKey; delim: string = ""): string {.inline.} =
+    ## convert to (binary) string format
+    $cast[EccAnyKey](prv)
 
 # ----------------------------------------------------------------------------
 # Public functions
@@ -98,37 +95,8 @@ proc getEccSessKey*(resKey: var EccSessKey;
   ## derive session keq from own private key and destination public key
   resKey.sesKey.uEccSessionKey(addr ownPrv.prvKey, addr dstPub.pubKey)
 
-proc getEccPreamble(pub1, pub2, pub3: EccPubKey): string = # {.deprecated.} =
-  ## create destination headers for two destination streams; this function
-  ## is deprecated and used for testing only, use sesskey.getSessHeader()
-  ## instead
-  var q: array[KeyHdrLen,uint8]
-  assert 3 * 32 <= KeyHdrLen
-  for n in 0..31:
-    q[n     ] = pub1.pubKey[n].uint8
-    q[n + 32] = pub2.pubKey[n].uint8
-    q[n + 64] = pub3.pubKey[n].uint8
-  const offs = 96
-  for n, w in rnd8items(KeyHdrLen - offs):
-    q[n + offs] = w.uint8
-  result = q.encode
-
-proc getEccPreamble(pub: EccPubKey): string = # {.deprecated.} =
-  ## create destination headers for one destination stream; this function
-  ## is deprecated and used for testing only, use sesskey.getSessHeader()
-  ## instead
-  var q: array[KeyHdrLen,uint8]
-  assert 3 * 32 <= KeyHdrLen
-  for n, w in rnd8items(32):
-    q[n     ] = pub.pubKey[n].uint8
-    q[n + 32] = w.uint8
-  const offs = 64
-  for n, w in rnd8items(KeyHdrLen - offs):
-    q[n + offs] = w.uint8
-  result = q.encode
-
-proc getEccPubKey(preamble: string):
-                 (EccPubKey, EccPubKey, EccPubKey) = # {.deprecated.}=
+proc getEccPubKey*(preamble: string):
+                   (EccPubKey, EccPubKey, EccPubKey) = # {.deprecated.}=
   ## extract public key from destination stream header, may return nil on
   ## error; this function is deprecated and used for testing only, use
   ## sesskey.getSessHeader() instead
@@ -158,6 +126,41 @@ proc pp*(ses: EccSessKey; delim: string = ""): string {.inline.} =
 when isMainModule:
 
   rnd64init(123)
+
+  const
+    InLinelen = 57
+    KeyHdrLen = 2 * InLinelen
+
+  assert InLinelen * 4 == 76 * 3      # verify full base64 line width
+
+  proc getEccPreamble(pub1, pub2, pub3: EccPubKey): string =
+    ## create destination headers for two destination streams; this function
+    ## is deprecated and used for testing only, use sesskey.getSessHeader()
+    ## instead
+    var q: array[KeyHdrLen,uint8]
+    assert 3 * 32 <= KeyHdrLen
+    for n in 0..31:
+      q[n     ] = pub1.pubKey[n].uint8
+      q[n + 32] = pub2.pubKey[n].uint8
+      q[n + 64] = pub3.pubKey[n].uint8
+    const offs = 96
+    for n, w in rnd8items(KeyHdrLen - offs):
+      q[n + offs] = w.uint8
+    result = q.encode
+
+  proc getEccPreamble(pub: EccPubKey): string =
+    ## create destination headers for one destination stream; this function
+    ## is deprecated and used for testing only, use sesskey.getSessHeader()
+    ## instead
+    var q: array[KeyHdrLen,uint8]
+    assert 3 * 32 <= KeyHdrLen
+    for n, w in rnd8items(32):
+      q[n     ] = pub.pubKey[n].uint8
+      q[n + 32] = w.uint8
+    const offs = 64
+    for n, w in rnd8items(KeyHdrLen - offs):
+      q[n + offs] = w.uint8
+    result = q.encode
 
   proc qq(s: string): string =
     s.replace("0x","")

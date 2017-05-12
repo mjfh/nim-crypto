@@ -118,22 +118,23 @@
 ##
 #
 import
-  base64, ecckey, ltc/sha100, rnd64, strutils, uecc/uecc
+  base64, ecckey, rnd64, strutils,
+  ltc  / [sha100],
+  uecc / [uecc]
 
 export
   uecc
 
 const
   InLinelen   = 57
-  OutLineLen  = 76
   HdrBlkLen   = 2 * InLinelen   # header: 2 blocks with 2 lines each
   HdrTotalLen = 2 * HdrBlkLen
 
-  SessKeyLen* = UEccScalarLen
+  SessKeyLen* = eccGfOrder.len  # length of (a typical) UEccScalar
   NonceLen*   = HdrTotalLen - 6 * SessKeyLen
   NonceLenH   = NonceLen div 2
 
-assert 57 * 4 == 76 * 3       # verify full base64 line width
+assert InLinelen * 4 == 76 * 3  # verify full base64 line width
 assert 20 < NonceLen
 assert 2 * NonceLenH == NonceLen
 assert SessKeyLen == EccSessKey.sizeof

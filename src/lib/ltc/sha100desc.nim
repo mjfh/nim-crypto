@@ -1,8 +1,3 @@
-# -*- nim -*-
-#
-# $Id$
-#
-# Copyright (c) 2017 Jordan Hrycaj <jordan@teddy-net.com>
 # All rights reserved.
 #
 # Permission to use, copy, modify, and distribute this software for any
@@ -24,65 +19,61 @@
 # OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #
 
-## Random generator based Fortuna
-
-import
-  hashes, times, strutils, sequtils,
-  ltc / [frta]
+# ----------------------------------------------------------------------------
+# Public
+# ----------------------------------------------------------------------------
 
 type
-  RndFrta* = Frta
-
-# ----------------------------------------------------------------------------
-# Public functions
-# ----------------------------------------------------------------------------
-
-proc initRndFrta*(ctx: var RndFrta; seed1, seed2: int64) =
-  ## Globally initialise Fortuna based random generator
-  block fail:
-    if not ctx.getFrta:
-      break fail
-    if not ctx.frtaAddEntropy(unsafeAddr seed1, seed1.sizeof):
-      break fail
-    if not ctx.frtaAddEntropy(unsafeAddr seed2, seed2.sizeof):
-      break fail
-    return
-  quit "Fortuna initialisation error"
-
-proc rndFrtaNext*(ctx: var RndFrta): int64 {.inline.} =
-  discard ctx.readFrta(addr result, result.sizeof)
+  Sha100Data* = array[32, uint8]
+  Sha100State* = tuple
+    length: uint64
+    state:  array[8, uint32]
+    curlen: uint32
+    buf:    array[64, uint8]
 
 # ----------------------------------------------------------------------------
 # Tests
 # ----------------------------------------------------------------------------
 
 when isMainModule:
-  const
-    ccInit = hash("wonderland")
-  when not defined(check_run):
-    echo ">>> ccInit=", ccInit.toHex
 
-  block:
-    var ctx: RndFrta
-    ctx.initRndFrta(0,ccInit)
-    for n in 0..3:
-      var w = ctx.rndFrtaNext
-      when not defined(check_run):
-        echo ">>>> ", w.toHex
-    when not defined(check_run):
-      echo ""
+  import
+    misc / [prjcfg]
 
-  block:
-    var ctx: RndFrta
-    ctx.initRndFrta(0,hash(CompileTime & CompileDate & hostOS & hostCPU))
-    for n in 0..3:
-      var w = ctx.rndFrtaNext
-      when not defined(check_run):
-        echo ">>>> ", w.toHex
+  type
+    HashState = tuple
+      sha: Sha100State
+      
+  {.passC: " -I " & "headers".nimSrcDirname.}
 
-#  when not defined(check_run):
-#    echo "*** not yet"
-
+  var
+    p: HashState
+    a = cast[int](addr p)
+    varSha256Length {.
+      importc: "offsetof(hash_state, sha256.length)",
+      header: "tomcrypt.h".}: int
+    varSha256State {.
+      importc: "offsetof(hash_state, sha256.state)",
+      header: "tomcrypt.h".}: int
+    varSha256Curlen {.
+      importc: "offsetof(hash_state, sha256.curlen)",
+      header: "tomcrypt.h".}: int
+    varSha256Buf {.
+      importc: "offsetof(hash_state, sha256.buf)",
+      header: "tomcrypt.h".}: int
+    varSha256StateSizeof {.
+      importc: "sizeof(struct sha256_state)",
+      header: "tomcrypt.h".}: int
+    varSha256HashStateSizeof {.
+      importc: "sizeof(hash_state)",
+      header: "tomcrypt.h".}: int
+  doAssert varSha256Length          == (cast[int](addr p.sha.length) - a)
+  doAssert varSha256State           == (cast[int](addr p.sha.state)  - a)
+  doAssert varSha256Curlen          == (cast[int](addr p.sha.curlen) - a)
+  doAssert varSha256Buf             == (cast[int](addr p.sha.buf)    - a)
+  doAssert varSha256StateSizeof     == p.sha.sizeof
+  doAssert varSha256HashStateSizeof == p.sizeof
+    
 # ----------------------------------------------------------------------------
 # End
 # ----------------------------------------------------------------------------

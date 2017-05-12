@@ -20,6 +20,7 @@ endif
 
 SUBDIRS    = lib
 CLEANFILES = *.exe cwrap $(NIMLIBWRAP)
+EXE_DEPS   = nim.cfg nim.sh
 
 if USE_DEBUG
 AM_CFLAGS = -g
@@ -39,8 +40,7 @@ endif
 # Main
 # ---------------------------------------------------------------------------
 
-all-local:: nim.sh nim.cfg
-prepare:: nim.cfg
+all-local:: $(EXE_DEPS)
 
 .PHONY: help
 help:
@@ -52,6 +52,17 @@ help:
 	@echo "      | try             -- run quick source file tests"
 	@echo "      | check           -- run all tests"
 	@echo
+
+# ---------------------------------------------------------------------------
+# Prepare
+# ---------------------------------------------------------------------------
+
+prepare:: $(EXE_DEPS)
+
+NIM_PATHS_INC = nim_paths_inc.nim
+EXE_DEPS += lib/misc/$(NIM_PATHS_INC)
+lib/misc/$(NIM_PATHS_INC):
+	$(MAKE) -C lib/misc $(NIM_PATHS_INC)
 
 # ---------------------------------------------------------------------------
 # Build library objects

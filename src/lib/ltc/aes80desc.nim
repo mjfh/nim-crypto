@@ -24,64 +24,59 @@
 # OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #
 
-## Random generator based Fortuna
-
-import
-  hashes, times, strutils, sequtils,
-  ltc / [frta]
+# ----------------------------------------------------------------------------
+# Public
+# ----------------------------------------------------------------------------
 
 type
-  RndFrta* = Frta
+  RijndaelKey* = tuple
+    eK: array[60, uint32]   # ulong32 eK[60]
+    dK: array[60, uint32]   # ulong32 dK[60];
+    nR: cint
 
-# ----------------------------------------------------------------------------
-# Public functions
-# ----------------------------------------------------------------------------
+  Aes80Array* = array[16,uint8]
+  Aes80Data*  = Aes80Array | array[16,int8]
 
-proc initRndFrta*(ctx: var RndFrta; seed1, seed2: int64) =
-  ## Globally initialise Fortuna based random generator
-  block fail:
-    if not ctx.getFrta:
-      break fail
-    if not ctx.frtaAddEntropy(unsafeAddr seed1, seed1.sizeof):
-      break fail
-    if not ctx.frtaAddEntropy(unsafeAddr seed2, seed2.sizeof):
-      break fail
-    return
-  quit "Fortuna initialisation error"
-
-proc rndFrtaNext*(ctx: var RndFrta): int64 {.inline.} =
-  discard ctx.readFrta(addr result, result.sizeof)
+when cint.sizeof != int.sizeof:
+  # occures on 32bit machines due to struct into union embedding
+  type Aes80Key* = tuple[rndl: RijndaelKey, pad: cint]
+else:
+  type Aes80Key* = tuple[rndl: RijndaelKey] # symmetric encryption key
 
 # ----------------------------------------------------------------------------
 # Tests
 # ----------------------------------------------------------------------------
 
 when isMainModule:
-  const
-    ccInit = hash("wonderland")
-  when not defined(check_run):
-    echo ">>> ccInit=", ccInit.toHex
 
-  block:
-    var ctx: RndFrta
-    ctx.initRndFrta(0,ccInit)
-    for n in 0..3:
-      var w = ctx.rndFrtaNext
-      when not defined(check_run):
-        echo ">>>> ", w.toHex
-    when not defined(check_run):
-      echo ""
+  import
+    misc / [prjcfg]
 
-  block:
-    var ctx: RndFrta
-    ctx.initRndFrta(0,hash(CompileTime & CompileDate & hostOS & hostCPU))
-    for n in 0..3:
-      var w = ctx.rndFrtaNext
-      when not defined(check_run):
-        echo ">>>> ", w.toHex
+  {.passC: " -I " & "headers".nimSrcDirname.}
 
-#  when not defined(check_run):
-#    echo "*** not yet"
+  var
+    p: Aes80Key
+    a = cast[int](addr p)
+    varAes80RndlEk {.
+      importc: "offsetof(symmetric_key, rijndael.eK)",
+      header: "tomcrypt.h".}: int
+    varAes80RndlDk {.
+      importc: "offsetof(symmetric_key, rijndael.dK)",
+      header: "tomcrypt.h".}: int
+    varAes80RndlNr {.
+      importc: "offsetof(symmetric_key, rijndael.Nr)",
+      header: "tomcrypt.h".}: int
+    varAes80RndlKeySizeof {.
+      importc: "sizeof(struct rijndael_key)",
+      header: "tomcrypt.h".}: int
+    varAes80SymKeySizeof {.
+      importc: "sizeof(symmetric_key)",
+      header: "tomcrypt.h".}: int
+  doAssert varAes80RndlEk        == (cast[int](addr p.rndl.eK) - a)
+  doAssert varAes80RndlDk        == (cast[int](addr p.rndl.dK) - a)
+  doAssert varAes80RndlNr        == (cast[int](addr p.rndl.nR) - a)
+  doAssert varAes80RndlKeySizeof == (p.rndl.sizeof)
+  doAssert varAes80SymKeySizeof  == (p.sizeof)
 
 # ----------------------------------------------------------------------------
 # End

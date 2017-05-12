@@ -19,8 +19,7 @@ prepare:: nim-cfg.sh nim-check.sh nim-compile.sh nim-paths.sh
 
 # Kludge - first subsystem to be called
 prepare::
-	$(MAKE) -C $(SRC_DIR)         $@
-	$(MAKE) -C $(SRCLIB_DIR)/misc $@
+	$(MAKE) -C $(SRC_DIR) $@
 
 # ---------------------------------------------------------------------------
 # External library imports

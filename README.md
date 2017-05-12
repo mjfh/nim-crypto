@@ -43,9 +43,14 @@ decryption and further processing.
  Download/clone *nim-crypto* and enter the root directory. Then type
  
        make -f Makefile.simple
-	   
- This will produce a binary command file *src/cwrap* which can
- be run as
+
+ or
+
+       make -f Makefile.simple mingw
+
+where the latter one might be needed on a Windows/MinGW set up.
+This will produce a binary command file *src/cwrap* which can
+be run as
 
        ./src/cwrap
 	   
@@ -100,21 +105,21 @@ be available by default.
 
 ## Bootstrapping
 
-Download/clone the *nim-crypto* repository from GitHUB and enter its root
+Download/clone the *nim-crypto* project from GitHUB and enter its root
 directory. All bootstrapping commands are bundled into a single *make*
-command script called *Build*. It is accessible in the root
+command script called *Build*. It is accessible in the project root
 directory. A help page is printed if called without arguments as in
 
       ./Build
 
-This command script expects the *make* command installed as
-*/usr/bin/make*. You need to edit the first line of this script
-accordingly if this is not the case.
+This command script expects the *make* command installed as */usr/bin/make*.
+You need to edit the first line of this script accordingly if this is not
+the case (or run it as *"make -f Build <args..>"* instead).
 
 #### Optional: Local NIM Installation
 
 Unless a *NIM* compiler is installed, it can be done locally within
-the *nim-crypto* repository with the command:
+the *nim-crypto* progect tree with the command:
 
      ./Build nim
 	 

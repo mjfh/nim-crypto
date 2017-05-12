@@ -83,10 +83,6 @@
  *                 space.
  */
 
-#ifdef HAVE_CONFIG_H
-# include "config.h"
-#endif
-
 #define ARGTYPE 4
 #define LTC_SMALL_CODE
 
@@ -112,18 +108,6 @@
 #define LTC_FORTUNA_WD    10 /* reseed every N read function calls */
 #define LTC_FORTUNA_POOLS 32
 #define LTC_RNG_GET_BYTES
-
-#ifdef HAVE_DEV_RANDOM
-# define LTC_DEVRANDOM
-# ifdef DEV_URANDOM
-# define LTC_TRY_URANDOM_FIRST
-# endif
-#else /* HAVE_DEV_RANDOM */
-# ifndef HAVE_CONFIG_H
-#  define LTC_DEVRANDOM /* try anyway */
-#  define LTC_TRY_URANDOM_FIRST
-# endif
-#endif /* HAVE_DEV_RANDOM */
 
 /* Disable others */
 #define XMALLOC    _XMALLOC_is_not_allowed_here_

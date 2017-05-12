@@ -27,7 +27,8 @@
 ## Random generator based ChaCha20
 
 import
-  chacha/chacha, hashes, times, strutils, sequtils
+  hashes, times, strutils, sequtils,
+  chacha / [chacha]
 
 type
   RndCcMsk = array[5,uint64]

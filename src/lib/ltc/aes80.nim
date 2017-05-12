@@ -25,15 +25,18 @@
 #
 
 import
-  os, sequtils, strutils, macros, ltc/ltc_const, misc/prjcfg
+  ltc  / [aes80desc, ltc_const],
+  misc / [prjcfg]
+
+export
+  aes80desc
 
 # ----------------------------------------------------------------------------
 # AES compiler
 # ----------------------------------------------------------------------------
 
 const
-  stdCcFlgs = " -I " & "headers".nimSrcDirname &
-              " -I " & "conf".nimSrcRoot
+  stdCcFlgs = " -I " & "headers".nimSrcDirname
 
 when isMainModule:
   const ccFlags = stdCcFlgs
@@ -49,22 +52,6 @@ else:
 # ----------------------------------------------------------------------------
 # Interface ltc/aes
 # ----------------------------------------------------------------------------
-
-type
-  RijndaelKey* = tuple
-    eK: array[60, uint32]   # ulong32 eK[60]
-    dK: array[60, uint32]   # ulong32 dK[60];
-    nR: cint
-
-  Aes80Array* = array[16,uint8]
-  Aes80Data*  = Aes80Array | array[16,int8]
-
-when cint.sizeof != int.sizeof:
-  # occures on 32bit machines due to struct into union embedding
-  type Aes80Key* = tuple[rndl: RijndaelKey, pad: cint]
-else:
-  type Aes80Key* = tuple[rndl: RijndaelKey] # symmetric encryption key
-
 
 proc rijndael_setup(key: pointer; kLen: cint;
                     nRnds: cint; sKey: ptr Aes80Key): cint {.cdecl, importc.}
@@ -85,15 +72,15 @@ proc rijndael_setup(key: pointer; kLen: cint;
 #  ## Argument:
 #  ##   sKey    -- [in] The key in as scheduled by this function.
 
-proc rijndael_keysize(kSize: ptr cint): cint {.cdecl, importc.}
-  ## Gets suitable key size
-  ##
-  ## Argument:
-  ##   kSize -- [in/out] The length of the recommended key (in bytes). This
-  ##                     function will store the suitable size back in this
-  ##                     variable (16, 24, or 32).
-  ## Returns:
-  ##   isCryptOk if the input key size is acceptable.
+#proc rijndael_keysize(kSize: ptr cint): cint {.cdecl, importc.}
+#  ## Gets suitable key size
+#  ##
+#  ## Argument:
+#  ##   kSize -- [in/out] The length of the recommended key (in bytes). This
+#  ##                     function will store the suitable size back in this
+#  ##                     variable (16, 24, or 32).
+#  ## Returns:
+#  ##   isCryptOk if the input key size is acceptable.
 
 proc rijndael_ecb_decrypt(ct, pt: pointer;
                           sKey: ptr Aes80Key): cint {.cdecl, importc.}
@@ -123,27 +110,29 @@ proc rijndael_ecb_encrypt(pt, ct: pointer;
 # Debugging helper
 # ----------------------------------------------------------------------------
 
-proc fromHexSeq(buf: seq[int8]; sep = " "): string =
-  ## dump an array or a data sequence as hex string
-  buf.mapIt(it.toHex(2).toLowerAscii).join(sep)
+when isMainModule:
+  proc fromHexSeq(buf: seq[int8]; sep = " "): string =
+    ## dump an array or a data sequence as hex string
+    buf.mapIt(it.toHex(2).toLowerAscii).join(sep)
 
-proc fromHexSeq(buf: Aes80Data; sep = " "): string =
-  var q = newSeq[int8](buf.len)
-  for n in 0..<buf.len: q[n] = buf[n].int.toU8
-  result = q.fromHexSeq(sep)
+  proc fromHexSeq(buf: Aes80Data; sep = " "): string =
+    var q = newSeq[int8](buf.len)
+    for n in 0..<buf.len:
+      q[n] = buf[n].int.toU8
+    result = q.fromHexSeq(sep)
 
-proc toHexSeq(s: string): seq[int8] =
-  ## Converts a hex string stream to a byte sequence, it raises an
-  ## exception if the hex string stream is incorrect.
-  result = newSeq[int8](s.len div 2)
-  for n in 0..<result.len:
-    result[n] = s[2*n..2*n+1].parseHexInt.toU8
-  doAssert s == result.mapIt(it.toHex(2).toLowerAscii).join
+  proc toHexSeq(s: string): seq[int8] =
+    ## Converts a hex string stream to a byte sequence, it raises an
+    ## exception if the hex string stream is incorrect.
+    result = newSeq[int8](s.len div 2)
+    for n in 0..<result.len:
+      result[n] = s[2*n..2*n+1].parseHexInt.toU8
+    doAssert s == result.mapIt(it.toHex(2).toLowerAscii).join
 
-proc toAes80Array(s: string): Aes80Array =
-  var q = s.toHexSeq
-  doAssert q.len == result.len
-  (addr result[0]).copyMem(addr q[0], result.len)
+  proc toAes80Array(s: string): Aes80Array =
+    var q = s.toHexSeq
+    doAssert q.len == result.len
+    (addr result[0]).copyMem(addr q[0], result.len)
 
 # ----------------------------------------------------------------------------
 # Public interface
@@ -163,13 +152,13 @@ proc clearAes80*(x: var Aes80Key) {.inline.} =
   # (addr x).rijndael_done
   (addr x).zeroMem(x.sizeof)
 
-proc aes80Encrypt(x: var Aes80Key;
-                  pOut, pIn: ptr Aes80Data): bool {.inline.} =
+proc aes80Encrypt*(x: var Aes80Key;
+                   pOut, pIn: ptr Aes80Data): bool {.inline.} =
   ## Encrypt a data block
   isCryptOk == rijndael_ecb_encrypt(pIn, pOut, addr x)
 
-proc aes80Decrypt(x: var Aes80Key;
-                  pOut, pIn: ptr Aes80Data): bool {.inline.} =
+proc aes80Decrypt*(x: var Aes80Key;
+                   pOut, pIn: ptr Aes80Data): bool {.inline.} =
   ## Decrypt a data block
   isCryptOk == rijndael_ecb_decrypt(pIn, pOut, addr x)
 
@@ -178,30 +167,6 @@ proc aes80Decrypt(x: var Aes80Key;
 # ----------------------------------------------------------------------------
 
 when isMainModule:
-
-  # verify Aes80Key descriptor layout in C and NIM
-  {.compile: "aesd/ltc_aes80specs.c".nimSrcDirname.}
-  proc zAes80Specs(): pointer {.cdecl, importc: "ltc_aes80_specs".}
-  proc tAes80Specs(): seq[int] =
-    result = newSeq[int](0)
-    var
-      p: Aes80Key
-      a = cast[int](addr p)
-    result.add(cast[int](addr p.rndl.eK) - a)
-    result.add(cast[int](addr p.rndl.dK) - a)
-    result.add(cast[int](addr p.rndl.nR) - a)
-    result.add(p.rndl.sizeof)
-    result.add(p.sizeof)
-    result.add(0xffff)
-  var
-    a: array[6,cint]
-    v = tAes80Specs()
-  (addr a[0]).copyMem(zAes80Specs(), sizeof(a))
-  var w = a.mapIt(int, it)
-  when not defined(check_run):
-    echo ">> desc: ", v
-  #echo ">> ", v, " >> ", w
-  doAssert v == w
 
   # invoke self test in C code
   proc rijndael_test(): cint {.cdecl, importc.}

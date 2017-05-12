@@ -5,7 +5,7 @@
 # Blame: Jordan Hrycaj <jordan@teddy-net.com>
 
 SUBDIRS =
-CLEANFILES = *.exe salsa
+CLEANFILES = *.exe salsa salsadesc
 
 NIMDOCHTML =
 NIMNOCHECK =

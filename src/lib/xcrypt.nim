@@ -169,7 +169,8 @@
 ##
 
 import
-  base64, chacha/chacha, ecckey, rnd64, sesskey, strutils
+  base64, ecckey, rnd64, sesskey, strutils,
+  chacha / [chacha]
 
 export
   ecckey
@@ -245,11 +246,9 @@ proc startXDecrypt(ctx: var XCryptCtx;
     for n in 0..<xdt.key.len:
       if xdt.key[n] == zero:                          # ignore zero key slot
         continue
-      var
-        kPtr = cast[ptr ChaChaKey](addr xdt.key[n])
-        line = hdr[(4 * InLinelen) .. <(5 * InLinelen)]
 
       # decrypt challenge with current key
+      var kPtr = cast[ptr ChaChaKey](addr xdt.key[n])
       getChaCha(ctx.ccc, kPtr, nPtr)                  # try key for decryption
       chachaAnyCrypt(ctx.ccc, addr xdt.oLine,         # decrypt line
                      unsafeAddr hdr[4 * InLinelen], InLinelen)

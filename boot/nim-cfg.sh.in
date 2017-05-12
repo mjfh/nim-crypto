@@ -84,7 +84,7 @@ assertions = off
 
 xmgw64_opts='
 @if windows:
-  # Note: os:windows @NIM_INFO@
+  # Note: os:windows MinGW X-compile => 64bit
   cpu = amd64
   amd64.windows.gcc.path = "/usr/bin"
   amd64.windows.gcc.exe = "@CC@"
@@ -94,7 +94,7 @@ xmgw64_opts='
 
 xmgw32_opts='
 @if windows:
-  # Note: os:windows @NIM_INFO@
+  # Note: os:windows MinGW X-compile => 32bit
   cpu = i386
   i386.windows.gcc.path = "/usr/bin"
   i386.windows.gcc.exe = "@CC@"
@@ -131,7 +131,7 @@ amd64_opts='
 i386_opts='
 @if i386:
   # Note: Posix/i386
-  cpu = amd64
+  cpu = i386
   passC = "@CFLAGS_CC_M32@"
   passL = "@CFLAGS_CC_M32@"
 @end'

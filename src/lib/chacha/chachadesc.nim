@@ -24,64 +24,52 @@
 # OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #
 
-## Random generator based Fortuna
-
-import
-  hashes, times, strutils, sequtils,
-  ltc / [frta]
+# ----------------------------------------------------------------------------
+# Public
+# ----------------------------------------------------------------------------
 
 type
-  RndFrta* = Frta
-
-# ----------------------------------------------------------------------------
-# Public functions
-# ----------------------------------------------------------------------------
-
-proc initRndFrta*(ctx: var RndFrta; seed1, seed2: int64) =
-  ## Globally initialise Fortuna based random generator
-  block fail:
-    if not ctx.getFrta:
-      break fail
-    if not ctx.frtaAddEntropy(unsafeAddr seed1, seed1.sizeof):
-      break fail
-    if not ctx.frtaAddEntropy(unsafeAddr seed2, seed2.sizeof):
-      break fail
-    return
-  quit "Fortuna initialisation error"
-
-proc rndFrtaNext*(ctx: var RndFrta): int64 {.inline.} =
-  discard ctx.readFrta(addr result, result.sizeof)
+  ChaChaIV*   = tuple[data: array[ 1,uint64]] ## nonce, initialisation vector
+  ChaChaHKey* = tuple[data: array[ 2,uint64]] ## small key
+  ChaChaKey*  = tuple[data: array[ 4,uint64]] ## recommended key
+  ChaChaBlk*  = tuple[data: array[64, uint8]] ## 64 byte data block
+  ChaChaXBlk* = tuple[data: array[16,uint32]] ## data block (other format)
+  ChaChaData* = ChaChaIV|ChaChaHKey|ChaChaKey|ChaChaBlk|ChaChaXBlk
+  ChaChaCtx* = tuple                          ## descriptor, holds context
+    schedule:  ChaChaBlk
+    keystream: ChaChaBlk
+    available: csize
 
 # ----------------------------------------------------------------------------
 # Tests
 # ----------------------------------------------------------------------------
 
 when isMainModule:
-  const
-    ccInit = hash("wonderland")
-  when not defined(check_run):
-    echo ">>> ccInit=", ccInit.toHex
 
-  block:
-    var ctx: RndFrta
-    ctx.initRndFrta(0,ccInit)
-    for n in 0..3:
-      var w = ctx.rndFrtaNext
-      when not defined(check_run):
-        echo ">>>> ", w.toHex
-    when not defined(check_run):
-      echo ""
+  import
+    misc / [prjcfg]
 
-  block:
-    var ctx: RndFrta
-    ctx.initRndFrta(0,hash(CompileTime & CompileDate & hostOS & hostCPU))
-    for n in 0..3:
-      var w = ctx.rndFrtaNext
-      when not defined(check_run):
-        echo ">>>> ", w.toHex
+  {.passC: " -I " & "private".nimSrcDirname.}
 
-#  when not defined(check_run):
-#    echo "*** not yet"
+  var
+    p: ChaChaCtx
+    a = cast[int](addr p)
+    varChaChaSchedule {.
+      importc: "offsetof(chacha20_ctx, schedule)",
+      header: "chacha20_simple.h".}: int
+    varChaChaKeyStream {.
+      importc: "offsetof(chacha20_ctx, keystream)",
+      header: "chacha20_simple.h".}: int
+    varChaChaAvailable {.
+      importc: "offsetof(chacha20_ctx, available)",
+      header: "chacha20_simple.h".}: int
+    varChaChaCtxSizeof {.
+      importc: "sizeof(chacha20_ctx)",
+      header: "chacha20_simple.h".}: int
+  doAssert varChaChaSchedule  == (cast[int](addr p.schedule)  - a)
+  doAssert varChaChaKeyStream == (cast[int](addr p.keystream) - a)
+  doAssert varChaChaAvailable == (cast[int](addr p.available) - a)
+  doAssert varChaChaCtxSizeof == (sizeof(p))
 
 # ----------------------------------------------------------------------------
 # End

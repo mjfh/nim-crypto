@@ -24,6 +24,9 @@
 # OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #
 
+import
+  misc / [prjcfg]
+
 # ----------------------------------------------------------------------------
 # Interface splitmix64
 # ----------------------------------------------------------------------------
@@ -32,10 +35,10 @@ type
   Spmx64Seed = culonglong
   X64Seed* = int64
   
-{.compile: "splitmix64.c".}
+{.compile: "splitmix64.c".nimSrcDirname.}
 proc spmxSet64next*(): culonglong {.cdecl, importc: "spmx64next".}
 
-{.compile: "spmx64seeder.c".}
+{.compile: "spmx64seeder.c".nimSrcDirname.}
 proc spmxGetSeed*(): culonglong {.cdecl, importc: "get_spmx64seed".}
 proc spmxSetSeed*(s: culonglong) {.cdecl, importc: "set_spmx64seed".}
 
@@ -54,7 +57,6 @@ proc spmx64next*(): int64 {.inline.} =
 # ----------------------------------------------------------------------------
 
 when isMainModule:
-  import strutils
 
   block:
     spmx64Seed(0x123456789)
