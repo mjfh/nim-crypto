@@ -1237,6 +1237,8 @@ function main() {
     title="getEccPubKey(pub: var EccPubKey; prv: ptr EccPrvKey)"><wbr />get<wbr />Ecc<wbr />Pub<wbr />Key<span class="attachedType" style="visibility:hidden">EccPubKey</span></a></li>
   <li><a class="reference" href="#getEccSessKey,EccSessKey,ptr.EccPrvKey,ptr.EccPubKey"
     title="getEccSessKey(resKey: var EccSessKey; ownPrv: ptr EccPrvKey; dstPub: ptr EccPubKey)"><wbr />get<wbr />Ecc<wbr />Sess<wbr />Key<span class="attachedType" style="visibility:hidden">EccSessKey</span></a></li>
+  <li><a class="reference" href="#getEccPubKey,string"
+    title="getEccPubKey(preamble: string): (EccPubKey, EccPubKey, EccPubKey)"><wbr />get<wbr />Ecc<wbr />Pub<wbr />Key<span class="attachedType" style="visibility:hidden">EccPubKey</span></a></li>
   <li><a class="reference" href="#pp,EccPrvKey,string"
     title="pp(prv: EccPrvKey; delim: string = &quot;&quot;): string"><wbr />pp<span class="attachedType" style="visibility:hidden">EccPrvKey</span></a></li>
   <li><a class="reference" href="#pp,EccPubKey,string"
@@ -1256,7 +1258,7 @@ function main() {
   <div class="section" id="6">
 <h1><a class="toc-backref" href="#6">Imports</a></h1>
 <dl class="item">
-<a class="reference external" href="base64.html">base64</a>, <a class="reference external" href="rnd64.html">rnd64</a>, <a class="reference external" href="sequtils.html">sequtils</a>, <a class="reference external" href="strutils.html">strutils</a>, <a class="reference external" href="uecc/uecc.html">uecc/uecc</a>
+<a class="reference external" href="base64.html">base64</a>, <a class="reference external" href="rnd64.html">rnd64</a>, <a class="reference external" href="sequtils.html">sequtils</a>, <a class="reference external" href="strutils.html">strutils</a>, <a class="reference external" href="uecc/[uecc].html">uecc/[uecc]</a>
 </dl></div>
 <div class="section" id="7">
 <h1><a class="toc-backref" href="#7">Types</a></h1>
@@ -1265,27 +1267,27 @@ function main() {
 <dd>
 
 &nbsp;&nbsp;<a
-href="/tree/master/ecckey.nim#L41"
+href="/tree/master/ecckey.nim#L35"
 class="link-seesrc" target="_blank">Source</a>
-<a href="/edit/devel/ecckey.nim#L41" class="link-seesrc" target="_blank" >Edit</a>
+<a href="/edit/devel/ecckey.nim#L35" class="link-seesrc" target="_blank" >Edit</a>
 
 </dd>
 <dt id="EccPubKey"><a name="EccPubKey"></a><pre><span class="Identifier">EccPubKey</span> <span class="Other">=</span> <span class="Keyword">tuple</span><span class="Other">[</span><span class="Identifier">pubKey</span><span class="Other">:</span> <span class="Identifier">UEccScalar</span><span class="Other">]</span></pre></dt>
 <dd>
 
 &nbsp;&nbsp;<a
-href="/tree/master/ecckey.nim#L44"
+href="/tree/master/ecckey.nim#L38"
 class="link-seesrc" target="_blank">Source</a>
-<a href="/edit/devel/ecckey.nim#L44" class="link-seesrc" target="_blank" >Edit</a>
+<a href="/edit/devel/ecckey.nim#L38" class="link-seesrc" target="_blank" >Edit</a>
 
 </dd>
 <dt id="EccSessKey"><a name="EccSessKey"></a><pre><span class="Identifier">EccSessKey</span> <span class="Other">=</span> <span class="Keyword">tuple</span><span class="Other">[</span><span class="Identifier">sesKey</span><span class="Other">:</span> <span class="Identifier">UEccScalar</span><span class="Other">]</span></pre></dt>
 <dd>
 
 &nbsp;&nbsp;<a
-href="/tree/master/ecckey.nim#L47"
+href="/tree/master/ecckey.nim#L41"
 class="link-seesrc" target="_blank">Source</a>
-<a href="/edit/devel/ecckey.nim#L47" class="link-seesrc" target="_blank" >Edit</a>
+<a href="/edit/devel/ecckey.nim#L41" class="link-seesrc" target="_blank" >Edit</a>
 
 </dd>
 
@@ -1297,18 +1299,18 @@ class="link-seesrc" target="_blank">Source</a>
 <dd>
 create a new private key
 &nbsp;&nbsp;<a
-href="/tree/master/ecckey.nim#L87"
+href="/tree/master/ecckey.nim#L84"
 class="link-seesrc" target="_blank">Source</a>
-<a href="/edit/devel/ecckey.nim#L87" class="link-seesrc" target="_blank" >Edit</a>
+<a href="/edit/devel/ecckey.nim#L84" class="link-seesrc" target="_blank" >Edit</a>
 
 </dd>
 <dt id="getEccPubKey"><a name="getEccPubKey,EccPubKey,ptr.EccPrvKey"></a><pre><span class="Keyword">proc</span> <span class="Identifier">getEccPubKey</span><span class="Other">(</span><span class="Identifier">pub</span><span class="Other">:</span> <span class="Keyword">var</span> <span class="Identifier">EccPubKey</span><span class="Other">;</span> <span class="Identifier">prv</span><span class="Other">:</span> <span class="Keyword">ptr</span> <span class="Identifier">EccPrvKey</span><span class="Other">)</span> <span class="Other pragmabegin">{.</span><div class="pragma"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span></div><span class="Other pragmaend">.}</span></pre></dt>
 <dd>
 derive public key from private key
 &nbsp;&nbsp;<a
-href="/tree/master/ecckey.nim#L92"
+href="/tree/master/ecckey.nim#L89"
 class="link-seesrc" target="_blank">Source</a>
-<a href="/edit/devel/ecckey.nim#L92" class="link-seesrc" target="_blank" >Edit</a>
+<a href="/edit/devel/ecckey.nim#L89" class="link-seesrc" target="_blank" >Edit</a>
 
 </dd>
 <dt id="getEccSessKey"><a name="getEccSessKey,EccSessKey,ptr.EccPrvKey,ptr.EccPubKey"></a><pre><span class="Keyword">proc</span> <span class="Identifier">getEccSessKey</span><span class="Other">(</span><span class="Identifier">resKey</span><span class="Other">:</span> <span class="Keyword">var</span> <span class="Identifier">EccSessKey</span><span class="Other">;</span> <span class="Identifier">ownPrv</span><span class="Other">:</span> <span class="Keyword">ptr</span> <span class="Identifier">EccPrvKey</span><span class="Other">;</span> <span class="Identifier">dstPub</span><span class="Other">:</span> <span class="Keyword">ptr</span> <span class="Identifier">EccPubKey</span><span class="Other">)</span> <span class="Other pragmabegin">{.</span><div class="pragma">
@@ -1316,36 +1318,46 @@ class="link-seesrc" target="_blank">Source</a>
 <dd>
 derive session keq from own private key and destination public key
 &nbsp;&nbsp;<a
-href="/tree/master/ecckey.nim#L96"
+href="/tree/master/ecckey.nim#L93"
 class="link-seesrc" target="_blank">Source</a>
-<a href="/edit/devel/ecckey.nim#L96" class="link-seesrc" target="_blank" >Edit</a>
+<a href="/edit/devel/ecckey.nim#L93" class="link-seesrc" target="_blank" >Edit</a>
+
+</dd>
+<dt id="getEccPubKey"><a name="getEccPubKey,string"></a><pre><span class="Keyword">proc</span> <span class="Identifier">getEccPubKey</span><span class="Other">(</span><span class="Identifier">preamble</span><span class="Other">:</span> <span class="Identifier">string</span><span class="Other">)</span><span class="Other">:</span> <span class="Other">(</span><span class="Identifier">EccPubKey</span><span class="Other">,</span> <span class="Identifier">EccPubKey</span><span class="Other">,</span> <span class="Identifier">EccPubKey</span><span class="Other">)</span> <span class="Other pragmabegin">{.</span><div class="pragma"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span><span class="Other">,</span>
+    <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span></div><span class="Other pragmaend">.}</span></pre></dt>
+<dd>
+extract public key from destination stream header, may return nil on error; this function is deprecated and used for testing only, use sesskey.getSessHeader() instead
+&nbsp;&nbsp;<a
+href="/tree/master/ecckey.nim#L98"
+class="link-seesrc" target="_blank">Source</a>
+<a href="/edit/devel/ecckey.nim#L98" class="link-seesrc" target="_blank" >Edit</a>
 
 </dd>
 <dt id="pp"><a name="pp,EccPrvKey,string"></a><pre><span class="Keyword">proc</span> <span class="Identifier">pp</span><span class="Other">(</span><span class="Identifier">prv</span><span class="Other">:</span> <span class="Identifier">EccPrvKey</span><span class="Other">;</span> <span class="Identifier">delim</span><span class="Other">:</span> <span class="Identifier">string</span> <span class="Other">=</span> <span class="StringLit">&quot;&quot;</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">string</span> <span class="Other pragmabegin">{.</span><div class="pragma"><span class="Identifier">inline</span><span class="Other">,</span> <span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span></div><span class="Other pragmaend">.}</span></pre></dt>
 <dd>
 pretty print key (for debugging)
 &nbsp;&nbsp;<a
-href="/tree/master/ecckey.nim#L142"
+href="/tree/master/ecckey.nim#L110"
 class="link-seesrc" target="_blank">Source</a>
-<a href="/edit/devel/ecckey.nim#L142" class="link-seesrc" target="_blank" >Edit</a>
+<a href="/edit/devel/ecckey.nim#L110" class="link-seesrc" target="_blank" >Edit</a>
 
 </dd>
 <dt id="pp"><a name="pp,EccPubKey,string"></a><pre><span class="Keyword">proc</span> <span class="Identifier">pp</span><span class="Other">(</span><span class="Identifier">pub</span><span class="Other">:</span> <span class="Identifier">EccPubKey</span><span class="Other">;</span> <span class="Identifier">delim</span><span class="Other">:</span> <span class="Identifier">string</span> <span class="Other">=</span> <span class="StringLit">&quot;&quot;</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">string</span> <span class="Other pragmabegin">{.</span><div class="pragma"><span class="Identifier">inline</span><span class="Other">,</span> <span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span></div><span class="Other pragmaend">.}</span></pre></dt>
 <dd>
 pretty print key (for debugging)
 &nbsp;&nbsp;<a
-href="/tree/master/ecckey.nim#L146"
+href="/tree/master/ecckey.nim#L114"
 class="link-seesrc" target="_blank">Source</a>
-<a href="/edit/devel/ecckey.nim#L146" class="link-seesrc" target="_blank" >Edit</a>
+<a href="/edit/devel/ecckey.nim#L114" class="link-seesrc" target="_blank" >Edit</a>
 
 </dd>
 <dt id="pp"><a name="pp,EccSessKey,string"></a><pre><span class="Keyword">proc</span> <span class="Identifier">pp</span><span class="Other">(</span><span class="Identifier">ses</span><span class="Other">:</span> <span class="Identifier">EccSessKey</span><span class="Other">;</span> <span class="Identifier">delim</span><span class="Other">:</span> <span class="Identifier">string</span> <span class="Other">=</span> <span class="StringLit">&quot;&quot;</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">string</span> <span class="Other pragmabegin">{.</span><div class="pragma"><span class="Identifier">inline</span><span class="Other">,</span> <span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span></div><span class="Other pragmaend">.}</span></pre></dt>
 <dd>
 pretty print key (for debugging)
 &nbsp;&nbsp;<a
-href="/tree/master/ecckey.nim#L150"
+href="/tree/master/ecckey.nim#L118"
 class="link-seesrc" target="_blank">Source</a>
-<a href="/edit/devel/ecckey.nim#L150" class="link-seesrc" target="_blank" >Edit</a>
+<a href="/edit/devel/ecckey.nim#L118" class="link-seesrc" target="_blank" >Edit</a>
 
 </dd>
 
@@ -1358,7 +1370,7 @@ class="link-seesrc" target="_blank">Source</a>
       <div class="twelve-columns footer">
         <span class="nim-sprite"></span>
         <br/>
-        <small>Made with Nim. Generated: 2017-04-28 18:38:35 UTC</small>
+        <small>Made with Nim. Generated: 2017-05-12 12:19:54 UTC</small>
       </div>
     </div>
   </div>
