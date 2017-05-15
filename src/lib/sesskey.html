@@ -1332,7 +1332,7 @@ E1 = (K1,W1,N), E2 = (K2,W2,N), E3 = (K3,W3,N)</pre>
   <div class="section" id="6">
 <h1><a class="toc-backref" href="#6">Imports</a></h1>
 <dl class="item">
-<a class="reference external" href="base64.html">base64</a>, <a class="reference external" href="ecckey.html">ecckey</a>, <a class="reference external" href="ltc/sha100.html">ltc/sha100</a>, <a class="reference external" href="rnd64.html">rnd64</a>, <a class="reference external" href="strutils.html">strutils</a>, <a class="reference external" href="uecc/uecc.html">uecc/uecc</a>, <a class="reference external" href="sequtils.html">sequtils</a>
+<a class="reference external" href="base64.html">base64</a>, <a class="reference external" href="ecckey.html">ecckey</a>, <a class="reference external" href="rnd64.html">rnd64</a>, <a class="reference external" href="strutils.html">strutils</a>, <a class="reference external" href="ltc/[sha100].html">ltc/[sha100]</a>, <a class="reference external" href="uecc/[uecc].html">uecc/[uecc]</a>, <a class="reference external" href="sequtils.html">sequtils</a>
 </dl></div>
 <div class="section" id="7">
 <h1><a class="toc-backref" href="#7">Types</a></h1>
@@ -1341,18 +1341,18 @@ E1 = (K1,W1,N), E2 = (K2,W2,N), E3 = (K3,W3,N)</pre>
 <dd>
 
 &nbsp;&nbsp;<a
-href="/tree/master/sesskey.nim#L142"
+href="/tree/master/sesskey.nim#L143"
 class="link-seesrc" target="_blank">Source</a>
-<a href="/edit/devel/sesskey.nim#L142" class="link-seesrc" target="_blank" >Edit</a>
+<a href="/edit/devel/sesskey.nim#L143" class="link-seesrc" target="_blank" >Edit</a>
 
 </dd>
 <dt id="SessNonce"><a name="SessNonce"></a><pre><span class="Identifier">SessNonce</span> <span class="Other">=</span> <span class="Identifier">array</span><span class="Other">[</span><span class="Identifier">NonceLen</span><span class="Other">,</span> <span class="Identifier">uint8</span><span class="Other">]</span></pre></dt>
 <dd>
 
 &nbsp;&nbsp;<a
-href="/tree/master/sesskey.nim#L143"
+href="/tree/master/sesskey.nim#L144"
 class="link-seesrc" target="_blank">Source</a>
-<a href="/edit/devel/sesskey.nim#L143" class="link-seesrc" target="_blank" >Edit</a>
+<a href="/edit/devel/sesskey.nim#L144" class="link-seesrc" target="_blank" >Edit</a>
 
 </dd>
 
@@ -1364,18 +1364,18 @@ class="link-seesrc" target="_blank">Source</a>
 <dd>
 
 &nbsp;&nbsp;<a
-href="/tree/master/sesskey.nim#L132"
+href="/tree/master/sesskey.nim#L133"
 class="link-seesrc" target="_blank">Source</a>
-<a href="/edit/devel/sesskey.nim#L132" class="link-seesrc" target="_blank" >Edit</a>
+<a href="/edit/devel/sesskey.nim#L133" class="link-seesrc" target="_blank" >Edit</a>
 
 </dd>
 <dt id="NonceLen"><a name="NonceLen"></a><pre><span class="Identifier">NonceLen</span> <span class="Other">=</span> <span class="DecNumber">36</span></pre></dt>
 <dd>
 
 &nbsp;&nbsp;<a
-href="/tree/master/sesskey.nim#L133"
+href="/tree/master/sesskey.nim#L134"
 class="link-seesrc" target="_blank">Source</a>
-<a href="/edit/devel/sesskey.nim#L133" class="link-seesrc" target="_blank" >Edit</a>
+<a href="/edit/devel/sesskey.nim#L134" class="link-seesrc" target="_blank" >Edit</a>
 
 </dd>
 
@@ -1388,9 +1388,9 @@ class="link-seesrc" target="_blank">Source</a>
 <dd>
 Creates a session header by encrypting a random meessage 'msg' with three ECC public keys given as argument (leave key slot nil). Returns the encrypted message as string and the generated message as SessKey (first var parameter).
 &nbsp;&nbsp;<a
-href="/tree/master/sesskey.nim#L249"
+href="/tree/master/sesskey.nim#L250"
 class="link-seesrc" target="_blank">Source</a>
-<a href="/edit/devel/sesskey.nim#L249" class="link-seesrc" target="_blank" >Edit</a>
+<a href="/edit/devel/sesskey.nim#L250" class="link-seesrc" target="_blank" >Edit</a>
 
 </dd>
 <dt id="getB64SessHeader"><a name="getB64SessHeader,SessKey,ptr.array[,ptr.EccPubKey]"></a><pre><span class="Keyword">proc</span> <span class="Identifier">getB64SessHeader</span><span class="Other">(</span><span class="Identifier">msg</span><span class="Other">:</span> <span class="Keyword">var</span> <span class="Identifier">SessKey</span><span class="Other">;</span> <span class="Identifier">pub</span><span class="Other">:</span> <span class="Keyword">ptr</span> <span class="Identifier">array</span><span class="Other">[</span><span class="DecNumber">3</span><span class="Other">,</span> <span class="Keyword">ptr</span> <span class="Identifier">EccPubKey</span><span class="Other">]</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">string</span> <span class="Other pragmabegin">{.</span><div class="pragma">
@@ -1398,9 +1398,9 @@ class="link-seesrc" target="_blank">Source</a>
 <dd>
 
 &nbsp;&nbsp;<a
-href="/tree/master/sesskey.nim#L261"
+href="/tree/master/sesskey.nim#L262"
 class="link-seesrc" target="_blank">Source</a>
-<a href="/edit/devel/sesskey.nim#L261" class="link-seesrc" target="_blank" >Edit</a>
+<a href="/edit/devel/sesskey.nim#L262" class="link-seesrc" target="_blank" >Edit</a>
 
 </dd>
 <dt id="getRawSessHeader"><a name="getRawSessHeader,SessKey,SessNonce,ptr.array[,ptr.EccPubKey]"></a><pre><span class="Keyword">proc</span> <span class="Identifier">getRawSessHeader</span><span class="Other">(</span><span class="Identifier">msg</span><span class="Other">:</span> <span class="Keyword">var</span> <span class="Identifier">SessKey</span><span class="Other">;</span> <span class="Identifier">nonce</span><span class="Other">:</span> <span class="Keyword">var</span> <span class="Identifier">SessNonce</span><span class="Other">;</span>
@@ -1408,9 +1408,9 @@ class="link-seesrc" target="_blank">Source</a>
 <dd>
 same as getB64SessHeader() but with binary 228 byte header returned rather than the base64 encoded version
 &nbsp;&nbsp;<a
-href="/tree/master/sesskey.nim#L268"
+href="/tree/master/sesskey.nim#L269"
 class="link-seesrc" target="_blank">Source</a>
-<a href="/edit/devel/sesskey.nim#L268" class="link-seesrc" target="_blank" >Edit</a>
+<a href="/edit/devel/sesskey.nim#L269" class="link-seesrc" target="_blank" >Edit</a>
 
 </dd>
 <dt id="extrB64SessMsg"><a name="extrB64SessMsg,array[,SessKey],SessNonce,string,ptr.array[,ptr.EccPrvKey]"></a><pre><span class="Keyword">proc</span> <span class="Identifier">extrB64SessMsg</span><span class="Other">(</span><span class="Identifier">msg</span><span class="Other">:</span> <span class="Keyword">var</span> <span class="Identifier">array</span><span class="Other">[</span><span class="DecNumber">3</span><span class="Other">,</span> <span class="Identifier">SessKey</span><span class="Other">]</span><span class="Other">;</span> <span class="Identifier">nonce</span><span class="Other">:</span> <span class="Keyword">var</span> <span class="Identifier">SessNonce</span><span class="Other">;</span> <span class="Identifier">b64Hdr</span><span class="Other">:</span> <span class="Identifier">string</span><span class="Other">;</span>
@@ -1420,9 +1420,9 @@ class="link-seesrc" target="_blank">Source</a>
 <p>Note: There is no means to check here whether the decoding of the shared message was correct.</p>
 
 &nbsp;&nbsp;<a
-href="/tree/master/sesskey.nim#L280"
+href="/tree/master/sesskey.nim#L281"
 class="link-seesrc" target="_blank">Source</a>
-<a href="/edit/devel/sesskey.nim#L280" class="link-seesrc" target="_blank" >Edit</a>
+<a href="/edit/devel/sesskey.nim#L281" class="link-seesrc" target="_blank" >Edit</a>
 
 </dd>
 <dt id="extrB64SessMsg"><a name="extrB64SessMsg,array[,SessKey],string,ptr.array[,ptr.EccPrvKey]"></a><pre><span class="Keyword">proc</span> <span class="Identifier">extrB64SessMsg</span><span class="Other">(</span><span class="Identifier">msg</span><span class="Other">:</span> <span class="Keyword">var</span> <span class="Identifier">array</span><span class="Other">[</span><span class="DecNumber">3</span><span class="Other">,</span> <span class="Identifier">SessKey</span><span class="Other">]</span><span class="Other">;</span> <span class="Identifier">b64Hdr</span><span class="Other">:</span> <span class="Identifier">string</span><span class="Other">;</span>
@@ -1430,9 +1430,9 @@ class="link-seesrc" target="_blank">Source</a>
 <dd>
 
 &nbsp;&nbsp;<a
-href="/tree/master/sesskey.nim#L297"
+href="/tree/master/sesskey.nim#L298"
 class="link-seesrc" target="_blank">Source</a>
-<a href="/edit/devel/sesskey.nim#L297" class="link-seesrc" target="_blank" >Edit</a>
+<a href="/edit/devel/sesskey.nim#L298" class="link-seesrc" target="_blank" >Edit</a>
 
 </dd>
 <dt id="extrRawSessMsg"><a name="extrRawSessMsg,array[,SessKey],SessNonce,string,ptr.array[,ptr.EccPrvKey]"></a><pre><span class="Keyword">proc</span> <span class="Identifier">extrRawSessMsg</span><span class="Other">(</span><span class="Identifier">msg</span><span class="Other">:</span> <span class="Keyword">var</span> <span class="Identifier">array</span><span class="Other">[</span><span class="DecNumber">3</span><span class="Other">,</span> <span class="Identifier">SessKey</span><span class="Other">]</span><span class="Other">;</span> <span class="Identifier">nonce</span><span class="Other">:</span> <span class="Keyword">var</span> <span class="Identifier">SessNonce</span><span class="Other">;</span> <span class="Identifier">rawHdr</span><span class="Other">:</span> <span class="Identifier">string</span><span class="Other">;</span>
@@ -1440,9 +1440,9 @@ class="link-seesrc" target="_blank">Source</a>
 <dd>
 same as extrB64SessMsg() but with binary 228 byte header (or more) rather than the base64 encoded version
 &nbsp;&nbsp;<a
-href="/tree/master/sesskey.nim#L305"
+href="/tree/master/sesskey.nim#L306"
 class="link-seesrc" target="_blank">Source</a>
-<a href="/edit/devel/sesskey.nim#L305" class="link-seesrc" target="_blank" >Edit</a>
+<a href="/edit/devel/sesskey.nim#L306" class="link-seesrc" target="_blank" >Edit</a>
 
 </dd>
 
@@ -1455,7 +1455,7 @@ class="link-seesrc" target="_blank">Source</a>
       <div class="twelve-columns footer">
         <span class="nim-sprite"></span>
         <br/>
-        <small>Made with Nim. Generated: 2017-04-28 18:38:36 UTC</small>
+        <small>Made with Nim. Generated: 2017-05-12 12:19:55 UTC</small>
       </div>
     </div>
   </div>

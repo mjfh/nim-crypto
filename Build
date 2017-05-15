@@ -96,6 +96,7 @@ CLOBBER += ar-lib configure config.* *.log *.m4
 GITBRANCH = `git status|awk '{print $$NF;exit}'`
 GITPULL   = git pull origin $(GITBRANCH)
 GITCHKOUT = git checkout $(GITBRANCH)
+GITFETCH  = git fetch --all
 GITMODCFG = git config -f .gitmodules --get-regexp
 GITSUBLST = `$(GITMODCFG) '^submodule\..*path$$'|\
                 sed -e 's/submodule\.//' -e 's/\.path//' -e 's/ /:/'`
@@ -371,9 +372,10 @@ pull:
              pat="submodule.$$mod.url"                           ;\
 	     url=`$(GITMODCFG) "^$$pat"|awk '{print $$NF;exit}'` ;\
 	     (set -x; git clone -b $$bra $$url $$pth)) || exit ;\
-	   (cd "$$pth" && $(GITCHKOUT) && $(GITPULL))  || exit ;\
+	   (cd "$$pth" && \
+	    $(GITCHKOUT) && $(GITPULL) && $(GITFETCH)) || exit ;\
 	done
-	@$(GITPULL)
+	@$(GITPULL) && $(GITFETCH)
 
 # ---------------------------------------------------------------------------
 # Clean up

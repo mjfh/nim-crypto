@@ -66,12 +66,14 @@ when declared(EnableRngNix):
     DevRandom  = "DEV_RANDOM".cnfValue("/dev/random")
     DevURandom = "DEV_URANDOM".cnfValue("/dev/urandom")
 
+  proc rdOpen(rnd: var File; s: string): bool =
+    var fd = open(s.cstring, O_RDONLY)
+    if 0 <= fd:
+      result = rnd.open(fd)
+
   proc rngNix(buf: pointer; size: int): int {.inline.} =
-    var
-      rnd  = DevURandom.open
-    if rnd.isNil:
-      rnd =  DevRandom.open
-    if not rnd.isNil:
+    var rnd: File
+    if rnd.rdOpen(DevURandom) or rnd.rdOpen(DevRandom):
       if rnd.setvbuf(nil, IONBF, 0) == 0: # disable buffering
         result = rnd.readBuffer(buf, size)
       rnd.close
