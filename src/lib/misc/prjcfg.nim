@@ -19,10 +19,13 @@ else:
   include misc/nim_paths_inc
 
 type # handy defs
-  SiUnit* = enum
-    KiB= 1024,
-    MiB = KiB.ord * KiB.ord,
-    GiB = KiB.ord * MiB.ord,
+  Ieee1541Unit* = enum
+    KiB = 1024,              # 2^10
+    MiB = KiB.ord * KiB.ord, # 2^20
+    GiB = KiB.ord * MiB.ord, # 2^30
+    TiB = KiB.ord * GiB.ord, # 2^40
+    PiB = KiB.ord * TiB.ord, # 2^50
+    EiB = KiB.ord * PiB.ord, # 2^60
 
 # ----------------------------------------------------------------------------
 # Public compile-time methods
